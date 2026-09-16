@@ -1,0 +1,58 @@
+"""
+profielen.py
+-----------------------------------------------------------------------------
+CRUD voor kindprofielen.
+"""
+
+from datetime import datetime
+
+from fastapi import APIRouter, Depends, HTTPException, status
+from pydantic import BaseModel
+from sqlalchemy.orm import Session
+
+from app.database import get_db
+from app.models.profiel import Profiel
+
+router = APIRouter(prefix="/api/profielen", tags=["profielen"])
+
+
+# --- Pydantic schemas -------------------------------------------------------
+
+class ProfielCreate(BaseModel):
+    naam: str
+    avatar: str
+
+
+class ProfielOut(BaseModel):
+    id: int
+    naam: str
+    avatar: str
+    aangemaakt_op: datetime
+
+    model_config = {"from_attributes": True}
+
+
+# --- Routes ------------------------------------------------------------------
+
+@router.get("", response_model=list[ProfielOut])
+def lijst_profielen(db: Session = Depends(get_db)):
+    return db.query(Profiel).order_by(Profiel.id).all()
+
+
+@router.post("", response_model=ProfielOut, status_code=status.HTTP_201_CREATED)
+def maak_profiel(payload: ProfielCreate, db: Session = Depends(get_db)):
+    profiel = Profiel(naam=payload.naam, avatar=payload.avatar)
+    db.add(profiel)
+    db.commit()
+    db.refresh(profiel)
+    return profiel
+
+
+@router.delete("/{profiel_id}", status_code=status.HTTP_204_NO_CONTENT)
+def verwijder_profiel(profiel_id: int, db: Session = Depends(get_db)):
+    profiel = db.query(Profiel).filter(Profiel.id == profiel_id).first()
+    if profiel is None:
+        raise HTTPException(status_code=404, detail="Profiel niet gevonden")
+    db.delete(profiel)
+    db.commit()
+    return None

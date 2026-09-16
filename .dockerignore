@@ -1,0 +1,24 @@
+# Git
+.git/
+.gitignore
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+*.egg-info/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# Data (SQLite wordt in volume gemonteerd)
+backend/data/*.db
+!backend/data/.gitkeep
+
+# Dev tools
+serve_no_cache.py
+Dockerfile
+.dockerignore

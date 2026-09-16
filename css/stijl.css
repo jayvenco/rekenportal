@@ -1,0 +1,862 @@
+/* ==========================================================================
+   Rekenportal — design system
+   Alle kleuren, afstanden, radius en typografie staan hier als CSS-variabelen.
+   Elk scherm/oefening gebruikt dezelfde variabelen, zodat de app overal
+   dezelfde rustige, moderne uitstraling heeft.
+   ========================================================================== */
+
+:root {
+  /* Kleuren */
+  --kleur-achtergrond: #f6f8fc;
+  --kleur-oppervlak: #ffffff;
+  --kleur-tekst: #1f2937;
+  --kleur-tekst-zacht: #5b6472;
+  --kleur-rand: #e2e8f0;
+  --kleur-primair: #4f8fe8;
+  --kleur-primair-donker: #3a72c4;
+  --kleur-primair-licht: #eaf2ff;
+  --kleur-succes: #38b26a;
+  --kleur-succes-licht: #e8f9ef;
+  --kleur-fout: #e8735a;
+  --kleur-fout-licht: #fdece8;
+  --kleur-oranje: #f0883e;
+  --kleur-oranje-licht: #fef1e2;
+  --kleur-accent-geel: #f5b942;
+  --kleur-schaduw: rgba(31, 41, 55, 0.08);
+
+  /* Afstanden */
+  --ruimte-xs: 6px;
+  --ruimte-sm: 12px;
+  --ruimte-md: 20px;
+  --ruimte-lg: 32px;
+  --ruimte-xl: 48px;
+
+  /* Ronde hoeken */
+  --radius-sm: 10px;
+  --radius-md: 18px;
+  --radius-lg: 28px;
+  --radius-vol: 999px;
+
+  /* Typografie */
+  --font-systeem: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+    Arial, sans-serif;
+  --font-basis: 18px;
+  --font-groot: 24px;
+  --font-cijfer: 40px;
+  --font-titel: 30px;
+
+  /* Schaduwen */
+  --schaduw-zacht: 0 4px 14px var(--kleur-schaduw);
+  --schaduw-diep: 0 10px 30px var(--kleur-schaduw);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-systeem);
+  font-size: var(--font-basis);
+  color: var(--kleur-tekst);
+  background: var(--kleur-achtergrond);
+  min-height: 100vh;
+  line-height: 1.5;
+}
+
+h1, h2, h3 {
+  margin: 0 0 var(--ruimte-sm) 0;
+  font-weight: 700;
+}
+
+h1 { font-size: var(--font-titel); }
+h2 { font-size: var(--font-groot); }
+
+p {
+  margin: 0 0 var(--ruimte-sm) 0;
+  color: var(--kleur-tekst-zacht);
+}
+
+button {
+  font-family: inherit;
+}
+
+/* Grote, ronde, kindvriendelijke knop-basis. Minimaal 44px raakvlak. */
+.knop {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ruimte-xs);
+  min-height: 56px;
+  min-width: 56px;
+  padding: 12px 24px;
+  border-radius: var(--radius-md);
+  border: none;
+  font-size: var(--font-groot);
+  font-weight: 700;
+  cursor: pointer;
+  background: var(--kleur-oppervlak);
+  color: var(--kleur-tekst);
+  box-shadow: var(--schaduw-zacht);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+  touch-action: manipulation;
+}
+
+.knop:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--schaduw-diep);
+}
+
+.knop:active {
+  transform: translateY(0);
+}
+
+.knop:focus-visible {
+  outline: 3px solid var(--kleur-primair);
+  outline-offset: 2px;
+}
+
+.knop--primair {
+  background: var(--kleur-primair);
+  color: #ffffff;
+}
+
+.knop--primair:hover {
+  background: var(--kleur-primair-donker);
+}
+
+.knop--succes {
+  background: var(--kleur-succes);
+  color: #ffffff;
+}
+
+.knop--zacht {
+  background: var(--kleur-primair-licht);
+  color: var(--kleur-primair-donker);
+}
+
+.knop--gevaar {
+  background: var(--kleur-fout-licht);
+  color: var(--kleur-fout);
+}
+
+.knop--klein {
+  font-size: var(--font-basis);
+  min-height: 44px;
+  padding: 8px 16px;
+}
+
+.knop[aria-pressed="true"] {
+  background: var(--kleur-primair);
+  color: #ffffff;
+  box-shadow: var(--schaduw-diep);
+}
+
+.knop:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Layout helpers */
+.pagina {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: var(--ruimte-lg) var(--ruimte-md) var(--ruimte-xl);
+}
+
+.kop-balk {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ruimte-sm);
+  margin-bottom: var(--ruimte-lg);
+  flex-wrap: wrap;
+}
+
+.kop-balk__titel {
+  display: flex;
+  align-items: center;
+  gap: var(--ruimte-sm);
+}
+
+.kop-balk__acties {
+  display: flex;
+  gap: var(--ruimte-sm);
+  flex-wrap: wrap;
+}
+
+.kaart {
+  background: var(--kleur-oppervlak);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--schaduw-zacht);
+  padding: var(--ruimte-lg);
+  margin-bottom: var(--ruimte-md);
+}
+
+/* Homepage tegels */
+.tegel-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: var(--ruimte-md);
+}
+
+.tegel {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--ruimte-sm);
+  background: var(--kleur-oppervlak);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--schaduw-zacht);
+  padding: var(--ruimte-lg);
+  text-align: left;
+  border: none;
+  cursor: pointer;
+  color: var(--kleur-tekst);
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+  min-height: 44px;
+  text-decoration: none;
+}
+
+.tegel:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--schaduw-diep);
+}
+
+.tegel:focus-visible {
+  outline: 3px solid var(--kleur-primair);
+  outline-offset: 3px;
+}
+
+.tegel__icoon {
+  width: 64px;
+  height: 64px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tegel__icoon svg {
+  width: 40px;
+  height: 40px;
+}
+
+.tegel__titel {
+  font-size: var(--font-groot);
+  font-weight: 700;
+  margin: 0;
+}
+
+.tegel__omschrijving {
+  color: var(--kleur-tekst-zacht);
+  font-size: var(--font-basis);
+  margin: 0;
+}
+
+.tegel__voortgang {
+  font-size: 15px;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: var(--radius-vol);
+  background: var(--kleur-succes-licht);
+  color: var(--kleur-succes);
+}
+
+.tegel--binnenkort {
+  opacity: 0.75;
+  cursor: default;
+}
+
+.tegel--binnenkort:hover {
+  transform: none;
+  box-shadow: var(--schaduw-zacht);
+}
+
+/* Instelscherm */
+.instel-groep {
+  margin-bottom: var(--ruimte-lg);
+}
+
+.instel-groep__label {
+  display: block;
+  font-weight: 700;
+  font-size: var(--font-basis);
+  margin-bottom: var(--ruimte-sm);
+}
+
+.keuze-rij {
+  display: flex;
+  gap: var(--ruimte-sm);
+  flex-wrap: wrap;
+}
+
+.keuze-knop {
+  min-height: 48px;
+  padding: 10px 20px;
+  border-radius: var(--radius-md);
+  border: 2px solid var(--kleur-rand);
+  background: var(--kleur-oppervlak);
+  font-size: var(--font-basis);
+  font-weight: 700;
+  color: var(--kleur-tekst);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.keuze-knop[aria-pressed="true"] {
+  border-color: var(--kleur-primair);
+  background: var(--kleur-primair-licht);
+  color: var(--kleur-primair-donker);
+}
+
+.keuze-knop:focus-visible {
+  outline: 3px solid var(--kleur-primair);
+  outline-offset: 2px;
+}
+
+.getal-invoer {
+  display: flex;
+  align-items: center;
+  gap: var(--ruimte-sm);
+  flex-wrap: wrap;
+}
+
+.getal-invoer label {
+  display: flex;
+  align-items: center;
+  gap: var(--ruimte-xs);
+  font-weight: 600;
+}
+
+.getal-invoer input[type="number"] {
+  width: 90px;
+  min-height: 44px;
+  font-size: var(--font-groot);
+  padding: 6px 10px;
+  border-radius: var(--radius-sm);
+  border: 2px solid var(--kleur-rand);
+  text-align: center;
+}
+
+.getal-invoer input[type="number"]:focus-visible {
+  outline: 3px solid var(--kleur-primair);
+  border-color: var(--kleur-primair);
+}
+
+/* Oefenscherm layout */
+.oefen-koppen {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--ruimte-md);
+  flex-wrap: wrap;
+  gap: var(--ruimte-sm);
+}
+
+.voortgang-tekst {
+  font-weight: 700;
+  color: var(--kleur-tekst-zacht);
+}
+
+.opgave-vraag {
+  font-size: var(--font-groot);
+  font-weight: 700;
+  text-align: center;
+  margin: var(--ruimte-md) 0;
+}
+
+.opgave-vraag .getal-groot {
+  font-size: var(--font-cijfer);
+  color: var(--kleur-primair-donker);
+  font-weight: 800;
+}
+
+.getallenlijn-houder {
+  width: 100%;
+  margin: var(--ruimte-lg) 0;
+}
+
+.getallenlijn-houder svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.feedback-vlak {
+  min-height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ruimte-sm);
+  font-size: var(--font-groot);
+  font-weight: 700;
+  border-radius: var(--radius-md);
+  padding: var(--ruimte-sm);
+  margin: var(--ruimte-md) 0;
+  text-align: center;
+}
+
+.feedback-vlak--goed {
+  background: var(--kleur-succes-licht);
+  color: var(--kleur-succes);
+}
+
+.feedback-vlak--fout {
+  background: var(--kleur-oranje-licht);
+  color: var(--kleur-oranje);
+}
+
+.feedback-vlak--tweede-poging-goed {
+  background: var(--kleur-primair-licht);
+  color: var(--kleur-primair-donker);
+}
+
+/* Cijfertoetsen */
+.cijfer-pad {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--ruimte-sm);
+  max-width: 320px;
+  margin: 0 auto var(--ruimte-md);
+}
+
+.cijfer-toets {
+  min-height: 60px;
+  font-size: var(--font-groot);
+  font-weight: 800;
+  border-radius: var(--radius-md);
+  border: 2px solid var(--kleur-rand);
+  background: var(--kleur-oppervlak);
+  color: var(--kleur-tekst);
+  cursor: pointer;
+  transition: transform 0.12s ease, background 0.12s ease;
+}
+
+.cijfer-toets:hover {
+  background: var(--kleur-primair-licht);
+}
+
+.cijfer-toets:active {
+  transform: scale(0.95);
+}
+
+.cijfer-toets:focus-visible {
+  outline: 3px solid var(--kleur-primair);
+  outline-offset: 2px;
+}
+
+.antwoord-scherm {
+  text-align: center;
+  font-size: var(--font-cijfer);
+  font-weight: 800;
+  letter-spacing: 2px;
+  min-height: 56px;
+  border: 2px solid var(--kleur-rand);
+  border-radius: var(--radius-md);
+  padding: 6px;
+  margin: 0 auto var(--ruimte-md);
+  max-width: 320px;
+  background: var(--kleur-oppervlak);
+  color: var(--kleur-primair-donker);
+}
+
+.meerkeuze-rij {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--ruimte-sm);
+  max-width: 480px;
+  margin: 0 auto var(--ruimte-md);
+}
+
+.meerkeuze-knop {
+  min-height: 60px;
+  font-size: var(--font-groot);
+  font-weight: 800;
+  border-radius: var(--radius-md);
+  border: 2px solid var(--kleur-rand);
+  background: var(--kleur-oppervlak);
+  cursor: pointer;
+}
+
+.meerkeuze-knop:hover {
+  background: var(--kleur-primair-licht);
+}
+
+.meerkeuze-knop:focus-visible {
+  outline: 3px solid var(--kleur-primair);
+  outline-offset: 2px;
+}
+
+.meerkeuze-knop--goed {
+  background: var(--kleur-succes-licht);
+  border-color: var(--kleur-succes);
+  color: var(--kleur-succes);
+}
+
+.meerkeuze-knop--fout {
+  background: var(--kleur-fout-licht);
+  border-color: var(--kleur-fout);
+  color: var(--kleur-fout);
+}
+
+.blanco-invoer {
+  width: 56px;
+  min-height: 48px;
+  font-size: var(--font-groot);
+  font-weight: 800;
+  text-align: center;
+  border-radius: var(--radius-sm);
+  border: 2px solid var(--kleur-primair);
+  color: var(--kleur-primair-donker);
+  background: var(--kleur-primair-licht);
+}
+
+.blanco-invoer:focus-visible {
+  outline: 3px solid var(--kleur-primair);
+}
+
+.acties-rij {
+  display: flex;
+  justify-content: center;
+  gap: var(--ruimte-sm);
+  margin-top: var(--ruimte-md);
+  flex-wrap: wrap;
+}
+
+/* Raket-animatie */
+.raket-baan {
+  position: relative;
+  width: 100%;
+  height: 260px;
+  background: linear-gradient(to top, #dceafe 0%, #f3f8ff 60%, #ffffff 100%);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  margin-bottom: var(--ruimte-md);
+}
+
+.raket-ster {
+  position: absolute;
+  transform-origin: center;
+  animation: raket-twinkel 2.4s ease-in-out infinite;
+}
+
+@keyframes raket-twinkel {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 1; }
+}
+
+.raket-figuur {
+  position: absolute;
+  left: 50%;
+  bottom: 8%;
+  width: 64px;
+  height: 64px;
+  transform: translate(-50%, 0);
+  transition: bottom 0.9s cubic-bezier(0.34, 1.4, 0.64, 1);
+}
+
+.raket-vonk {
+  position: absolute;
+  border-radius: 50%;
+  background: var(--kleur-accent-geel);
+  opacity: 0;
+}
+
+.raket-vonk--actief {
+  animation: raket-vonk-omhoog 0.9s ease-out forwards;
+}
+
+@keyframes raket-vonk-omhoog {
+  0% { opacity: 1; transform: translateY(0) scale(1); }
+  100% { opacity: 0; transform: translateY(-60px) scale(0.4); }
+}
+
+.confetti-stukje {
+  position: absolute;
+  top: -10px;
+  opacity: 0;
+}
+
+.confetti-stukje--actief {
+  animation: confetti-val 2.6s ease-in forwards;
+}
+
+@keyframes confetti-val {
+  0% { opacity: 1; transform: translateY(0) rotate(0deg); }
+  100% { opacity: 0; transform: translateY(280px) rotate(360deg); }
+}
+
+/* Eind-animatie op het afsluitscherm: raket landt veilig (goed) of ontploft (te veel fout) */
+.eind-animatie-vlak {
+  position: relative;
+  width: 100%;
+  max-width: 360px;
+  height: 220px;
+  margin: var(--ruimte-md) auto;
+  background: linear-gradient(to top, #dceafe 0%, #f3f8ff 60%, #ffffff 100%);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.eind-raket {
+  position: absolute;
+  left: 50%;
+  top: 42%;
+  width: 56px;
+  height: 56px;
+  transform: translate(-50%, -50%);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.eind-animatie-vlak--goed .eind-raket {
+  animation: eind-raket-landen 1s ease-out;
+}
+
+@keyframes eind-raket-landen {
+  0% { transform: translate(-50%, -80%) scale(0.9); opacity: 0; }
+  100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+}
+
+.eind-raket--explodeer {
+  animation: eind-raket-schudden 0.4s ease-in-out;
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(0.3) rotate(25deg);
+  transition: opacity 0.35s ease, transform 0.35s ease;
+}
+
+@keyframes eind-raket-schudden {
+  0%, 100% { transform: translate(-50%, -50%) rotate(0deg); }
+  25% { transform: translate(-56%, -50%) rotate(-6deg); }
+  75% { transform: translate(-44%, -50%) rotate(6deg); }
+}
+
+.explosie-stukje {
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0;
+}
+
+.explosie-stukje--actief {
+  animation: explosie-uitbarsting 0.9s ease-out forwards;
+}
+
+@keyframes explosie-uitbarsting {
+  0% { opacity: 1; transform: translate(0, 0) scale(1); }
+  100% { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(0.3); }
+}
+
+.eind-astronaut {
+  position: absolute;
+  left: 50%;
+  top: 58%;
+}
+
+.eind-astronaut--naast-raket {
+  transform: translate(-50%, -50%);
+}
+
+.eind-astronaut--intro {
+  animation: eind-astronaut-intro 0.6s ease-out 0.5s backwards;
+}
+
+@keyframes eind-astronaut-intro {
+  0% { opacity: 0; transform: translate(-50%, -30%) scale(0.6); }
+  100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+
+.eind-astronaut-binnen--vrolijk {
+  animation: eind-astronaut-zweven 2.6s ease-in-out infinite;
+}
+
+.eind-astronaut-binnen--verdrietig {
+  animation: eind-astronaut-zweven-traag 4s ease-in-out infinite;
+}
+
+@keyframes eind-astronaut-zweven {
+  0%, 100% { transform: translateY(0) rotate(-3deg); }
+  50% { transform: translateY(-8px) rotate(3deg); }
+}
+
+@keyframes eind-astronaut-zweven-traag {
+  0%, 100% { transform: translateY(0) rotate(-4deg); }
+  50% { transform: translateY(6px) rotate(4deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .raket-figuur { transition: none; }
+  .raket-ster, .raket-vonk--actief, .confetti-stukje--actief {
+    animation: none !important;
+  }
+  .tegel, .knop { transition: none; }
+  .eind-raket, .eind-raket--explodeer,
+  .eind-astronaut--intro,
+  .eind-astronaut-binnen--vrolijk, .eind-astronaut-binnen--verdrietig,
+  .explosie-stukje--actief {
+    animation: none !important;
+    transition: none !important;
+  }
+  .eind-raket--explodeer {
+    opacity: 0.15;
+    transform: translate(-50%, -50%) scale(0.6);
+  }
+}
+
+/* Statistieken */
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: var(--ruimte-sm);
+  margin-bottom: var(--ruimte-md);
+}
+
+.stat-tegeltje {
+  background: var(--kleur-primair-licht);
+  border-radius: var(--radius-md);
+  padding: var(--ruimte-md);
+  text-align: center;
+}
+
+.stat-tegeltje__waarde {
+  font-size: var(--font-cijfer);
+  font-weight: 800;
+  color: var(--kleur-primair-donker);
+  display: block;
+}
+
+.stat-tegeltje__label {
+  font-size: 15px;
+  color: var(--kleur-tekst-zacht);
+  font-weight: 600;
+}
+
+.grafiek-houder {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.grafiek-houder svg {
+  width: 100%;
+  min-width: 480px;
+  height: auto;
+}
+
+.uitsplitsing-rij {
+  display: flex;
+  align-items: center;
+  gap: var(--ruimte-sm);
+  padding: var(--ruimte-xs) 0;
+  border-bottom: 1px solid var(--kleur-rand);
+}
+
+.uitsplitsing-rij:last-child {
+  border-bottom: none;
+}
+
+.uitsplitsing-label {
+  min-width: 140px;
+  font-weight: 700;
+}
+
+.uitsplitsing-balk-achtergrond {
+  flex: 1;
+  height: 20px;
+  border-radius: var(--radius-vol);
+  background: var(--kleur-rand);
+  overflow: hidden;
+}
+
+.uitsplitsing-balk {
+  height: 100%;
+  background: var(--kleur-succes);
+  border-radius: var(--radius-vol);
+  transition: width 0.4s ease;
+}
+
+.uitsplitsing-percentage {
+  min-width: 48px;
+  text-align: right;
+  font-weight: 700;
+}
+
+.leeg-melding {
+  text-align: center;
+  color: var(--kleur-tekst-zacht);
+  padding: var(--ruimte-lg);
+}
+
+.wissel {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ruimte-sm);
+}
+
+.wissel input[type="checkbox"] {
+  width: 44px;
+  height: 26px;
+  appearance: none;
+  background: var(--kleur-rand);
+  border-radius: var(--radius-vol);
+  position: relative;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.wissel input[type="checkbox"]::after {
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #ffffff;
+  transition: transform 0.2s ease;
+  box-shadow: var(--schaduw-zacht);
+}
+
+.wissel input[type="checkbox"]:checked {
+  background: var(--kleur-primair);
+}
+
+.wissel input[type="checkbox"]:checked::after {
+  transform: translateX(18px);
+}
+
+.terug-link {
+  color: var(--kleur-primair-donker);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.terug-link:hover {
+  text-decoration: underline;
+}
+
+/* ==========================================================================
+   Profielen — profielkiezer- en beheerscherm (meerdere kindprofielen)
+   Toegevoegd voor de backend-API-integratie met profiel-ondersteuning.
+   ========================================================================== */
+
+/* Avatar-keuzeknoppen in het "nieuw profiel"-formulier: iets groter dan de
+   gewone keuze-knoppen omdat het om emoji gaat, en in een los grid zodat ze
+   op kleine schermen netjes omklappen. */
+.avatar-keuze-rij {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ruimte-sm);
+}
+
+.avatar-keuze-knop {
+  font-size: 28px;
+  min-width: 64px;
+  min-height: 64px;
+  padding: 8px;
+}
+
