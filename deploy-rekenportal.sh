@@ -3,8 +3,9 @@
 # deploy-rekenportal.sh
 # -----------------------------------------------------------------------------
 # Unraid deployment script voor Rekenportal (GHCR image).
-# + First-run: maakt appdata directory, pullt image, start container
-# + Update: backup DB, pull nieuwe image, restart container, health check
+# + Always pulls a fresh image, removes old container, starts new one
+# + Backup DB before update
+# + Health check na start
 #
 # Gebruik:
 #   curl -sL https://raw.githubusercontent.com/jayvenco/rekenportal/staging/deploy-rekenportal.sh | bash
@@ -60,22 +61,23 @@ else
   log "FASE 2/5: Database backup overgeslagen (nieuwe installatie)"
 fi
 
-# --- Fase 3: image pullen ---
-log "FASE 3/5: Image pullen van GHCR..."
+# --- Fase 3: oude container verwijderen ---
+log "FASE 3/5: Oude container verwijderen..."
+docker stop "${APP_NAME}" >/dev/null 2>&1 || true
+docker rm "${APP_NAME}" >/dev/null 2>&1 || true
+ok "Oude container verwijderd"
+
+# --- Fase 4: verse image pullen ---
+log "FASE 4/5: Verse image pullen van GHCR..."
 docker pull "${IMAGE}" 2>&1 | tail -1
-ok "Image gepulled"
+ok "Image gepulled: ${IMAGE}"
 
-# --- Fase 4: container starten/herstarten ---
-log "FASE 4/5: Container starten..."
+# Check of er oude dangling images zijn om op te ruimen
+log "  Opruimen van oude dangling images..."
+docker image prune -f >/dev/null 2>&1 || true
 
-# Remove existing container (if any)
-if docker ps -a --format '{{.Names}}' | grep -q "^${APP_NAME}\$"; then
-  log "  Bestaande container wordt vervangen..."
-  docker stop "${APP_NAME}" >/dev/null 2>&1 || true
-  docker rm "${APP_NAME}" >/dev/null 2>&1 || true
-  ok "Oude container verwijderd"
-fi
-
+# --- Fase 5: container starten ---
+log "FASE 5/5: Container starten..."
 docker run -d \
   --name "${APP_NAME}" \
   --restart unless-stopped \
@@ -85,8 +87,7 @@ docker run -d \
 
 ok "Container gestart op poort ${LOCAL_PORT}"
 
-# --- Fase 5: health check ---
-log "FASE 5/5: Gezondheidscheck..."
+# --- Health check ---
 sleep 3
 
 HEALTH=$(curl -sf http://localhost:${LOCAL_PORT}/api/health 2>&1 || echo "FAIL")
