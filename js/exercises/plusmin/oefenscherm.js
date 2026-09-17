@@ -105,6 +105,7 @@ export function startOefensessie(container, instellingen, opKlaar) {
   }
   async function verwerkAntwoord(antwoordVanKind) {
     if (bezigMetFeedback) return;
+    try {
     const isGoed = Number(antwoordVanKind) === Number(huidigeOpgave.antwoordGoed);
     const tijdBesteed = Math.round(performance.now() - startTijdOpgave);
 
@@ -168,6 +169,16 @@ export function startOefensessie(container, instellingen, opKlaar) {
         opgaveIndex += 1;
         toonOpgave();
       }, 1600);
+    }
+  } catch (fout) {
+      console.error("Onverwachte fout bij verwerken antwoord:", fout);
+      bezigMetFeedback = false;
+      feedbackVlak.className = "feedback-vlak feedback-vlak--fout";
+      feedbackVlak.textContent = "Er ging iets mis, probeer de volgende opgave.";
+      setTimeout(() => {
+        opgaveIndex += 1;
+        toonOpgave();
+      }, 2000);
     }
   }
 

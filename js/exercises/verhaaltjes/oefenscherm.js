@@ -118,6 +118,7 @@ export function startOefensessie(container, instellingen, opKlaar) {
 
   async function verwerkAntwoord(antwoordVanKind) {
     if (bezigMetFeedback) return;
+    try {
     const isGoed = Number(antwoordVanKind) === Number(huidigeOpgave.antwoordGoed);
     const tijdBesteed = Math.round(performance.now() - startTijdOpgave);
 

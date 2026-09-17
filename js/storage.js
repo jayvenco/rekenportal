@@ -177,8 +177,8 @@ export function exportAlleUrl(formaat) {
  * @param {Object} [gegevens.meta]
  */
 export async function recordAnswer({ exerciseId, correct, timeMs, meta }) {
-  const profielId = vereisActiefProfielId();
   try {
+    const profielId = vereisActiefProfielId();
     return await fetchJson("/antwoorden", {
       method: "POST",
       body: JSON.stringify({
@@ -197,8 +197,8 @@ export async function recordAnswer({ exerciseId, correct, timeMs, meta }) {
 
 /** Geeft alle opgeslagen antwoorden van het actieve profiel terug, optioneel gefilterd op oefening. */
 export async function getAntwoorden(exerciseId) {
-  const profielId = vereisActiefProfielId();
   try {
+    const profielId = vereisActiefProfielId();
     const resultaat = await fetchJson(
       `/antwoorden${bouwQuery({ profielId, exerciseId })}`
     );
@@ -211,8 +211,8 @@ export async function getAntwoorden(exerciseId) {
 
 /** Verwijdert alle opgeslagen antwoorden van het actieve profiel. */
 export async function wisAlleStatistieken() {
-  const profielId = vereisActiefProfielId();
   try {
+    const profielId = vereisActiefProfielId();
     await fetchJson(`/antwoorden${bouwQuery({ profielId })}`, {
       method: "DELETE",
     });
@@ -227,8 +227,8 @@ export async function wisAlleStatistieken() {
 
 /** Haalt de laatst gekozen instellingen van een oefening op (of null). */
 export async function getInstellingen(exerciseId) {
-  const profielId = vereisActiefProfielId();
   try {
+    const profielId = vereisActiefProfielId();
     return await fetchJson(
       `/instellingen/${encodeURIComponent(profielId)}/exercise/${encodeURIComponent(exerciseId)}`
     );
@@ -240,8 +240,8 @@ export async function getInstellingen(exerciseId) {
 
 /** Slaat de gekozen instellingen van een oefening op. */
 export async function saveInstellingen(exerciseId, instellingen) {
-  const profielId = vereisActiefProfielId();
   try {
+    const profielId = vereisActiefProfielId();
     return await fetchJson(
       `/instellingen/${encodeURIComponent(profielId)}/exercise/${encodeURIComponent(exerciseId)}`,
       { method: "PUT", body: JSON.stringify(instellingen) }
@@ -254,8 +254,8 @@ export async function saveInstellingen(exerciseId, instellingen) {
 
 /** Haalt de algemene (globale) instellingen op, bv. geluid aan/uit. */
 export async function getAlgemeneInstellingen() {
-  const profielId = vereisActiefProfielId();
   try {
+    const profielId = vereisActiefProfielId();
     const resultaat = await fetchJson(`/instellingen/${encodeURIComponent(profielId)}/algemeen`);
     return { ...STANDAARD_ALGEMENE_INSTELLINGEN, ...(resultaat || {}) };
   } catch (fout) {
@@ -266,8 +266,8 @@ export async function getAlgemeneInstellingen() {
 
 /** Slaat de algemene instellingen op (gemerged met wat er al stond). */
 export async function saveAlgemeneInstellingen(instellingen) {
-  const profielId = vereisActiefProfielId();
   try {
+    const profielId = vereisActiefProfielId();
     return await fetchJson(`/instellingen/${encodeURIComponent(profielId)}/algemeen`, {
       method: "PUT",
       body: JSON.stringify(instellingen),
@@ -296,8 +296,8 @@ const LEEG_OVERZICHT = {
  * Als exerciseId is meegegeven, alleen voor die oefening; anders algeheel.
  */
 export async function getStatistiekOverzicht(exerciseId) {
-  const profielId = vereisActiefProfielId();
   try {
+    const profielId = vereisActiefProfielId();
     const resultaat = await fetchJson(
       `/statistieken/${encodeURIComponent(profielId)}/overzicht${bouwQuery({ exerciseId })}`
     );
@@ -310,8 +310,8 @@ export async function getStatistiekOverzicht(exerciseId) {
 
 /** Geeft een lijst van alle exerciseId's die minstens één antwoord hebben (actief profiel). */
 export async function getGebruikteOefenIds() {
-  const profielId = vereisActiefProfielId();
   try {
+    const profielId = vereisActiefProfielId();
     const resultaat = await fetchJson(
       `/statistieken/${encodeURIComponent(profielId)}/gebruikte-oefeningen`
     );
@@ -327,8 +327,8 @@ export async function getGebruikteOefenIds() {
  * gemaakte opgaven en het percentage goed terug voor het actieve profiel.
  */
 export async function getDagelijkseStatistieken(aantalDagen = 14, exerciseId) {
-  const profielId = vereisActiefProfielId();
   try {
+    const profielId = vereisActiefProfielId();
     const resultaat = await fetchJson(
       `/statistieken/${encodeURIComponent(profielId)}/dagelijks${bouwQuery({
         dagen: aantalDagen,
@@ -344,8 +344,8 @@ export async function getDagelijkseStatistieken(aantalDagen = 14, exerciseId) {
 
 /** Hoeveel opgaven zijn er vandaag goed gemaakt voor een specifieke oefening (actief profiel)? */
 export async function getAantalGoedVandaag(exerciseId) {
-  const profielId = vereisActiefProfielId();
   try {
+    const profielId = vereisActiefProfielId();
     const resultaat = await fetchJson(
       `/statistieken/${encodeURIComponent(profielId)}/vandaag${bouwQuery({ exerciseId })}`
     );
@@ -361,8 +361,8 @@ export async function getAantalGoedVandaag(exerciseId) {
  * zodat je kunt zien waar het moeilijk is.
  */
 export async function getUitsplitsingPerVeld(exerciseId, veldNaam) {
-  const profielId = vereisActiefProfielId();
   try {
+    const profielId = vereisActiefProfielId();
     const resultaat = await fetchJson(
       `/statistieken/${encodeURIComponent(profielId)}/uitsplitsing${bouwQuery({
         exerciseId,
