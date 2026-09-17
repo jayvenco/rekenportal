@@ -364,6 +364,43 @@ button {
   color: var(--kleur-tekst-zacht);
 }
 
+/* Rij van voortgangssterretjes: één ster per opgave, kleurt in na elk antwoord. */
+.voortgang-cirkels {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ruimte-xs);
+  justify-content: center;
+  margin: 0 0 var(--ruimte-md);
+}
+
+.voortgang-cirkel {
+  display: inline-flex;
+  width: 28px;
+  height: 28px;
+  transition: transform 0.3s ease;
+  flex-shrink: 0;
+}
+
+.voortgang-cirkel svg {
+  width: 100%;
+  height: 100%;
+}
+
+.voortgang-cirkel--goed {
+  transform: scale(1.15);
+  filter: drop-shadow(0 0 3px rgba(56, 178, 106, 0.5));
+}
+
+.voortgang-cirkel--tweede-poging-goed {
+  transform: scale(1.15);
+  filter: drop-shadow(0 0 3px rgba(240, 136, 62, 0.5));
+}
+
+.voortgang-cirkel--fout {
+  transform: scale(1.15);
+  filter: drop-shadow(0 0 3px rgba(232, 115, 90, 0.5));
+}
+
 .opgave-vraag {
   font-size: var(--font-groot);
   font-weight: 700;
@@ -484,6 +521,14 @@ button {
   cursor: pointer;
 }
 
+.meerkeuze-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
 .meerkeuze-knop:hover {
   background: var(--kleur-primair-licht);
 }
@@ -592,6 +637,40 @@ button {
   100% { opacity: 0; transform: translateY(280px) rotate(360deg); }
 }
 
+/* Raket boost: vuurwerk bij goed antwoord */
+.raket-vuurwerk {
+  position: absolute;
+}
+.raket-vuurwerk--actief {
+  animation: raket-vuurwerk-straal 1s ease-out forwards;
+}
+@keyframes raket-vuurwerk-straal {
+  0% { opacity: 1; transform: scale(1) translateY(0); }
+  100% { opacity: 0; transform: scale(0.3) translateY(-40px); }
+}
+
+/* Zwarte rook bij fout antwoord */
+.raket-rook {
+  position: absolute;
+  border-radius: 50%;
+  background: #3a3a4a;
+}
+.raket-rook--actief {
+  animation: raket-rook-drijven 1.2s ease-out forwards;
+}
+@keyframes raket-rook-drijven {
+  0% { opacity: 0.7; transform: scale(0.5) translateY(0); }
+  50% { opacity: 0.4; transform: scale(1.2) translateY(-15px); }
+  100% { opacity: 0; transform: scale(1.8) translateY(-30px); }
+}
+
+/* Rood zwaailicht op raket */
+.raket-zwaailicht {
+  position: absolute;
+  border-radius: 50%;
+  z-index: 10;
+}
+
 /* Eind-animatie op het afsluitscherm: raket landt veilig (goed) of ontploft (te veel fout) */
 .eind-animatie-vlak {
   position: relative;
@@ -694,6 +773,7 @@ button {
     animation: none !important;
   }
   .tegel, .knop { transition: none; }
+  .voortgang-cirkel { transition: none; }
   .eind-raket, .eind-raket--explodeer,
   .eind-astronaut--intro,
   .eind-astronaut-binnen--vrolijk, .eind-astronaut-binnen--verdrietig,
@@ -843,6 +923,60 @@ button {
    Profielen — profielkiezer- en beheerscherm (meerdere kindprofielen)
    Toegevoegd voor de backend-API-integratie met profiel-ondersteuning.
    ========================================================================== */
+
+/* Punten-animatie op eindscherm */
+.punten-animatie {
+  text-align: center;
+  padding: 24px 16px;
+  margin: 16px 0;
+  background: #f8faff;
+  border-radius: 16px;
+  border: 2px solid #e2e8f0;
+}
+.punten-munt {
+  font-size: 48px;
+  line-height: 1;
+  margin-bottom: 8px;
+  transition: transform 0.3s ease;
+}
+.punten-munt--sprong {
+  animation: punten-munt-sprong 0.4s ease-out;
+}
+@keyframes punten-munt-sprong {
+  0% { transform: scale(1) rotate(0deg); }
+  30% { transform: scale(1.4) rotate(-15deg); }
+  60% { transform: scale(0.9) rotate(8deg); }
+  100% { transform: scale(1) rotate(0deg); }
+}
+.punten-teller {
+  font-size: 52px;
+  font-weight: 800;
+  color: #38b26a;
+  line-height: 1;
+  margin-bottom: 4px;
+  font-variant-numeric: tabular-nums;
+}
+.punten-label {
+  font-size: 18px;
+  font-weight: 600;
+  color: #5b6472;
+  margin-bottom: 12px;
+}
+.punten-balk-wrap {
+  height: 10px;
+  background: #e2e8f0;
+  border-radius: 5px;
+  overflow: hidden;
+  max-width: 240px;
+  margin: 12px auto 0;
+}
+.punten-balk {
+  height: 100%;
+  background: linear-gradient(90deg, #38b26a, #4f8fe8);
+  border-radius: 5px;
+  width: 0%;
+  transition: width 0.1s linear;
+}
 
 /* Avatar-keuzeknoppen in het "nieuw profiel"-formulier: iets groter dan de
    gewone keuze-knoppen omdat het om emoji gaat, en in een los grid zodat ze

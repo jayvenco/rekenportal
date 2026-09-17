@@ -26,8 +26,14 @@ export async function toonHomepage(container) {
 
   const titelBlok = document.createElement("div");
   titelBlok.className = "kop-balk__titel";
+  const logoImg = document.createElement("img");
+  logoImg.src = "img/logo.png";
+  logoImg.style.cssText = "height:48px;width:48px;border-radius:12px;vertical-align:middle;margin-right:10px;";
+  logoImg.alt = "Rekenportal logo";
   const titel = document.createElement("h1");
+  titel.style.cssText = "display:inline;vertical-align:middle;";
   titel.textContent = "Rekenportal";
+  titelBlok.appendChild(logoImg);
   titelBlok.appendChild(titel);
   koppenRij.appendChild(titelBlok);
 
@@ -54,6 +60,12 @@ export async function toonHomepage(container) {
   beheerLink.href = "#/beheer";
   beheerLink.textContent = "👪 Beheer";
   actiesBlok.appendChild(beheerLink);
+
+  const leerplanLink = document.createElement("a");
+  leerplanLink.className = "knop knop--zacht";
+  leerplanLink.href = "#/leerplan";
+  leerplanLink.textContent = "📚 Leerplan";
+  actiesBlok.appendChild(leerplanLink);
 
   const statistiekenKnop = document.createElement("a");
   statistiekenKnop.className = "knop knop--zacht";

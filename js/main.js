@@ -24,6 +24,7 @@ import { toonStatistiekenScherm } from "./screens/statistieken.js";
 import { toonInstellingenScherm } from "./screens/instellingen.js";
 import { toonProfielkiezerScherm } from "./screens/profielkiezer.js";
 import { toonBeheerScherm } from "./screens/beheer.js";
+import { toonLeerplanScherm } from "./screens/leerplan.js";
 import { getActiefProfielId } from "./storage.js";
 
 const hoofdContainer = document.getElementById("app");
@@ -35,7 +36,7 @@ async function verwerkRoute() {
   window.scrollTo(0, 0);
 
   // Cruciale gate: geen actief profiel en geen beheer-route? Toon de profielkiezer.
-  if (hash !== "#/profielen" && hash !== "#/beheer" && getActiefProfielId() === null) {
+  if (hash !== "#/profielen" && hash !== "#/beheer" && hash !== "#/leerplan" && getActiefProfielId() === null) {
     await toonProfielkiezerScherm(hoofdContainer);
     return;
   }
@@ -52,6 +53,8 @@ async function verwerkRoute() {
     await toonProfielkiezerScherm(hoofdContainer);
   } else if (hash === "#/beheer") {
     await toonBeheerScherm(hoofdContainer);
+  } else if (hash === "#/leerplan") {
+    await toonLeerplanScherm(hoofdContainer);
   } else {
     await toonHomepage(hoofdContainer);
   }

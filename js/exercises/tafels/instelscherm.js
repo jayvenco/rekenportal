@@ -10,8 +10,9 @@ import { getInstellingen, saveInstellingen } from "../../storage.js";
 const ALLE_TAFELS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
 const STANDAARD_INSTELLINGEN = {
-  tafels: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+  tafels: [],
   aantalOpgaven: 10,
+  moeilijkheid: "uitdagend",
 };
 
 const AANTAL_OPTIES = [5, 10, 20];
@@ -26,10 +27,10 @@ export async function bouwInstelscherm(container, opStarten) {
   const instellingen = {
     ...STANDAARD_INSTELLINGEN,
     ...opgeslagen,
-    tafels: Array.isArray(opgeslagen.tafels) && opgeslagen.tafels.length > 0
-      ? [...opgeslagen.tafels]
-      : [...STANDAARD_INSTELLINGEN.tafels],
+    tafels: Array.isArray(opgeslagen.tafels) ? [...opgeslagen.tafels] : [...STANDAARD_INSTELLINGEN.tafels],
   };
+
+  let foutMeldingEl = null;
 
   container.innerHTML = "";
 
@@ -87,15 +88,17 @@ export async function bouwInstelscherm(container, opStarten) {
     knop.addEventListener("click", () => {
       const index = instellingen.tafels.indexOf(tafel);
       if (index >= 0) {
-        // Niet de laatste tafel kunnen uitvinken: er moet minstens 1 gekozen blijven.
-        if (instellingen.tafels.length > 1) {
-          instellingen.tafels.splice(index, 1);
-        }
+        instellingen.tafels.splice(index, 1);
       } else {
         instellingen.tafels.push(tafel);
       }
       knop.setAttribute("aria-pressed", String(instellingen.tafels.includes(tafel)));
       werkAlleKnopBij();
+      // Verwijder foutmelding als er nu wél een tafel is gekozen
+      if (foutMeldingEl && instellingen.tafels.length > 0) {
+        foutMeldingEl.remove();
+        foutMeldingEl = null;
+      }
     });
     tafelKnoppen.push({ knop, tafel });
     tafelRij.appendChild(knop);
@@ -146,6 +149,47 @@ export async function bouwInstelscherm(container, opStarten) {
   aantalGroep.appendChild(aantalRij);
   kaart.appendChild(aantalGroep);
 
+  // --- Moeilijkheid ---
+  const moeiGroep = document.createElement("div");
+  moeiGroep.className = "instel-groep";
+  const moeiLabel = document.createElement("span");
+  moeiLabel.className = "instel-groep__label";
+  moeiLabel.textContent = "Hoe moeilijk?";
+  moeiGroep.appendChild(moeiLabel);
+
+  const moeiRij = document.createElement("div");
+  moeiRij.className = "keuze-rij";
+  moeiRij.setAttribute("role", "radiogroup");
+  moeiRij.setAttribute("aria-label", "Moeilijkheidsgraad");
+
+  const MOEILIJKHEID_OPTIES = [
+    { id: "makkelijk", label: "\u{1F31F} Makkelijk (meerkeuze)" },
+    { id: "uitdagend", label: "\u{1F680} Uitdagend (zelf intypen)" },
+  ];
+
+  const moeiKnoppen = [];
+  for (const optie of MOEILIJKHEID_OPTIES) {
+    const knop = document.createElement("button");
+    knop.type = "button";
+    knop.className = "keuze-knop";
+    knop.textContent = optie.label;
+    knop.setAttribute("role", "radio");
+    knop.setAttribute("aria-checked", String(instellingen.moeilijkheid === optie.id));
+    knop.setAttribute("aria-pressed", String(instellingen.moeilijkheid === optie.id));
+    knop.addEventListener("click", () => {
+      instellingen.moeilijkheid = optie.id;
+      for (const item of moeiKnoppen) {
+        const actief = item.id === optie.id;
+        item.knop.setAttribute("aria-checked", String(actief));
+        item.knop.setAttribute("aria-pressed", String(actief));
+      }
+    });
+    moeiKnoppen.push({ knop, id: optie.id });
+    moeiRij.appendChild(knop);
+  }
+  moeiGroep.appendChild(moeiRij);
+  kaart.appendChild(moeiGroep);
+
   // --- Startknop ---
   const startRij = document.createElement("div");
   startRij.className = "acties-rij";
@@ -155,8 +199,15 @@ export async function bouwInstelscherm(container, opStarten) {
   startKnop.textContent = "Start de oefening";
   startKnop.addEventListener("click", async () => {
     if (instellingen.tafels.length === 0) {
-      instellingen.tafels = [...ALLE_TAFELS];
+      if (!foutMeldingEl) {
+        foutMeldingEl = document.createElement("p");
+        foutMeldingEl.style.cssText = "color:var(--kleur-fout);font-weight:600;margin:8px 0 0;";
+        foutMeldingEl.textContent = "Kies eerst minstens één tafel om te oefenen.";
+        startRij.appendChild(foutMeldingEl);
+      }
+      return;
     }
+    if (foutMeldingEl) { foutMeldingEl.remove(); foutMeldingEl = null; }
     await saveInstellingen("tafels", instellingen);
     opStarten({ ...instellingen, tafels: [...instellingen.tafels] });
   });

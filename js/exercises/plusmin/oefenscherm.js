@@ -5,12 +5,15 @@
 // stuurt de raket-animatie aan.
 // -----------------------------------------------------------------------------
 
-import { recordAnswer } from "../../storage.js";
+import { recordAnswer, getActiefProfielId, listProfielen } from "../../storage.js";
+import { berekenPunten, slaSessieOp, toonPuntenAnimatie } from "../../utils/punten.js";
+import { bouwCijferInvoer, bouwMeerkeuzeInvoer, genereerFoutePlusMinAntwoorden } from "../../utils/invoerModus.js";
 import { genereerOpgave, opgaveNaarSleutel } from "./opgaven.js";
 import { genereerUniekeOpgave } from "../../utils/willekeurig.js";
 import { geefCompliment, geefFoutmelding } from "../../utils/complimenten.js";
 import { speelGoedGeluid, speelFoutGeluid } from "../../utils/geluid.js";
 import { maakRaketAnimatie, toonEindAnimatie } from "../../utils/raketAnimatie.js";
+import { maakVoortgangCirkels } from "../../utils/voortgangCirkels.js";
 
 const EXERCISE_ID = "plusmin";
 
@@ -39,6 +42,9 @@ export function startOefensessie(container, instellingen, opKlaar) {
   koppenRij.appendChild(voortgangTekst);
   container.appendChild(koppenRij);
 
+  // --- Voortgangscirkels: één per opgave, kleurt in na elk antwoord ---
+  const voortgangCirkels = maakVoortgangCirkels(container, instellingen.aantalOpgaven);
+
   // --- Raket-animatie ---
   const raket = maakRaketAnimatie(container, instellingen.aantalOpgaven);
 
@@ -60,97 +66,6 @@ export function startOefensessie(container, instellingen, opKlaar) {
 
   function bijwerkenVoortgang() {
     voortgangTekst.textContent = `Opgave ${Math.min(opgaveIndex + 1, instellingen.aantalOpgaven)} van ${instellingen.aantalOpgaven} — ${aantalGoedTotaal} goed`;
-  }
-
-  /** Bouwt de "cijfers"-invoer: groot invoerveld + numeriek toetsenbord + bevestigknop. */
-  function bouwCijferInvoer(opGeantwoord) {
-    invoerVlak.innerHTML = "";
-    let huidigeWaarde = "";
-
-    const scherm = document.createElement("div");
-    scherm.className = "antwoord-scherm";
-    scherm.setAttribute("aria-label", "Jouw antwoord");
-    scherm.textContent = "";
-    invoerVlak.appendChild(scherm);
-
-    const pad = document.createElement("div");
-    pad.className = "cijfer-pad";
-
-    function toonWaarde() {
-      scherm.textContent = huidigeWaarde;
-    }
-
-    const cijferKnoppen = [1, 2, 3, 4, 5, 6, 7, 8, 9];
-    for (const cijfer of cijferKnoppen) {
-      const knop = document.createElement("button");
-      knop.type = "button";
-      knop.className = "cijfer-toets";
-      knop.textContent = String(cijfer);
-      knop.setAttribute("aria-label", `Cijfer ${cijfer}`);
-      knop.addEventListener("click", () => {
-        if (huidigeWaarde.length < 3) {
-          huidigeWaarde += String(cijfer);
-          toonWaarde();
-        }
-      });
-      pad.appendChild(knop);
-    }
-
-    const wisKnop = document.createElement("button");
-    wisKnop.type = "button";
-    wisKnop.className = "cijfer-toets";
-    wisKnop.textContent = "⌫";
-    wisKnop.setAttribute("aria-label", "Verwijder laatste cijfer");
-    wisKnop.addEventListener("click", () => {
-      huidigeWaarde = huidigeWaarde.slice(0, -1);
-      toonWaarde();
-    });
-    pad.appendChild(wisKnop);
-
-    const nulKnop = document.createElement("button");
-    nulKnop.type = "button";
-    nulKnop.className = "cijfer-toets";
-    nulKnop.textContent = "0";
-    nulKnop.setAttribute("aria-label", "Cijfer 0");
-    nulKnop.addEventListener("click", () => {
-      if (huidigeWaarde.length < 3) {
-        huidigeWaarde += "0";
-        toonWaarde();
-      }
-    });
-    pad.appendChild(nulKnop);
-
-    const bevestigKnop = document.createElement("button");
-    bevestigKnop.type = "button";
-    bevestigKnop.className = "cijfer-toets";
-    bevestigKnop.style.background = "#38b26a";
-    bevestigKnop.style.color = "#ffffff";
-    bevestigKnop.textContent = "✓";
-    bevestigKnop.setAttribute("aria-label", "Antwoord bevestigen");
-    bevestigKnop.addEventListener("click", () => {
-      if (huidigeWaarde === "") return;
-      opGeantwoord(Number(huidigeWaarde));
-    });
-    pad.appendChild(bevestigKnop);
-
-    invoerVlak.appendChild(pad);
-
-    // Ook bruikbaar via echt toetsenbord: cijfers, backspace en Enter.
-    function toetsHandler(gebeurtenis) {
-      if (bezigMetFeedback) return;
-      if (/^[0-9]$/.test(gebeurtenis.key) && huidigeWaarde.length < 3) {
-        huidigeWaarde += gebeurtenis.key;
-        toonWaarde();
-      } else if (gebeurtenis.key === "Backspace") {
-        huidigeWaarde = huidigeWaarde.slice(0, -1);
-        toonWaarde();
-      } else if (gebeurtenis.key === "Enter" && huidigeWaarde !== "") {
-        opGeantwoord(Number(huidigeWaarde));
-      }
-    }
-    document.addEventListener("keydown", toetsHandler);
-    invoerVlak.dataset.actief = "true";
-    return () => document.removeEventListener("keydown", toetsHandler);
   }
 
   let opruimHuidigeInvoer = null;
@@ -177,9 +92,17 @@ export function startOefensessie(container, instellingen, opKlaar) {
     startTijdOpgave = performance.now();
     bijwerkenVoortgang();
     vraagVlak.innerHTML = `<span class="getal-groot">${huidigeOpgave.vraagTekst}</span>`;
-    opruimHuidigeInvoer = bouwCijferInvoer(verwerkAntwoord);
-  }
 
+    if (instellingen.moeilijkheid === "makkelijk") {
+      opruimHuidigeInvoer = bouwMeerkeuzeInvoer(
+        invoerVlak, verwerkAntwoord,
+        huidigeOpgave.antwoordGoed,
+        genereerFoutePlusMinAntwoorden(huidigeOpgave.antwoordGoed)
+      );
+    } else {
+      opruimHuidigeInvoer = bouwCijferInvoer(invoerVlak, verwerkAntwoord, () => bezigMetFeedback);
+    }
+  }
   async function verwerkAntwoord(antwoordVanKind) {
     if (bezigMetFeedback) return;
     const isGoed = Number(antwoordVanKind) === Number(huidigeOpgave.antwoordGoed);
@@ -196,10 +119,12 @@ export function startOefensessie(container, instellingen, opKlaar) {
       });
       if (pogingNummer === 1) {
         feedbackVlak.className = "feedback-vlak feedback-vlak--goed";
-        feedbackVlak.textContent = `✓ ${geefCompliment()}`;
+        feedbackVlak.textContent = `✓ ${geefCompliment(profielNaam)}`;
+        voortgangCirkels.zetStatus(opgaveIndex, "goed");
       } else {
         feedbackVlak.className = "feedback-vlak feedback-vlak--tweede-poging-goed";
-        feedbackVlak.textContent = `✓ ${geefCompliment()} (tweede poging!)`;
+        feedbackVlak.textContent = `✓ ${geefCompliment(profielNaam)} (tweede poging!)`;
+        voortgangCirkels.zetStatus(opgaveIndex, "tweedePogingGoed");
       }
       speelGoedGeluid();
       raket.goedAntwoord();
@@ -215,7 +140,15 @@ export function startOefensessie(container, instellingen, opKlaar) {
       feedbackVlak.textContent = `${geefFoutmelding()} Probeer het nog eens.`;
       speelFoutGeluid();
       if (opruimHuidigeInvoer) opruimHuidigeInvoer();
-      opruimHuidigeInvoer = bouwCijferInvoer(verwerkAntwoord);
+      if (instellingen.moeilijkheid === "makkelijk") {
+        opruimHuidigeInvoer = bouwMeerkeuzeInvoer(
+          invoerVlak, verwerkAntwoord,
+          huidigeOpgave.antwoordGoed,
+          genereerFoutePlusMinAntwoorden(huidigeOpgave.antwoordGoed)
+        );
+      } else {
+        opruimHuidigeInvoer = bouwCijferInvoer(invoerVlak, verwerkAntwoord, () => bezigMetFeedback);
+      }
     } else {
       // Tweede poging ook fout: toon het juiste antwoord, ga door naar de volgende opgave.
       bezigMetFeedback = true;
@@ -229,6 +162,7 @@ export function startOefensessie(container, instellingen, opKlaar) {
       feedbackVlak.textContent = `${geefFoutmelding()} Het juiste antwoord is ${huidigeOpgave.antwoordGoed}.`;
       speelFoutGeluid();
       raket.foutAntwoord();
+      voortgangCirkels.zetStatus(opgaveIndex, "fout");
       bijwerkenVoortgang();
       setTimeout(() => {
         opgaveIndex += 1;
@@ -239,6 +173,14 @@ export function startOefensessie(container, instellingen, opKlaar) {
 
   function toonEindscherm() {
     container.innerHTML = "";
+
+    // Punten berekenen en opslaan
+    const puntenResultaat = berekenPunten(aantalGoedTotaal, instellingen.aantalOpgaven);
+    const profielId = getActiefProfielId();
+    if (profielId !== null) {
+      slaSessieOp(profielId, EXERCISE_ID, aantalGoedTotaal, instellingen.aantalOpgaven);
+    }
+
     const kaart = document.createElement("div");
     kaart.className = "kaart";
     kaart.style.textAlign = "center";
@@ -257,9 +199,14 @@ export function startOefensessie(container, instellingen, opKlaar) {
     resultaatTekst.textContent = `Je had ${aantalGoedTotaal} van de ${instellingen.aantalOpgaven} goed!`;
     kaart.appendChild(resultaatTekst);
 
+    // Punten animatie
+    const puntenVlak = document.createElement("div");
+    kaart.appendChild(puntenVlak);
+    toonPuntenAnimatie(puntenVlak, puntenResultaat.punten, puntenResultaat.label);
+
     const complimentTekst = document.createElement("p");
     complimentTekst.style.fontSize = "20px";
-    complimentTekst.textContent = geefCompliment();
+    complimentTekst.textContent = geefCompliment(profielNaam);
     kaart.appendChild(complimentTekst);
 
     const actiesRij = document.createElement("div");

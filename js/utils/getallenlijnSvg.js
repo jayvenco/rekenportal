@@ -77,7 +77,7 @@ export function bouwGetallenlijn({ min, max, stap, verborgenGetallen = [], marke
       })
     );
 
-    if (!verborgenSet.has(getal) && (lang || stap >= 5)) {
+    if (!verborgenSet.has(getal)) {
       svg.appendChild(
         svgEl("text", {
           x,

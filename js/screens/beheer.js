@@ -15,6 +15,7 @@ import {
   getActiefProfielId,
   wisActiefProfiel,
 } from "../storage.js";
+import { haalMaandOverzicht, haalTotaalPunten } from "../utils/punten.js";
 
 function formatTijd(ms) {
   if (!ms) return "–";
@@ -143,6 +144,18 @@ export async function toonBeheerScherm(container) {
     kaart.appendChild(
       bouwExportRij(exportUrl(profiel.id, "json"), exportUrl(profiel.id, "csv"))
     );
+
+    // Maandpunten
+    const maandPuntenVeld = document.createElement("div");
+    maandPuntenVeld.style.marginTop = "12px";
+    maandPuntenVeld.style.fontSize = "16px";
+    maandPuntenVeld.style.fontWeight = "600";
+    maandPuntenVeld.style.color = "#4f8fe8";
+    maandPuntenVeld.textContent = "Punten deze maand: laden...";
+    kaart.appendChild(maandPuntenVeld);
+    haalMaandOverzicht(profiel.id, new Date().getFullYear(), new Date().getMonth() + 1).then((m) => {
+      maandPuntenVeld.textContent = `💰 Punten deze maand: ${m.totaalPunten}`;
+    });
 
     container.appendChild(kaart);
   }

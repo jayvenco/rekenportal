@@ -14,6 +14,15 @@ const COMPLIMENTEN_GOED = [
   "Super!",
 ];
 
+const COMPLIMENTEN_PERSOONLIJK = [
+  (n) => `${n} goed zo!`,
+  (n) => `${n} goed bezig!`,
+  (n) => `${n} topper!`,
+  (n) => `${n} ga zo door!`,
+  (n) => `${n} super gedaan!`,
+  (n) => `Wat goed, ${n}!`,
+];
+
 const MELDINGEN_FOUT = [
   "Bijna! Kijk nog eens.",
   "Net niet! Kijk maar naar het juiste antwoord.",
@@ -21,10 +30,26 @@ const MELDINGEN_FOUT = [
 ];
 
 let laatsteComplimentIndex = -1;
+let laatstePersoonlijkIndex = -1;
 let laatsteFoutIndex = -1;
 
-/** Geeft een willekeurig compliment terug, nooit hetzelfde als de vorige keer. */
-export function geefCompliment() {
+/**
+ * Geeft een willekeurig compliment terug, nooit hetzelfde als de vorige keer.
+ * @param {string} [naam] - optionele profielnaam voor een persoonlijk compliment.
+ */
+export function geefCompliment(naam) {
+  if (naam) {
+    // Mix: 50/50 kans op persoonlijk of algemeen compliment
+    if (Math.random() < 0.5) {
+      if (COMPLIMENTEN_PERSOONLIJK.length === 1) return COMPLIMENTEN_PERSOONLIJK[0](naam);
+      let index = Math.floor(Math.random() * COMPLIMENTEN_PERSOONLIJK.length);
+      while (index === laatstePersoonlijkIndex) {
+        index = Math.floor(Math.random() * COMPLIMENTEN_PERSOONLIJK.length);
+      }
+      laatstePersoonlijkIndex = index;
+      return COMPLIMENTEN_PERSOONLIJK[index](naam);
+    }
+  }
   if (COMPLIMENTEN_GOED.length === 1) return COMPLIMENTEN_GOED[0];
   let index = Math.floor(Math.random() * COMPLIMENTEN_GOED.length);
   while (index === laatsteComplimentIndex) {

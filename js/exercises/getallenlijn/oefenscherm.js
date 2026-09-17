@@ -10,6 +10,7 @@ import { genereerUniekeOpgave } from "../../utils/willekeurig.js";
 import { geefCompliment, geefFoutmelding } from "../../utils/complimenten.js";
 import { speelGoedGeluid, speelFoutGeluid } from "../../utils/geluid.js";
 import { maakRaketAnimatie, toonEindAnimatie } from "../../utils/raketAnimatie.js";
+import { maakVoortgangCirkels } from "../../utils/voortgangCirkels.js";
 import { bouwGetallenlijn, xNaarGetal } from "../../utils/getallenlijnSvg.js";
 
 const EXERCISE_ID = "getallenlijn";
@@ -38,6 +39,9 @@ export function startOefensessie(container, instellingen, opKlaar) {
   voortgangTekst.className = "voortgang-tekst";
   koppenRij.appendChild(voortgangTekst);
   container.appendChild(koppenRij);
+
+  // --- Voortgangscirkels: één per opgave, kleurt in na elk antwoord ---
+  const voortgangCirkels = maakVoortgangCirkels(container, instellingen.aantalOpgaven);
 
   // --- Raket-animatie ---
   const raket = maakRaketAnimatie(container, instellingen.aantalOpgaven);
@@ -257,9 +261,11 @@ export function startOefensessie(container, instellingen, opKlaar) {
       if (pogingNummer === 1) {
         feedbackVlak.className = "feedback-vlak feedback-vlak--goed";
         feedbackVlak.textContent = `✓ ${geefCompliment()}`;
+        voortgangCirkels.zetStatus(opgaveIndex, "goed");
       } else {
         feedbackVlak.className = "feedback-vlak feedback-vlak--tweede-poging-goed";
         feedbackVlak.textContent = `✓ ${geefCompliment()} (tweede poging!)`;
+        voortgangCirkels.zetStatus(opgaveIndex, "tweedePogingGoed");
       }
       speelGoedGeluid();
       raket.goedAntwoord();
@@ -297,6 +303,7 @@ export function startOefensessie(container, instellingen, opKlaar) {
       feedbackVlak.textContent = `${geefFoutmelding()} Het juiste antwoord is ${huidigeOpgave.antwoordGoed}.`;
       speelFoutGeluid();
       raket.foutAntwoord();
+      voortgangCirkels.zetStatus(opgaveIndex, "fout");
       // Toon zowel het antwoord van het kind als het juiste antwoord op de lijn.
       const markeringen = [
         { getal: huidigeOpgave.antwoordGoed, kleur: "#38b26a", label: "juist" },

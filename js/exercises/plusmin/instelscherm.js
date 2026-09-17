@@ -13,6 +13,7 @@ const STANDAARD_INSTELLINGEN = {
   max: 20,
   bewerking: "beide",
   aantalOpgaven: 10,
+  moeilijkheid: "uitdagend",
 };
 
 const SNELKEUZES_BEREIK = [
@@ -161,6 +162,47 @@ export async function bouwInstelscherm(container, opStarten) {
   }
   bewerkingGroep.appendChild(bewerkingRij);
   kaart.appendChild(bewerkingGroep);
+
+  // --- Moeilijkheid ---
+  const moeiGroep = document.createElement("div");
+  moeiGroep.className = "instel-groep";
+  const moeiLabel = document.createElement("span");
+  moeiLabel.className = "instel-groep__label";
+  moeiLabel.textContent = "Hoe moeilijk?";
+  moeiGroep.appendChild(moeiLabel);
+
+  const moeiRij = document.createElement("div");
+  moeiRij.className = "keuze-rij";
+  moeiRij.setAttribute("role", "radiogroup");
+  moeiRij.setAttribute("aria-label", "Moeilijkheidsgraad");
+
+  const MOEILIJKHEID_OPTIES = [
+    { id: "makkelijk", label: "\u{1F31F} Makkelijk (meerkeuze)" },
+    { id: "uitdagend", label: "\u{1F680} Uitdagend (zelf intypen)" },
+  ];
+
+  const moeiKnoppen = [];
+  for (const optie of MOEILIJKHEID_OPTIES) {
+    const knop = document.createElement("button");
+    knop.type = "button";
+    knop.className = "keuze-knop";
+    knop.textContent = optie.label;
+    knop.setAttribute("role", "radio");
+    knop.setAttribute("aria-checked", String(instellingen.moeilijkheid === optie.id));
+    knop.setAttribute("aria-pressed", String(instellingen.moeilijkheid === optie.id));
+    knop.addEventListener("click", () => {
+      instellingen.moeilijkheid = optie.id;
+      for (const item of moeiKnoppen) {
+        const actief = item.id === optie.id;
+        item.knop.setAttribute("aria-checked", String(actief));
+        item.knop.setAttribute("aria-pressed", String(actief));
+      }
+    });
+    moeiKnoppen.push({ knop, id: optie.id });
+    moeiRij.appendChild(knop);
+  }
+  moeiGroep.appendChild(moeiRij);
+  kaart.appendChild(moeiGroep);
 
   // --- Aantal opgaven ---
   const aantalGroep = document.createElement("div");

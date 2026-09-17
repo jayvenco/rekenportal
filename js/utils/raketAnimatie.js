@@ -18,6 +18,10 @@ const AANTAL_CONFETTI = 24;
 const CONFETTI_KLEUREN = ["#4f8fe8", "#f5b942", "#38b26a", "#e8735a", "#a56ee2"];
 const AANTAL_EXPLOSIE_STUKJES = 16;
 const EXPLOSIE_KLEUREN = ["#f0883e", "#e8735a", "#f5b942", "#c95a41"];
+const AANTAL_VUURWERK = 8;
+const VUURWERK_KLEUREN = ["#f5b942", "#f0883e", "#4f8fe8", "#38b26a", "#a56ee2"];
+const AANTAL_ROOK = 6;
+const ROOK_KLEUR = "#3a3a4a";
 
 function svgElement(tag, attributen = {}) {
   const el = document.createElementNS("http://www.w3.org/2000/svg", tag);
@@ -104,6 +108,66 @@ function toonVonken(baan, links) {
     baan.appendChild(vonk);
     setTimeout(() => vonk.remove(), 1000);
   }
+}
+
+/** Toont kleine vuurwerk-sterretjes rond de raket bij een goed antwoord. */
+function toonVuurwerk(baan, links) {
+  for (let i = 0; i < AANTAL_VUURWERK; i += 1) {
+    const ster = document.createElement("div");
+    ster.className = "raket-vuurwerk raket-vuurwerk--actief";
+    ster.style.left = `calc(${links}% + ${(Math.random() - 0.5) * 60}px)`;
+    ster.style.bottom = `${8 + Math.random() * 20}%`;
+    ster.style.background = VUURWERK_KLEUREN[i % VUURWERK_KLEUREN.length];
+    ster.style.width = `${4 + Math.random() * 5}px`;
+    ster.style.height = ster.style.width;
+    ster.style.borderRadius = "50%";
+    baan.appendChild(ster);
+    setTimeout(() => ster.remove(), 1000);
+  }
+}
+
+/** Toont zwarte rookwolken bij een fout antwoord. */
+function toonRook(baan, links) {
+  for (let i = 0; i < AANTAL_ROOK; i += 1) {
+    const wolk = document.createElement("div");
+    wolk.className = "raket-rook raket-rook--actief";
+    wolk.style.left = `calc(${links}% + ${(Math.random() - 0.5) * 40}px)`;
+    wolk.style.bottom = `${6 + Math.random() * 8}%`;
+    wolk.style.width = `${10 + Math.random() * 14}px`;
+    wolk.style.height = wolk.style.width;
+    baan.appendChild(wolk);
+    setTimeout(() => wolk.remove(), 1200);
+  }
+}
+
+/** Toont een rode knipperende waarschuwingslicht op de raket. */
+let roodLichtInterval = null;
+function toonRoodZwaailicht(raketWrapper) {
+  // Voeg een rode cirkel toe die knippert
+  let zichtbaar = false;
+  if (roodLichtInterval) clearInterval(roodLichtInterval);
+  const licht = document.createElement("div");
+  licht.className = "raket-zwaailicht";
+  Object.assign(licht.style, {
+    position: "absolute", top: "0", right: "-8px",
+    width: "14px", height: "14px", borderRadius: "50%",
+    background: "#e8735a", boxShadow: "0 0 8px #e8735a",
+    transition: "opacity 0.2s", opacity: "0",
+    zIndex: "10",
+  });
+  raketWrapper.appendChild(licht);
+  roodLichtInterval = setInterval(() => {
+    zichtbaar = !zichtbaar;
+    licht.style.opacity = zichtbaar ? "1" : "0";
+  }, 350);
+  // Automatisch stoppen na 3 seconden
+  setTimeout(() => {
+    if (roodLichtInterval) {
+      clearInterval(roodLichtInterval);
+      roodLichtInterval = null;
+    }
+    licht.remove();
+  }, 3000);
 }
 
 /** Toont confetti-regen over de hele baan wanneer het doel bereikt is. */
@@ -295,11 +359,13 @@ export function maakRaketAnimatie(container, doelAantal) {
     goedAntwoord() {
       aantalGoed += 1;
       toonVonken(baan, 50);
+      toonVuurwerk(baan, 50);
       bijwerken();
     },
-    /** De raket blijft precies staan waar hij was. */
+    /** De raket blijft staan, rook en zwaailicht bij een fout antwoord. */
     foutAntwoord() {
-      // Bewust geen enkele wijziging: geen straf bij een fout antwoord.
+      toonRook(baan, 35);
+      toonRoodZwaailicht(raketWrapper);
     },
     /** Zet de animatie terug naar het begin. */
     reset() {
