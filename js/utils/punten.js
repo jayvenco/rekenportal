@@ -5,7 +5,9 @@
 // op via de backend-API.
 // -----------------------------------------------------------------------------
 
-const API_BASE = "/api";
+const API_BASE = (window.location.port === "8791" || window.location.port === "8792")
+  ? "http://localhost:8420/api"
+  : "/api";
 
 /**
  * Berekent het aantal punten op basis van score.

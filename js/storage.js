@@ -9,17 +9,11 @@
 // -----------------------------------------------------------------------------
 
 // -----------------------------------------------------------------------------
-// API_BASE — pas dit hier aan als je frontend en backend los van elkaar draait.
-//
-// - Productie / dezelfde origin (backend serveert ook de frontend, of een
-//   reverse proxy zet /api door naar de backend): laat dit op het relatieve
-//   pad "/api" staan. Dat werkt dan overal, ook achter Docker/een proxy.
-// - Standalone frontend-dev (bv. frontend op poort 8792 via `python3 -m
-//   http.server`, backend los op poort 8420): zet dit tijdelijk om naar een
-//   VOLLEDIGE url, bv. "http://localhost:8420/api". Vergeet niet dit weer
-//   terug te zetten naar "/api" voordat je naar productie gaat.
-// -----------------------------------------------------------------------------
-const API_BASE = "/api";
+// API_BASE — automatisch: als we op een dev-poort zitten (8791/8792) pakken
+// we de backend op :8420; in Docker (alles op 1 poort) gebruiken we /api.
+const API_BASE = (window.location.port === "8791" || window.location.port === "8792")
+  ? "http://localhost:8420/api"
+  : "/api";
 
 const SLEUTEL_ACTIEF_PROFIEL = "rekenportal_actief_profiel_id";
 
