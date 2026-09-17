@@ -20,5 +20,6 @@ backend/data/*.db
 
 # Dev tools
 serve_no_cache.py
+deploy-*.sh
 Dockerfile
 .dockerignore
