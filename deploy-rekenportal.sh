@@ -42,6 +42,11 @@ echo ""
 
 # --- Fase 1: appdata directory ---
 log "FASE 1/5: Appdata directory..."
+
+if [ ! -d "${APP_DIR}" ]; then
+  log "  Map ${APP_DIR} bestaat nog niet — wordt aangemaakt..."
+fi
+
 mkdir -p "${APP_DIR}/data/backups"
 ok "Directory ${APP_DIR} klaar"
 
