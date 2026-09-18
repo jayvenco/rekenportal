@@ -1,379 +1,281 @@
 // utils/raketAnimatie.js
 // -----------------------------------------------------------------------------
-// Motiverende animatie die bij elke oefening te zien is: een raket die bij elk
-// goed antwoord een stukje omhoog vliegt naar de maan. De maan (het doel) is
-// altijd in beeld. Bij een fout antwoord blijft de raket gewoon staan (nooit
-// terugvallen — geen straf). Als de raket de maan bereikt: sterretjes-confetti
-// en de tekst "Je bent er!".
-//
-// Gebruik:
-//   const raket = maakRaketAnimatie(container, aantalOpgaven);
-//   raket.goedAntwoord();   // beweegt de raket een stapje omhoog
-//   raket.foutAntwoord();   // raket blijft staan, geen strafbeweging
-//   raket.reset();          // begin opnieuw (bv. bij "nog een keer")
+// Superhero Math Power: gedeelde voortgangsanimatie voor alle oefeningen.
+// De publieke API blijft bewust gelijk aan de oude raket-animatie, zodat de
+// oefenschermen alleen goedAntwoord(), foutAntwoord() en reset() hoeven te kennen.
 // -----------------------------------------------------------------------------
 
-const AANTAL_STERREN = 18;
-const AANTAL_CONFETTI = 24;
-const CONFETTI_KLEUREN = ["#4f8fe8", "#f5b942", "#38b26a", "#e8735a", "#a56ee2"];
-const AANTAL_EXPLOSIE_STUKJES = 16;
-const EXPLOSIE_KLEUREN = ["#f0883e", "#e8735a", "#f5b942", "#c95a41"];
-const AANTAL_VUURWERK = 8;
-const VUURWERK_KLEUREN = ["#f5b942", "#f0883e", "#4f8fe8", "#38b26a", "#a56ee2"];
-const AANTAL_ROOK = 6;
-const ROOK_KLEUR = "#3a3a4a";
+const CHECKPOINTS = [
+  { grens: 25, tekst: "HERO IN TRAINING" },
+  { grens: 50, tekst: "POWER HERO" },
+  { grens: 75, tekst: "SUPER HERO" },
+  { grens: 100, tekst: "MATH MASTER" },
+];
 
-function svgElement(tag, attributen = {}) {
-  const el = document.createElementNS("http://www.w3.org/2000/svg", tag);
-  for (const [naam, waarde] of Object.entries(attributen)) {
-    el.setAttribute(naam, waarde);
-  }
-  return el;
+const PARTIKELS = ["+", "-", "x", "÷", "Σ", "★"];
+const PARTIKEL_KLEUREN = ["#2f6ed4", "#38b26a", "#f5b942", "#f07a3d", "#9b5de5"];
+
+function begrens(getal, min, max) {
+  return Math.max(min, Math.min(max, getal));
 }
 
-/** Bouwt de raket-vorm als SVG-groep (lichaam, venster, vlammen, vinnen). */
-function bouwRaketSvg() {
-  const svg = svgElement("svg", { viewBox: "0 0 64 64", width: "64", height: "64" });
-  const romp = svgElement("path", {
-    d: "M32 2 C42 14 46 30 40 50 L24 50 C18 30 22 14 32 2 Z",
-    fill: "#e8735a",
-    stroke: "#c95a41",
-    "stroke-width": "2",
-  });
-  const venster = svgElement("circle", {
-    cx: "32", cy: "24", r: "7",
-    fill: "#eaf2ff", stroke: "#4f8fe8", "stroke-width": "2",
-  });
-  const vinLinks = svgElement("path", {
-    d: "M24 50 L14 60 L24 58 Z",
-    fill: "#4f8fe8",
-  });
-  const vinRechts = svgElement("path", {
-    d: "M40 50 L50 60 L40 58 Z",
-    fill: "#4f8fe8",
-  });
-  const vlam = svgElement("path", {
-    d: "M27 50 L32 62 L37 50 Z",
-    fill: "#f5b942",
-  });
-  svg.append(vinLinks, vinRechts, romp, venster, vlam);
-  return svg;
+function maakElement(tag, className, tekst = "") {
+  const element = document.createElement(tag);
+  if (className) element.className = className;
+  if (tekst) element.textContent = tekst;
+  return element;
 }
 
-/** Maakt de sterretjes-achtergrond met een klein twinkel-animatietje. */
-function bouwSterren(baan) {
-  for (let i = 0; i < AANTAL_STERREN; i += 1) {
-    const ster = document.createElement("div");
-    ster.className = "raket-ster";
-    const grootte = 2 + Math.random() * 3;
-    ster.style.width = `${grootte}px`;
-    ster.style.height = `${grootte}px`;
-    ster.style.left = `${Math.random() * 96}%`;
-    ster.style.top = `${5 + Math.random() * 55}%`;
-    ster.style.background = "#c7d7f0";
-    ster.style.borderRadius = "50%";
-    ster.style.animationDelay = `${Math.random() * 2.4}s`;
-    baan.appendChild(ster);
-  }
-}
-
-/** Tekent de maan (het doel) rechtsboven in de baan, als SVG. */
-function bouwMaan() {
-  const wrapper = document.createElement("div");
-  wrapper.style.position = "absolute";
-  wrapper.style.top = "6%";
-  wrapper.style.right = "8%";
-  wrapper.style.width = "64px";
-  wrapper.style.height = "64px";
-  const svg = svgElement("svg", { viewBox: "0 0 64 64", width: "64", height: "64" });
-  const maan = svgElement("circle", { cx: "32", cy: "32", r: "26", fill: "#f5e6b8" });
-  const krater1 = svgElement("circle", { cx: "22", cy: "24", r: "5", fill: "#e8d69a" });
-  const krater2 = svgElement("circle", { cx: "38", cy: "36", r: "7", fill: "#e8d69a" });
-  const krater3 = svgElement("circle", { cx: "28", cy: "42", r: "3.5", fill: "#e8d69a" });
-  svg.append(maan, krater1, krater2, krater3);
-  wrapper.appendChild(svg);
+function svgSuperheld() {
+  const wrapper = maakElement("div", "math-hero__character");
+  wrapper.setAttribute("aria-hidden", "true");
+  wrapper.innerHTML = `
+    <svg class="math-hero__svg" viewBox="0 0 180 180" role="img">
+      <defs>
+        <linearGradient id="heroCape" x1="0" x2="1" y1="0" y2="1">
+          <stop offset="0%" stop-color="#ff785a" />
+          <stop offset="100%" stop-color="#d42d52" />
+        </linearGradient>
+        <linearGradient id="heroSuit" x1="0" x2="1" y1="0" y2="1">
+          <stop offset="0%" stop-color="#4f8fe8" />
+          <stop offset="100%" stop-color="#2652b8" />
+        </linearGradient>
+        <filter id="heroGlow" x="-40%" y="-40%" width="180%" height="180%">
+          <feGaussianBlur stdDeviation="4" result="blur" />
+          <feMerge>
+            <feMergeNode in="blur" />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
+        </filter>
+      </defs>
+      <g class="math-hero__aura">
+        <circle cx="90" cy="92" r="62" fill="#f8d84c" opacity="0.16" />
+        <path d="M90 16 L100 54 L136 35 L119 72 L160 78 L122 96 L151 126 L111 118 L116 160 L90 126 L64 160 L69 118 L29 126 L58 96 L20 78 L61 72 L44 35 L80 54 Z" fill="#ffd83d" opacity="0.18" />
+      </g>
+      <path class="math-hero__cape" d="M55 72 C28 90 21 128 39 161 C58 145 75 135 93 132 C111 136 128 146 146 161 C163 128 154 89 125 72 C112 88 70 88 55 72 Z" fill="url(#heroCape)" />
+      <path d="M46 111 C26 123 24 146 35 151 C42 135 53 125 68 119 Z" fill="#f7c7a1" />
+      <path d="M134 111 C154 123 156 146 145 151 C138 135 127 125 112 119 Z" fill="#f7c7a1" />
+      <path class="math-hero__body" d="M62 82 C63 65 76 54 90 54 C104 54 117 65 118 82 L125 129 C105 142 75 142 55 129 Z" fill="url(#heroSuit)" />
+      <path d="M71 89 L90 123 L109 89 Z" fill="#ffffff" opacity="0.92" />
+      <circle cx="90" cy="101" r="18" fill="#ffd83d" stroke="#ffffff" stroke-width="4" />
+      <text x="90" y="109" text-anchor="middle" font-size="23" font-family="Arial, sans-serif" font-weight="900" fill="#2652b8">Σ</text>
+      <circle cx="90" cy="44" r="30" fill="#f7c7a1" />
+      <path d="M59 39 C67 13 110 6 123 37 C110 27 81 27 59 39 Z" fill="#4b2d73" />
+      <path d="M61 45 C76 35 103 35 119 45 L113 58 C101 51 79 51 67 58 Z" fill="#263b83" />
+      <circle cx="79" cy="49" r="4" fill="#1c2740" />
+      <circle cx="101" cy="49" r="4" fill="#1c2740" />
+      <path d="M80 64 Q90 72 101 64" fill="none" stroke="#7a3d2a" stroke-width="4" stroke-linecap="round" />
+      <path d="M67 132 L58 164" stroke="#263b83" stroke-width="14" stroke-linecap="round" />
+      <path d="M113 132 L122 164" stroke="#263b83" stroke-width="14" stroke-linecap="round" />
+      <path class="math-hero__bolt-left" d="M35 34 L22 62 L39 58 L31 86 L58 45 L42 49 Z" fill="#ffd83d" />
+      <path class="math-hero__bolt-right" d="M145 34 L158 62 L141 58 L149 86 L122 45 L138 49 Z" fill="#ffd83d" />
+    </svg>
+  `;
   return wrapper;
 }
 
-/** Genereert wat vonkjes rond de raket bij een goed antwoord. */
-function toonVonken(baan, links) {
-  for (let i = 0; i < 6; i += 1) {
-    const vonk = document.createElement("div");
-    vonk.className = "raket-vonk raket-vonk--actief";
-    const grootte = 4 + Math.random() * 5;
-    vonk.style.width = `${grootte}px`;
-    vonk.style.height = `${grootte}px`;
-    vonk.style.left = `calc(${links}% + ${(Math.random() - 0.5) * 50}px)`;
-    vonk.style.bottom = "10%";
-    baan.appendChild(vonk);
-    setTimeout(() => vonk.remove(), 1000);
+function checkpointVoorPercentage(percentage) {
+  return CHECKPOINTS.reduce((gevonden, checkpoint) => (
+    percentage >= checkpoint.grens ? checkpoint : gevonden
+  ), CHECKPOINTS[0]);
+}
+
+function tierVoorPercentage(percentage) {
+  if (percentage >= 100) return 5;
+  if (percentage >= 80) return 4;
+  if (percentage >= 60) return 3;
+  if (percentage >= 40) return 2;
+  if (percentage >= 20) return 1;
+  return 0;
+}
+
+function animatieHerstart(element, className) {
+  element.classList.remove(className);
+  void element.offsetWidth;
+  element.classList.add(className);
+}
+
+function toonPartikels(laag, opties = {}) {
+  const aantal = opties.aantal ?? 12;
+  const symbols = opties.symbols ?? PARTIKELS;
+  for (let i = 0; i < aantal; i += 1) {
+    const partikel = maakElement("span", "math-hero__particle");
+    partikel.textContent = symbols[i % symbols.length];
+    partikel.style.left = `${18 + Math.random() * 64}%`;
+    partikel.style.top = `${34 + Math.random() * 34}%`;
+    partikel.style.color = PARTIKEL_KLEUREN[i % PARTIKEL_KLEUREN.length];
+    partikel.style.setProperty("--dx", `${(Math.random() - 0.5) * 130}px`);
+    partikel.style.setProperty("--dy", `${-45 - Math.random() * 70}px`);
+    partikel.style.animationDelay = `${Math.random() * 0.12}s`;
+    laag.appendChild(partikel);
+    setTimeout(() => partikel.remove(), 1100);
   }
 }
 
-/** Toont kleine vuurwerk-sterretjes rond de raket bij een goed antwoord. */
-function toonVuurwerk(baan, links) {
-  for (let i = 0; i < AANTAL_VUURWERK; i += 1) {
-    const ster = document.createElement("div");
-    ster.className = "raket-vuurwerk raket-vuurwerk--actief";
-    ster.style.left = `calc(${links}% + ${(Math.random() - 0.5) * 60}px)`;
-    ster.style.bottom = `${8 + Math.random() * 20}%`;
-    ster.style.background = VUURWERK_KLEUREN[i % VUURWERK_KLEUREN.length];
-    ster.style.width = `${4 + Math.random() * 5}px`;
-    ster.style.height = ster.style.width;
-    ster.style.borderRadius = "50%";
-    baan.appendChild(ster);
-    setTimeout(() => ster.remove(), 1000);
-  }
+function toonBadge(badge, tekst) {
+  badge.textContent = tekst;
+  animatieHerstart(badge, "math-hero__badge--show");
+  setTimeout(() => badge.classList.remove("math-hero__badge--show"), 1400);
 }
 
-/** Toont zwarte rookwolken bij een fout antwoord. */
-function toonRook(baan, links) {
-  for (let i = 0; i < AANTAL_ROOK; i += 1) {
-    const wolk = document.createElement("div");
-    wolk.className = "raket-rook raket-rook--actief";
-    wolk.style.left = `calc(${links}% + ${(Math.random() - 0.5) * 40}px)`;
-    wolk.style.bottom = `${6 + Math.random() * 8}%`;
-    wolk.style.width = `${10 + Math.random() * 14}px`;
-    wolk.style.height = wolk.style.width;
-    baan.appendChild(wolk);
-    setTimeout(() => wolk.remove(), 1200);
-  }
+function bouwSuperheroBlok() {
+  const blok = maakElement("div", "math-hero");
+  blok.style.setProperty("--power-progress", "0%");
+  blok.setAttribute("role", "img");
+  blok.setAttribute("aria-label", "Superheld die sterker wordt bij elk goed rekenantwoord.");
+
+  const achtergrond = maakElement("div", "math-hero__scene");
+  const speedlines = maakElement("div", "math-hero__speedlines");
+  const particles = maakElement("div", "math-hero__particles");
+  const hero = svgSuperheld();
+  const badge = maakElement("div", "math-hero__badge");
+  const bubble = maakElement("div", "math-hero__bubble", "Klaar voor math power!");
+
+  const meter = maakElement("div", "math-hero__meter");
+  meter.innerHTML = `
+    <div class="math-hero__meter-top">
+      <span class="math-hero__label">MATH POWER</span>
+      <span class="math-hero__percent">0%</span>
+    </div>
+    <div class="math-hero__bar" aria-hidden="true">
+      <div class="math-hero__bar-fill"></div>
+      <div class="math-hero__checkpoint math-hero__checkpoint--25"></div>
+      <div class="math-hero__checkpoint math-hero__checkpoint--50"></div>
+      <div class="math-hero__checkpoint math-hero__checkpoint--75"></div>
+      <div class="math-hero__checkpoint math-hero__checkpoint--100"></div>
+    </div>
+    <div class="math-hero__meta">
+      <span class="math-hero__rank">HERO IN TRAINING</span>
+      <span class="math-hero__count">0 / 1 goed</span>
+    </div>
+  `;
+
+  achtergrond.append(speedlines, particles, hero, badge, bubble);
+  blok.append(achtergrond, meter);
+
+  return {
+    blok,
+    hero,
+    particles,
+    badge,
+    bubble,
+    percent: meter.querySelector(".math-hero__percent"),
+    rank: meter.querySelector(".math-hero__rank"),
+    count: meter.querySelector(".math-hero__count"),
+    fill: meter.querySelector(".math-hero__bar-fill"),
+  };
 }
 
-/** Toont een rode knipperende waarschuwingslicht op de raket. */
-let roodLichtInterval = null;
-function toonRoodZwaailicht(raketWrapper) {
-  // Voeg een rode cirkel toe die knippert
-  let zichtbaar = false;
-  if (roodLichtInterval) clearInterval(roodLichtInterval);
-  const licht = document.createElement("div");
-  licht.className = "raket-zwaailicht";
-  Object.assign(licht.style, {
-    position: "absolute", top: "0", right: "-8px",
-    width: "14px", height: "14px", borderRadius: "50%",
-    background: "#e8735a", boxShadow: "0 0 8px #e8735a",
-    transition: "opacity 0.2s", opacity: "0",
-    zIndex: "10",
-  });
-  raketWrapper.appendChild(licht);
-  roodLichtInterval = setInterval(() => {
-    zichtbaar = !zichtbaar;
-    licht.style.opacity = zichtbaar ? "1" : "0";
-  }, 350);
-  // Automatisch stoppen na 3 seconden
-  setTimeout(() => {
-    if (roodLichtInterval) {
-      clearInterval(roodLichtInterval);
-      roodLichtInterval = null;
-    }
-    licht.remove();
-  }, 3000);
-}
-
-/** Toont confetti-regen over de hele baan wanneer het doel bereikt is. */
-function toonConfetti(baan) {
-  for (let i = 0; i < AANTAL_CONFETTI; i += 1) {
-    const stuk = document.createElement("div");
-    stuk.className = "confetti-stukje confetti-stukje--actief";
-    stuk.style.left = `${Math.random() * 100}%`;
-    stuk.style.width = "8px";
-    stuk.style.height = "8px";
-    stuk.style.background = CONFETTI_KLEUREN[i % CONFETTI_KLEUREN.length];
-    stuk.style.borderRadius = i % 2 === 0 ? "50%" : "2px";
-    stuk.style.animationDelay = `${Math.random() * 0.6}s`;
-    baan.appendChild(stuk);
-    setTimeout(() => stuk.remove(), 3200);
-  }
-}
-
-/** Toont een uitbarsting van deeltjes vanuit het midden, voor het "ruimteschip ontploft"-effect. */
-function toonExplosieDeeltjes(baan) {
-  for (let i = 0; i < AANTAL_EXPLOSIE_STUKJES; i += 1) {
-    const stukje = document.createElement("div");
-    stukje.className = "explosie-stukje explosie-stukje--actief";
-    const hoek = (360 / AANTAL_EXPLOSIE_STUKJES) * i + (Math.random() * 20 - 10);
-    const afstand = 40 + Math.random() * 55;
-    const dx = Math.cos((hoek * Math.PI) / 180) * afstand;
-    const dy = Math.sin((hoek * Math.PI) / 180) * afstand;
-    stukje.style.setProperty("--dx", `${dx}px`);
-    stukje.style.setProperty("--dy", `${dy}px`);
-    stukje.style.left = "50%";
-    stukje.style.top = "44%";
-    const grootte = 5 + Math.random() * 6;
-    stukje.style.width = `${grootte}px`;
-    stukje.style.height = `${grootte}px`;
-    stukje.style.background = EXPLOSIE_KLEUREN[i % EXPLOSIE_KLEUREN.length];
-    baan.appendChild(stukje);
-    setTimeout(() => stukje.remove(), 1200);
-  }
-}
-
-/** Tekent een kleine vrolijke astronaut: armen omhoog, lachend gezicht. Gebruikt bij een goede eindscore. */
-function bouwAstronautVrolijk() {
-  const svg = svgElement("svg", { viewBox: "0 0 80 96", width: "84", height: "100" });
-  const beenLinks = svgElement("path", { d: "M30 84 L24 94", stroke: "#4f8fe8", "stroke-width": "7", "stroke-linecap": "round", fill: "none" });
-  const beenRechts = svgElement("path", { d: "M50 84 L56 94", stroke: "#4f8fe8", "stroke-width": "7", "stroke-linecap": "round", fill: "none" });
-  const armLinks = svgElement("path", { d: "M20 50 L6 28", stroke: "#4f8fe8", "stroke-width": "7", "stroke-linecap": "round", fill: "none" });
-  const armRechts = svgElement("path", { d: "M60 50 L74 28", stroke: "#4f8fe8", "stroke-width": "7", "stroke-linecap": "round", fill: "none" });
-  const lichaam = svgElement("ellipse", { cx: "40", cy: "58", rx: "22", ry: "28", fill: "#f6f8fc", stroke: "#4f8fe8", "stroke-width": "3" });
-  const handLinks = svgElement("circle", { cx: "6", cy: "26", r: "6", fill: "#f6f8fc", stroke: "#4f8fe8", "stroke-width": "2" });
-  const handRechts = svgElement("circle", { cx: "74", cy: "26", r: "6", fill: "#f6f8fc", stroke: "#4f8fe8", "stroke-width": "2" });
-  const helm = svgElement("circle", { cx: "40", cy: "30", r: "22", fill: "#eaf2ff", stroke: "#4f8fe8", "stroke-width": "3" });
-  const visor = svgElement("ellipse", { cx: "40", cy: "31", rx: "14", ry: "12", fill: "#4f8fe8" });
-  const oogLinks = svgElement("circle", { cx: "35", cy: "29", r: "2.4", fill: "#ffffff" });
-  const oogRechts = svgElement("circle", { cx: "45", cy: "29", r: "2.4", fill: "#ffffff" });
-  const mond = svgElement("path", { d: "M33 35 Q40 41 47 35", stroke: "#ffffff", "stroke-width": "2.4", fill: "none", "stroke-linecap": "round" });
-  svg.append(beenLinks, beenRechts, armLinks, armRechts, lichaam, handLinks, handRechts, helm, visor, oogLinks, oogRechts, mond);
-  return svg;
-}
-
-/** Tekent een kleine verdrietige astronaut: armen omlaag, verdrietig gezicht met traan. Gebruikt bij een zwakke eindscore. */
-function bouwAstronautVerdrietig() {
-  const svg = svgElement("svg", { viewBox: "0 0 80 96", width: "84", height: "100" });
-  const beenLinks = svgElement("path", { d: "M30 84 L26 94", stroke: "#8a94a6", "stroke-width": "7", "stroke-linecap": "round", fill: "none" });
-  const beenRechts = svgElement("path", { d: "M50 84 L54 94", stroke: "#8a94a6", "stroke-width": "7", "stroke-linecap": "round", fill: "none" });
-  const armLinks = svgElement("path", { d: "M20 50 L14 72", stroke: "#8a94a6", "stroke-width": "7", "stroke-linecap": "round", fill: "none" });
-  const armRechts = svgElement("path", { d: "M60 50 L66 72", stroke: "#8a94a6", "stroke-width": "7", "stroke-linecap": "round", fill: "none" });
-  const lichaam = svgElement("ellipse", { cx: "40", cy: "58", rx: "22", ry: "28", fill: "#f6f8fc", stroke: "#8a94a6", "stroke-width": "3" });
-  const helm = svgElement("circle", { cx: "40", cy: "30", r: "22", fill: "#eaf2ff", stroke: "#8a94a6", "stroke-width": "3" });
-  const visor = svgElement("ellipse", { cx: "40", cy: "31", rx: "14", ry: "12", fill: "#8a94a6" });
-  const oogLinks = svgElement("circle", { cx: "35", cy: "30", r: "2.4", fill: "#ffffff" });
-  const oogRechts = svgElement("circle", { cx: "45", cy: "30", r: "2.4", fill: "#ffffff" });
-  const mond = svgElement("path", { d: "M33 38 Q40 32 47 38", stroke: "#ffffff", "stroke-width": "2.4", fill: "none", "stroke-linecap": "round" });
-  const traan = svgElement("path", { d: "M47 33 Q49.5 38 47 41 Q44.5 38 47 33 Z", fill: "#8fd0f5" });
-  svg.append(beenLinks, beenRechts, armLinks, armRechts, lichaam, helm, visor, oogLinks, oogRechts, mond, traan);
-  return svg;
-}
-
-/** Bouwt de wrapper-elementen voor de eind-astronaut (intro-animatie + infinite zweven, los van elkaar). */
-function bouwEindAstronaut(soort) {
-  const wrapper = document.createElement("div");
-  wrapper.className = "eind-astronaut eind-astronaut--intro";
-  const binnen = document.createElement("div");
-  binnen.className = `eind-astronaut-binnen eind-astronaut-binnen--${soort}`;
-  binnen.appendChild(soort === "vrolijk" ? bouwAstronautVrolijk() : bouwAstronautVerdrietig());
-  wrapper.appendChild(binnen);
-  return wrapper;
-}
-
-/**
- * Toont de eind-animatie op het afsluitscherm van een oefensessie: bij een goede score
- * (minder dan of gelijk aan 30% fout) een juichende astronaut met confetti, bij een
- * zwakke score (meer dan 30% fout) een "ruimteschip ontploft"-effect met een kleine
- * verdrietige astronaut die er rustig doorheen zweeft (geen enge/harde animatie).
- * @param {HTMLElement} container - element waar de animatie in komt (bv. de eindscherm-kaart).
- * @param {number} percentageGoed - percentage goed beantwoorde opgaven (0-100).
- */
 export function toonEindAnimatie(container, percentageGoed) {
-  const vlak = document.createElement("div");
-  vlak.className = "eind-animatie-vlak";
+  const percentage = begrens(Math.round(percentageGoed || 0), 0, 100);
+  const vlak = maakElement("div", "math-hero-result");
+  vlak.style.setProperty("--power-progress", `${percentage}%`);
   vlak.setAttribute("role", "img");
-  bouwSterren(vlak);
 
-  const raketWrapper = document.createElement("div");
-  raketWrapper.className = "eind-raket";
-  raketWrapper.appendChild(bouwRaketSvg());
-  vlak.appendChild(raketWrapper);
+  const succes = percentage >= 70;
+  const titel = percentage >= 100
+    ? "MATH MASTER!"
+    : succes
+      ? "SUPER MATH HERO!"
+      : "HERO IN TRAINING!";
+  const tekst = succes
+    ? "Missie voltooid. Je power staat hoog!"
+    : "Goed geoefend. De volgende missie maakt je sterker.";
 
-  if (percentageGoed >= 70) {
-    vlak.classList.add("eind-animatie-vlak--goed");
-    vlak.setAttribute("aria-label", "Het ruimteschip is veilig geland. Een juichende astronaut steekt zijn armen omhoog, want het ging heel goed!");
-    const astronautWrapper = bouwEindAstronaut("vrolijk");
-    astronautWrapper.classList.add("eind-astronaut--naast-raket");
-    vlak.appendChild(astronautWrapper);
-    toonConfetti(vlak);
-  } else {
-    vlak.classList.add("eind-animatie-vlak--fout");
-    vlak.setAttribute(
-      "aria-label",
-      "Het ruimteschip valt uit elkaar. Een klein verdrietig astronautje zweeft rustig door de ruimte."
-    );
-    const astronautWrapper = bouwEindAstronaut("verdrietig");
-    astronautWrapper.classList.add("eind-astronaut--naast-raket");
-    vlak.appendChild(astronautWrapper);
-    // Na een klein moment (zodat het schip eerst nog even in beeld staat) ontploft het.
-    setTimeout(() => {
-      raketWrapper.classList.add("eind-raket--explodeer");
-      toonExplosieDeeltjes(vlak);
-    }, 500);
+  vlak.setAttribute("aria-label", `${titel} ${tekst}`);
+  vlak.innerHTML = `
+    <div class="math-hero-result__burst"></div>
+    <div class="math-hero-result__hero"></div>
+    <h3>${titel}</h3>
+    <p>${tekst}</p>
+    <div class="math-hero-result__meter">
+      <div class="math-hero-result__fill"></div>
+    </div>
+    <strong>${percentage}% goed</strong>
+  `;
+  vlak.querySelector(".math-hero-result__hero").appendChild(svgSuperheld());
+  container.appendChild(vlak);
+
+  if (succes) {
+    toonPartikels(vlak.querySelector(".math-hero-result__burst"), { aantal: 22 });
   }
 
-  container.appendChild(vlak);
   return vlak;
 }
 
-/**
- * Maakt de raket-animatie aan in de gegeven container.
- * @param {HTMLElement} container - element waar de animatie in komt.
- * @param {number} doelAantal - hoeveel goede antwoorden nodig zijn om de maan te bereiken.
- */
 export function maakRaketAnimatie(container, doelAantal) {
   const totaal = Math.max(1, doelAantal);
   let aantalGoed = 0;
+  let laatstGehaaldeCheckpoint = 0;
+  let bubbleTimer = null;
 
-  const baan = document.createElement("div");
-  baan.className = "raket-baan";
-  baan.setAttribute("role", "img");
-  baan.setAttribute("aria-label", "Een raket die richting de maan vliegt bij elk goed antwoord.");
+  const ui = bouwSuperheroBlok();
+  container.appendChild(ui.blok);
 
-  bouwSterren(baan);
-  baan.appendChild(bouwMaan());
-
-  const raketWrapper = document.createElement("div");
-  raketWrapper.className = "raket-figuur";
-  raketWrapper.appendChild(bouwRaketSvg());
-  baan.appendChild(raketWrapper);
-
-  const doelTekst = document.createElement("div");
-  doelTekst.style.position = "absolute";
-  doelTekst.style.top = "50%";
-  doelTekst.style.left = "50%";
-  doelTekst.style.transform = "translate(-50%, -50%)";
-  doelTekst.style.fontSize = "28px";
-  doelTekst.style.fontWeight = "800";
-  doelTekst.style.color = "#3a72c4";
-  doelTekst.style.opacity = "0";
-  doelTekst.style.transition = "opacity 0.5s ease";
-  doelTekst.textContent = "Je bent er!";
-  baan.appendChild(doelTekst);
-
-  container.appendChild(baan);
-
-  /** Berekent de bottom-positie (%) van de raket op basis van aantal goed. */
-  function berekenPositie() {
-    const verhouding = Math.min(1, aantalGoed / totaal);
-    // 8% is de startpositie, 78% is net onder de maan.
-    return 8 + verhouding * 70;
+  function zetBubble(tekst) {
+    ui.bubble.textContent = tekst;
+    ui.bubble.classList.add("math-hero__bubble--show");
+    clearTimeout(bubbleTimer);
+    bubbleTimer = setTimeout(() => {
+      ui.bubble.classList.remove("math-hero__bubble--show");
+    }, 1500);
   }
 
-  function bijwerken() {
-    raketWrapper.style.bottom = `${berekenPositie()}%`;
-    if (aantalGoed >= totaal) {
-      doelTekst.style.opacity = "1";
-      toonConfetti(baan);
+  function bijwerken({ toonCheckpoint = false } = {}) {
+    const percentage = begrens(Math.round((aantalGoed / totaal) * 100), 0, 100);
+    const checkpoint = checkpointVoorPercentage(percentage);
+    const tier = tierVoorPercentage(percentage);
+
+    ui.blok.dataset.tier = String(tier);
+    ui.blok.style.setProperty("--power-progress", `${percentage}%`);
+    ui.fill.style.width = `${percentage}%`;
+    ui.percent.textContent = `${percentage}%`;
+    ui.rank.textContent = checkpoint.tekst;
+    ui.count.textContent = `${aantalGoed} / ${totaal} goed`;
+
+    if (toonCheckpoint && checkpoint.grens > laatstGehaaldeCheckpoint) {
+      laatstGehaaldeCheckpoint = checkpoint.grens;
+      toonBadge(ui.badge, checkpoint.tekst);
+    }
+
+    if (percentage >= 100) {
+      toonBadge(ui.badge, "MISSIE VOLTOOID!");
+      zetBubble("SUPER MATH HERO!");
+      ui.blok.classList.add("math-hero--complete");
+    } else {
+      ui.blok.classList.remove("math-hero--complete");
     }
   }
 
+  bijwerken();
+
   return {
-    /** De raket vliegt een stapje omhoog. */
     goedAntwoord() {
-      aantalGoed += 1;
-      toonVonken(baan, 50);
-      toonVuurwerk(baan, 50);
+      const vorigePercentage = Math.round((aantalGoed / totaal) * 100);
+      aantalGoed = Math.min(totaal, aantalGoed + 1);
+      const nieuwePercentage = Math.round((aantalGoed / totaal) * 100);
+      animatieHerstart(ui.blok, "math-hero--boost");
+      toonPartikels(ui.particles, { aantal: nieuwePercentage >= 100 ? 24 : 12 });
+      zetBubble("+1 POWER");
+      bijwerken({ toonCheckpoint: nieuwePercentage > vorigePercentage });
+    },
+
+    foutAntwoord() {
+      animatieHerstart(ui.blok, "math-hero--encourage");
+      zetBubble("Nog een keer!");
+      toonPartikels(ui.particles, { aantal: 5, symbols: ["★", "+"] });
       bijwerken();
     },
-    /** De raket blijft staan, rook en zwaailicht bij een fout antwoord. */
-    foutAntwoord() {
-      toonRook(baan, 35);
-      toonRoodZwaailicht(raketWrapper);
-    },
-    /** Zet de animatie terug naar het begin. */
+
     reset() {
       aantalGoed = 0;
-      doelTekst.style.opacity = "0";
+      laatstGehaaldeCheckpoint = 0;
+      clearTimeout(bubbleTimer);
+      ui.blok.classList.remove("math-hero--complete", "math-hero--boost", "math-hero--encourage");
+      ui.bubble.classList.remove("math-hero__bubble--show");
       bijwerken();
     },
-    /** Geeft het DOM-element van de baan terug. */
-    element: baan,
+
+    element: ui.blok,
   };
 }
