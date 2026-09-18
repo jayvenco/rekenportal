@@ -1,0 +1,300 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#0b1020" />
+    <meta name="color-scheme" content="dark" />
+    <title>Aetherwing — Ride the Ancient Skies</title>
+    <meta
+      name="description"
+      content="Aetherwing is a one-button cinematic flight arcade game. Glide an ancient sky drake through colossal floating monoliths across five living skies."
+    />
+    <meta property="og:title" content="Aetherwing — Ride the Ancient Skies" />
+    <meta
+      property="og:description"
+      content="One button. Endless sky. How far can you glide?"
+    />
+    <meta property="og:type" content="website" />
+    <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="./favicon.svg" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  </head>
+  <body>
+    <div id="app" class="app">
+      <canvas id="stage" aria-label="Aetherwing game stage" role="img"></canvas>
+
+      <!-- ============================ OVERLAY ============================ -->
+      <div id="overlay" class="overlay">
+        <!-- ---------------------------- LOADING --------------------------- -->
+        <section class="screen screen--loading is-active" data-screen="loading">
+          <div class="loader">
+            <div class="loader__mark" aria-hidden="true">
+              <span class="loader__wing loader__wing--l"></span>
+              <span class="loader__wing loader__wing--r"></span>
+              <span class="loader__core"></span>
+            </div>
+            <h1 class="loader__title">AETHERWING</h1>
+            <div class="loader__bar"><i id="loadBar" style="transform: scaleX(0)"></i></div>
+            <p id="loadLabel" class="loader__label">Carving the mountains…</p>
+          </div>
+        </section>
+
+        <!-- ----------------------------- MENU ----------------------------- -->
+        <section class="screen screen--menu" data-screen="menu">
+          <div class="menu">
+            <header class="brand">
+              <h1 class="brand__title">
+                <span class="brand__word">AETHERWING</span>
+              </h1>
+              <p class="brand__tag">Ride the ancient skies</p>
+            </header>
+
+            <div class="menu__scores">
+              <div class="stat">
+                <span class="stat__label">Best</span>
+                <span class="stat__value" id="menuBest">0</span>
+              </div>
+              <div class="stat stat--divider" aria-hidden="true"></div>
+              <div class="stat">
+                <span class="stat__label">Flights</span>
+                <span class="stat__value" id="menuRuns">0</span>
+              </div>
+            </div>
+
+            <button class="btn btn--primary btn--play" data-action="play" type="button">
+              <span class="btn__glow" aria-hidden="true"></span>
+              <span class="btn__label">PLAY</span>
+            </button>
+
+            <div class="menu__row">
+              <button class="btn btn--ghost" data-action="themes" type="button">
+                <span class="btn__label">Skies</span>
+              </button>
+              <button class="btn btn--ghost" data-action="settings" type="button">
+                <span class="btn__label">Settings</span>
+              </button>
+            </div>
+
+            <p class="menu__hint">
+              <kbd>Space</kbd> / <kbd>Click</kbd> / <kbd>Tap</kbd> to fly
+            </p>
+          </div>
+        </section>
+
+        <!-- ---------------------------- READY ----------------------------- -->
+        <section class="screen screen--ready screen--passthrough" data-screen="ready">
+          <div class="ready">
+            <div class="ready__pulse" aria-hidden="true">
+              <svg viewBox="0 0 64 64" class="ready__icon" aria-hidden="true">
+                <path
+                  d="M32 8 L32 40 M32 8 L22 20 M32 8 L42 20"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="4"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+                <circle cx="32" cy="52" r="5" fill="currentColor" />
+              </svg>
+            </div>
+            <p class="ready__text">TAP TO FLY</p>
+            <p class="ready__sub">Hold nothing. Time everything.</p>
+          </div>
+        </section>
+
+        <!-- ---------------------------- PAUSED ---------------------------- -->
+        <section class="screen screen--pause" data-screen="paused">
+          <div class="panel">
+            <h2 class="panel__title">PAUSED</h2>
+            <div class="panel__stack">
+              <button class="btn btn--primary" data-action="resume" type="button">
+                <span class="btn__glow" aria-hidden="true"></span>
+                <span class="btn__label">Resume</span>
+              </button>
+              <button class="btn btn--ghost" data-action="settings" type="button">
+                <span class="btn__label">Settings</span>
+              </button>
+              <button class="btn btn--ghost btn--quiet" data-action="quit" type="button">
+                <span class="btn__label">Quit to menu</span>
+              </button>
+            </div>
+            <p class="panel__hint"><kbd>Esc</kbd> or <kbd>P</kbd> to resume</p>
+          </div>
+        </section>
+
+        <!-- --------------------------- GAME OVER -------------------------- -->
+        <section class="screen screen--over" data-screen="gameover">
+          <div class="over">
+            <p class="over__kicker" id="overKicker">FLIGHT ENDED</p>
+            <h2 class="over__title">GAME OVER</h2>
+
+            <div class="over__score">
+              <span class="over__scoreValue" id="overScore">0</span>
+              <span class="over__scoreLabel">score</span>
+            </div>
+
+            <div class="over__meta">
+              <div class="stat">
+                <span class="stat__label">Best</span>
+                <span class="stat__value" id="overBest">0</span>
+              </div>
+              <div class="stat stat--divider" aria-hidden="true"></div>
+              <div class="stat">
+                <span class="stat__label">Sky</span>
+                <span class="stat__value stat__value--sm" id="overTheme">Gilded Reach</span>
+              </div>
+            </div>
+
+            <div class="over__banner" id="overBanner" hidden>
+              <span class="over__bannerGlow" aria-hidden="true"></span>
+              <span class="over__bannerText">NEW PERSONAL BEST</span>
+            </div>
+
+            <div class="over__unlock" id="overUnlock" hidden>
+              <span class="over__unlockIcon" aria-hidden="true">✦</span>
+              <span>New sky unlocked — <b id="overUnlockName">Storm Vale</b></span>
+            </div>
+
+            <div class="panel__stack">
+              <button class="btn btn--primary" data-action="retry" type="button">
+                <span class="btn__glow" aria-hidden="true"></span>
+                <span class="btn__label">FLY AGAIN</span>
+              </button>
+              <div class="menu__row">
+                <button class="btn btn--ghost" data-action="share" type="button">
+                  <span class="btn__label" id="shareLabel">Share</span>
+                </button>
+                <button class="btn btn--ghost" data-action="quit" type="button">
+                  <span class="btn__label">Menu</span>
+                </button>
+              </div>
+            </div>
+            <p class="panel__hint"><kbd>Space</kbd> to fly again</p>
+          </div>
+        </section>
+
+        <!-- ---------------------------- THEMES ---------------------------- -->
+        <section class="screen screen--themes" data-screen="themes">
+          <div class="panel panel--wide">
+            <h2 class="panel__title">SKIES</h2>
+            <p class="panel__sub">Reach the score to unlock a new world. Your sky shifts mid-flight as you climb.</p>
+            <div class="themes" id="themeList"></div>
+            <button class="btn btn--ghost" data-action="back" type="button">
+              <span class="btn__label">Back</span>
+            </button>
+          </div>
+        </section>
+
+        <!-- --------------------------- SETTINGS --------------------------- -->
+        <section class="screen screen--settings" data-screen="settings">
+          <div class="panel">
+            <h2 class="panel__title">SETTINGS</h2>
+            <div class="opts">
+              <label class="opt">
+                <span class="opt__label">Sound effects</span>
+                <input type="checkbox" data-setting="sfx" class="opt__box" />
+                <span class="opt__switch" aria-hidden="true"></span>
+              </label>
+              <label class="opt">
+                <span class="opt__label">Music</span>
+                <input type="checkbox" data-setting="music" class="opt__box" />
+                <span class="opt__switch" aria-hidden="true"></span>
+              </label>
+              <label class="opt">
+                <span class="opt__label">Screen shake</span>
+                <input type="checkbox" data-setting="shake" class="opt__box" />
+                <span class="opt__switch" aria-hidden="true"></span>
+              </label>
+              <label class="opt">
+                <span class="opt__label">Haptics</span>
+                <input type="checkbox" data-setting="haptics" class="opt__box" />
+                <span class="opt__switch" aria-hidden="true"></span>
+              </label>
+              <label class="opt">
+                <span class="opt__label">Reduced motion</span>
+                <input type="checkbox" data-setting="reducedMotion" class="opt__box" />
+                <span class="opt__switch" aria-hidden="true"></span>
+              </label>
+              <label class="opt">
+                <span class="opt__label">Show FPS</span>
+                <input type="checkbox" data-setting="showFps" class="opt__box" />
+                <span class="opt__switch" aria-hidden="true"></span>
+              </label>
+              <div class="opt opt--select">
+                <span class="opt__label">Graphics</span>
+                <select data-setting="quality" class="opt__select">
+                  <option value="auto">Auto</option>
+                  <option value="high">High</option>
+                  <option value="medium">Medium</option>
+                  <option value="low">Low</option>
+                </select>
+              </div>
+            </div>
+            <div class="panel__stack">
+              <button class="btn btn--ghost" data-action="back" type="button">
+                <span class="btn__label">Back</span>
+              </button>
+              <button class="btn btn--ghost btn--quiet" data-action="reset" type="button">
+                <span class="btn__label">Reset progress</span>
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <!-- --------------------------- ROTATE HINT ------------------------ -->
+        <div class="toast" id="toast" hidden><span id="toastText"></span></div>
+      </div>
+
+      <!-- Persistent in-run controls -->
+      <button
+        class="iconbtn iconbtn--pause"
+        id="pauseBtn"
+        type="button"
+        aria-label="Pause"
+        hidden
+      >
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <rect x="7" y="5" width="3.6" height="14" rx="1.4" />
+          <rect x="13.4" y="5" width="3.6" height="14" rx="1.4" />
+        </svg>
+      </button>
+      <button class="iconbtn iconbtn--mute" id="muteBtn" type="button" aria-label="Toggle sound">
+        <svg viewBox="0 0 24 24" aria-hidden="true" class="ico ico--on">
+          <path d="M4 9.5h3.2L12 5.4v13.2L7.2 14.5H4z" />
+          <path
+            d="M15.5 9.2a4 4 0 0 1 0 5.6M18 6.8a7.5 7.5 0 0 1 0 10.4"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+            stroke-linecap="round"
+          />
+        </svg>
+        <svg viewBox="0 0 24 24" aria-hidden="true" class="ico ico--off">
+          <path d="M4 9.5h3.2L12 5.4v13.2L7.2 14.5H4z" />
+          <path
+            d="M16 9.5l5 5M21 9.5l-5 5"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.9"
+            stroke-linecap="round"
+          />
+        </svg>
+      </button>
+    </div>
+
+    <noscript>
+      <div style="padding: 2rem; color: #e8ecf6; font: 500 16px/1.6 system-ui, sans-serif">
+        <h1>Aetherwing</h1>
+        <p>This game needs JavaScript enabled. Please turn it on and reload.</p>
+      </div>
+    </noscript>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

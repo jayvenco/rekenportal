@@ -1,0 +1,28 @@
+{
+  "name": "aetherwing",
+  "version": "1.0.0",
+  "description": "Aetherwing — a one-button cinematic flight arcade game. Glide an ancient sky drake through colossal floating monoliths.",
+  "type": "module",
+  "license": "MIT",
+  "keywords": [
+    "game",
+    "arcade",
+    "canvas",
+    "html5",
+    "typescript",
+    "vite",
+    "one-button"
+  ],
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "build:pages": "tsc --noEmit && vite build",
+    "preview": "vite preview --port 4173",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "terser": "^5.31.6",
+    "typescript": "^5.5.4",
+    "vite": "^5.4.2"
+  }
+}
