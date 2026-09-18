@@ -994,3 +994,260 @@ button {
   padding: 8px;
 }
 
+/* Nieuwe profielstartpagina: ronde profielen op een illustratieve achtergrond. */
+.pagina.profiel-start {
+  width: 100%;
+  max-width: none;
+  min-height: 100vh;
+  margin: 0;
+  padding: clamp(18px, 4vw, 56px);
+  display: grid;
+  place-items: center;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.2), rgba(246, 248, 252, 0.88)),
+    url("../img/profiel-achtergrond.png?v=1") center / cover no-repeat;
+}
+
+.profiel-start__shell {
+  width: min(960px, 100%);
+  padding: clamp(20px, 4vw, 38px);
+  border: 1px solid rgba(255, 255, 255, 0.62);
+  border-radius: 28px;
+  background: rgba(255, 255, 255, 0.78);
+  box-shadow: 0 24px 70px rgba(31, 41, 55, 0.18);
+  backdrop-filter: blur(16px);
+}
+
+.profiel-start__kop {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: clamp(24px, 4vw, 40px);
+}
+
+.profiel-start__logo-rij {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.profiel-start__logo {
+  width: 62px;
+  height: 62px;
+  border-radius: 18px;
+  box-shadow: 0 10px 24px rgba(31, 41, 55, 0.12);
+}
+
+.profiel-start__titel {
+  margin: 0;
+  font-size: clamp(30px, 5vw, 52px);
+  line-height: 1.05;
+  color: #17324d;
+}
+
+.profiel-start__subtitel {
+  margin: 8px 0 0;
+  color: #33506b;
+  font-size: clamp(17px, 2.2vw, 22px);
+  font-weight: 650;
+}
+
+.profiel-start__beheer,
+.profiel-start__herlaad {
+  border: 0;
+  border-radius: var(--radius-vol);
+  background: rgba(255, 255, 255, 0.86);
+  color: #23547a;
+  box-shadow: var(--schaduw-zacht);
+  cursor: pointer;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.profiel-start__beheer {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 10px 18px;
+}
+
+.profiel-start__herlaad {
+  margin-left: 8px;
+  padding: 8px 12px;
+  font-size: 15px;
+}
+
+.profiel-start__profielen {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: clamp(16px, 4vw, 34px);
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+}
+
+.profiel-start__profiel {
+  width: clamp(112px, 16vw, 150px);
+  min-height: 168px;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: #17324d;
+  cursor: pointer;
+  display: grid;
+  justify-items: center;
+  gap: 12px;
+}
+
+.profiel-start__cirkel {
+  width: clamp(104px, 15vw, 142px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  border: 7px solid rgba(255, 255, 255, 0.9);
+  background: linear-gradient(145deg, #ffffff, #eaf6ff);
+  box-shadow: 0 18px 34px rgba(31, 41, 55, 0.17);
+  font-size: clamp(44px, 7vw, 66px);
+  font-weight: 900;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.profiel-start__profiel:hover .profiel-start__cirkel,
+.profiel-start__profiel:focus-visible .profiel-start__cirkel {
+  transform: translateY(-5px) scale(1.03);
+  box-shadow: 0 24px 44px rgba(31, 41, 55, 0.22);
+}
+
+.profiel-start__profiel:focus-visible {
+  outline: 3px solid #23547a;
+  outline-offset: 8px;
+  border-radius: 24px;
+}
+
+.profiel-start__profiel--nieuw .profiel-start__cirkel {
+  background: linear-gradient(145deg, #fff8db, #69d891);
+  color: #1f6b3c;
+  font-size: clamp(60px, 9vw, 86px);
+  line-height: 1;
+}
+
+.profiel-start__profielnaam {
+  max-width: 100%;
+  padding: 7px 14px;
+  border-radius: var(--radius-vol);
+  background: rgba(255, 255, 255, 0.84);
+  box-shadow: var(--schaduw-zacht);
+  font-size: 18px;
+  font-weight: 850;
+  color: #17324d;
+  overflow-wrap: anywhere;
+}
+
+.profiel-start__status {
+  text-align: center;
+  margin: 0;
+  color: #33506b;
+  font-weight: 700;
+}
+
+.profiel-start__formulier {
+  max-width: 620px;
+  margin: 24px auto 0;
+  padding: clamp(18px, 3vw, 28px);
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: var(--schaduw-diep);
+}
+
+.profiel-start__formulier[hidden] {
+  display: none;
+}
+
+.profiel-start__formulier-titel {
+  margin-bottom: 18px;
+  color: #17324d;
+}
+
+.profiel-start__label {
+  display: block;
+  margin: 14px 0 8px;
+  color: #17324d;
+  font-weight: 800;
+}
+
+.profiel-start__naam-invoer {
+  width: 100%;
+  min-height: 56px;
+  padding: 10px 16px;
+  border: 2px solid #b9d7ef;
+  border-radius: 16px;
+  font-size: 22px;
+  color: #17324d;
+}
+
+.profiel-start__naam-invoer:focus-visible {
+  outline: 3px solid var(--kleur-primair);
+  outline-offset: 2px;
+}
+
+.profiel-start__avatar-rij {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.profiel-start__avatar-keuze {
+  width: 58px;
+  height: 58px;
+  border: 3px solid transparent;
+  border-radius: 50%;
+  background: #f6fbff;
+  box-shadow: var(--schaduw-zacht);
+  cursor: pointer;
+  font-size: 30px;
+}
+
+.profiel-start__avatar-keuze[aria-checked="true"] {
+  border-color: var(--kleur-primair);
+  background: var(--kleur-primair-licht);
+}
+
+.profiel-start__fout {
+  margin-top: 14px;
+  color: var(--kleur-fout);
+  font-weight: 800;
+}
+
+.profiel-start__acties {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 20px;
+}
+
+@media (max-width: 640px) {
+  .pagina.profiel-start {
+    align-items: start;
+    padding: 14px;
+  }
+
+  .profiel-start__shell {
+    border-radius: 22px;
+  }
+
+  .profiel-start__kop {
+    flex-direction: column;
+  }
+
+  .profiel-start__logo {
+    width: 52px;
+    height: 52px;
+  }
+
+  .profiel-start__profiel {
+    width: 104px;
+    min-height: 150px;
+  }
+}

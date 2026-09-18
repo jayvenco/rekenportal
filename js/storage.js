@@ -16,6 +16,7 @@ const API_BASE = (window.location.port === "8791" || window.location.port === "8
   : "/api";
 
 const SLEUTEL_ACTIEF_PROFIEL = "rekenportal_actief_profiel_id";
+let laatsteProfielenLaadfout = null;
 
 const STANDAARD_ALGEMENE_INSTELLINGEN = {
   geluid: false,
@@ -122,11 +123,18 @@ async function fetchJson(pad, opties = {}) {
 export async function listProfielen() {
   try {
     const resultaat = await fetchJson("/profielen");
+    laatsteProfielenLaadfout = null;
     return resultaat || [];
   } catch (fout) {
     console.error("Kon profielen niet ophalen:", fout);
+    laatsteProfielenLaadfout = fout;
     return [];
   }
+}
+
+/** Geeft de laatste fout bij het ophalen van profielen terug, of null na succes. */
+export function getLaatsteProfielenLaadfout() {
+  return laatsteProfielenLaadfout;
 }
 
 /** Maakt een nieuw profiel aan. Gooit de fout door zodat de UI kan reageren. */

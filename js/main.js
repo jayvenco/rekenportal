@@ -34,6 +34,7 @@ async function verwerkRoute() {
   const oefeningMatch = hash.match(/^#\/oefening\/(.+)$/);
 
   window.scrollTo(0, 0);
+  hoofdContainer.className = "pagina";
 
   // Cruciale gate: geen actief profiel en geen beheer-route? Toon de profielkiezer.
   if (hash !== "#/profielen" && hash !== "#/beheer" && hash !== "#/leerplan" && getActiefProfielId() === null) {
