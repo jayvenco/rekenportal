@@ -13,6 +13,8 @@ import { maakRaketAnimatie, toonEindAnimatie } from "../../utils/raketAnimatie.j
 import { maakVoortgangCirkels } from "../../utils/voortgangCirkels.js";
 import { bouwGetallenlijn, xNaarGetal } from "../../utils/getallenlijnSvg.js";
 import { maakRewardTracker, toonBadgeUnlocks, toonRewardResultaat, verversCoinCounter } from "../../utils/rewards.js";
+import { berekenPunten, slaSessieOp, toonPuntenAnimatie } from "../../utils/punten.js";
+import { toonPerfecteScoreAnimatie } from "../../utils/eindeAnimatie.js";
 
 const EXERCISE_ID = "getallenlijn";
 
