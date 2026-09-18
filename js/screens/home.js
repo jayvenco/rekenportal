@@ -44,7 +44,7 @@ export async function toonHomepage(container) {
   const titelBlok = document.createElement("div");
   titelBlok.className = "kop-balk__titel";
   const logoImg = document.createElement("img");
-  logoImg.src = "img/logo.png";
+  logoImg.src = "img/logo.png?v=3";
   logoImg.style.cssText = "height:48px;width:48px;border-radius:12px;vertical-align:middle;margin-right:10px;";
   logoImg.alt = "Rekenportal logo";
   const titel = document.createElement("h1");

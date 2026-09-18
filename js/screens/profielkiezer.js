@@ -76,7 +76,7 @@ export async function toonProfielkiezerScherm(container) {
   const logoRij = maakElement("div", "profiel-start__logo-rij");
   const logo = document.createElement("img");
   logo.className = "profiel-start__logo";
-  logo.src = "img/logo.png?v=2";
+  logo.src = "img/logo.png?v=3";
   logo.alt = "";
   logo.loading = "eager";
 
