@@ -158,7 +158,7 @@ export function toonRewardResultaat(container, rewardResult) {
   const bonusLabel = resultaat.bonusCoins >= 10 ? "PERFECT!" : resultaat.bonusCoins > 0 ? "BONUS!" : "POWER";
   blok.innerHTML = `
     <div class="reward-result__coins">
-      <span class="reward-result__coin">🪙</span>
+      <span class="reward-result__coin"><img src="img/coins/coin-lightning.png" alt="" class="coin-counter__munt--klein" /></span>
       <strong>+${formatCoins(resultaat.totalCoins)}</strong>
     </div>
     <p>${formatCoins(resultaat.baseCoins)} coins uit antwoorden</p>
@@ -235,7 +235,7 @@ export async function toonBadgeCollectie() {
       <header>
         <p>🏆 BADGE COLLECTION</p>
         <h2>Power level ${rewards.level}</h2>
-        <strong>🪙 ${formatCoins(rewards.coins)} coins</strong>
+        <strong><img src="img/coins/coin-lightning.png" alt="" class="coin-counter__munt coin-counter__munt--klein" /> ${formatCoins(rewards.coins)} coins</strong>
         <span>${rewards.earnedBadgeCount} / ${rewards.totalBadgeCount} badges verzameld</span>
       </header>
       <div class="badge-collection__grid">${badgesHtml}</div>

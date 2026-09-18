@@ -824,6 +824,15 @@ button {
   border-radius: 50%;
 }
 
+.coin-counter__munt--klein {
+  width: 24px;
+  height: 24px;
+  display: inline-block;
+  border-radius: 50%;
+  vertical-align: middle;
+  margin-right: 4px;
+}
+
 .coin-counter[hidden] {
   display: none;
 }
