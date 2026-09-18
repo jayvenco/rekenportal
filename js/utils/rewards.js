@@ -64,7 +64,7 @@ export function initialiseerCoinCounter() {
   coinCounterEl.type = "button";
   coinCounterEl.className = "coin-counter";
   coinCounterEl.setAttribute("aria-label", "Open badge collectie");
-  coinCounterEl.innerHTML = `<span class="coin-counter__coin">🪙</span><span class="coin-counter__waarde">0</span>`;
+  coinCounterEl.innerHTML = `<span class="coin-counter__coin"><img src="img/coins/coin-lightning.png" alt="" class="coin-counter__munt" /></span><span class="coin-counter__waarde">0</span>`;
   coinCounterEl.addEventListener("click", () => toonBadgeCollectie());
   document.body.appendChild(coinCounterEl);
   return coinCounterEl;
