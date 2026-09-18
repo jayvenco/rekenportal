@@ -16,6 +16,7 @@ import { maakVoortgangCirkels } from "../../utils/voortgangCirkels.js";
 import { maakRewardTracker, toonBadgeUnlocks, toonRewardResultaat, verversCoinCounter } from "../../utils/rewards.js";
 import { berekenPunten, slaSessieOp, toonPuntenAnimatie } from "../../utils/punten.js";
 import { toonPerfecteScoreAnimatie } from "../../utils/eindeAnimatie.js";
+import { maakRaketAnimatie, toonEindAnimatie } from "../../utils/raketAnimatie.js";
 
 const EXERCISE_ID = "complex";
 
@@ -127,10 +128,11 @@ export function startOefensessie(container, instellingen, opKlaar) {
       const tijdBesteed = Math.round(performance.now() - startTijdOpgave);
 
       if (isGoed) {
-        bezigMetFeedback = true;
-        aantalGoedTotaal += 1;
-        await recordAnswer({
-          exerciseId: EXERCISE_ID,
+            bezigMetFeedback = true;
+            aantalGoedTotaal += 1;
+            raket.goedAntwoord();
+
+            recordAnswer({
           correct: true,
           timeMs: tijdBesteed,
           meta: { ...huidigeOpgave.meta, pogingen: pogingNummer },

@@ -13,6 +13,7 @@ import { maakVoortgangCirkels } from "../../utils/voortgangCirkels.js";
 import { toonPerfecteScoreAnimatie } from "../../utils/eindeAnimatie.js";
 import { berekenPunten, slaSessieOp, toonPuntenAnimatie } from "../../utils/punten.js";
 import { maakRewardTracker, toonBadgeUnlocks, toonRewardResultaat, verversCoinCounter } from "../../utils/rewards.js";
+import { maakRaketAnimatie, toonEindAnimatie } from "../../utils/raketAnimatie.js";
 
 const EXERCISE_ID = "breuken";
 
@@ -271,6 +272,10 @@ export function toonOefeningScherm(container, instellingen) {
   const voortgangCirkels = maakVoortgangCirkels(container, instellingen.aantalOpgaven);
   const rewardTracker = maakRewardTracker(EXERCISE_ID, instellingen.aantalOpgaven);
 
+  // --- Nyan Cat animatie ---
+  const raket = maakRaketAnimatie(container, instellingen.aantalOpgaven);
+  raket.element.style.marginBottom = "10px";
+
   // --- Vraagvlak ---
   const vraagVlak = document.createElement("div");
   vraagVlak.className = "opgave-vraag";
@@ -332,6 +337,7 @@ export function toonOefeningScherm(container, instellingen) {
     if (isGoed) {
       bezigMetFeedback = true;
       aantalGoedTotaal += 1;
+      raket.goedAntwoord();
 
       recordAnswer({
         exerciseId: EXERCISE_ID,
@@ -359,6 +365,7 @@ export function toonOefeningScherm(container, instellingen) {
     } else if (pogingNummer === 1) {
       // Eerste poging fout: nog een kans
       pogingNummer = 2;
+      raket.foutAntwoord();
       rewardTracker.registreerFout();
       feedbackVlak.className = "feedback-vlak feedback-vlak--fout";
       feedbackVlak.textContent = `${geefFoutmelding()} Probeer het nog eens.`;
@@ -371,6 +378,7 @@ export function toonOefeningScherm(container, instellingen) {
     } else {
       // Tweede poging ook fout: toon juiste antwoord
       bezigMetFeedback = true;
+      raket.foutAntwoord();
       recordAnswer({
         exerciseId: EXERCISE_ID,
         correct: false,
@@ -402,6 +410,7 @@ export function toonOefeningScherm(container, instellingen) {
     titel.textContent = percentageGoed >= 70 ? "Goed gedaan!" : "Bijna! Nog even oefenen.";
     kaart.appendChild(titel);
 
+    const raketEind = toonEindAnimatie(kaart, percentageGoed);
     const resultaatTekst = document.createElement("p");
     resultaatTekst.style.fontSize = "24px";
     resultaatTekst.style.fontWeight = "700";
