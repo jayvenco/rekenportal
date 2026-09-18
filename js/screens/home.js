@@ -142,7 +142,16 @@ export async function toonHomepage(container) {
       for (const badge of rewards.badges.slice(0, 10)) {
         const item = document.createElement("span");
         item.className = `hero-profile-card__badge ${badge.earned ? "" : "hero-profile-card__badge--locked"}`;
-        item.textContent = badge.earned ? badge.icon : "🔒";
+        if (badge.earned && badge.visual) {
+          const img = document.createElement("img");
+          img.className = "badge-icon-img";
+          img.src = badge.visual;
+          img.alt = "";
+          img.loading = "lazy";
+          item.appendChild(img);
+        } else {
+          item.textContent = badge.earned ? badge.icon : "🔒";
+        }
         item.title = badge.name;
         badgesRij.appendChild(item);
       }

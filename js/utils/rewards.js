@@ -16,6 +16,18 @@ function formatCoins(waarde) {
   return Number.isInteger(getal) ? String(getal) : getal.toFixed(1);
 }
 
+function badgeIconHtml(badge, { locked = false } = {}) {
+  if (locked) return "🔒";
+  if (badge.visual) {
+    return `<img class="badge-icon-img" src="${badge.visual}" alt="" loading="lazy">`;
+  }
+  return badge.icon || "🏆";
+}
+
+function vulBadgeIcoon(container, badge) {
+  container.innerHTML = badgeIconHtml(badge);
+}
+
 async function fetchJson(pad, opties = {}) {
   const response = await fetch(`${API_BASE}${pad}`, {
     headers: { "Content-Type": "application/json", ...(opties.headers || {}) },
@@ -180,7 +192,7 @@ export function toonBadgeUnlocks(badges) {
 
     function toonHuidigeBadge() {
       const badge = badges[index];
-      icoon.textContent = badge.icon;
+      vulBadgeIcoon(icoon, badge);
       icoon.dataset.rarity = badge.rarity;
       titel.textContent = badge.name;
       tekst.textContent = badge.description || "Badge toegevoegd aan jouw collectie!";
@@ -209,7 +221,7 @@ export async function toonBadgeCollectie() {
   overlay.className = "badge-collection";
   const badgesHtml = rewards.badges.map((badge) => `
     <button type="button" class="badge-card ${badge.earned ? "badge-card--earned" : "badge-card--locked"}" data-rarity="${badge.rarity}">
-      <span class="badge-card__icon">${badge.earned ? badge.icon : "🔒"}</span>
+      <span class="badge-card__icon">${badgeIconHtml(badge, { locked: !badge.earned })}</span>
       <strong>${badge.name}</strong>
       <small>${badge.rarity}</small>
       <span>${badge.description}</span>

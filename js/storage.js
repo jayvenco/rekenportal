@@ -19,7 +19,7 @@ const SLEUTEL_ACTIEF_PROFIEL = "rekenportal_actief_profiel_id";
 let laatsteProfielenLaadfout = null;
 
 const STANDAARD_ALGEMENE_INSTELLINGEN = {
-  geluid: false,
+  geluid: true,
 };
 
 // -----------------------------------------------------------------------------
