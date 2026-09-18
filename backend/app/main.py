@@ -46,37 +46,13 @@ def health():
 
 
 # -----------------------------------------------------------------------------
-# Catch-all route: serveert frontend statische bestanden.
-# API-routes (/api/...) zijn hierboven geregistreerd en hebben prioriteit
-# omdat ze eerder in de route-tabel staan.
+# Static files: serveert frontend via FastAPI's StaticFiles (betrouwbaar).
+# Staat na alle API-routes zodat /api/* eerst matcht.
+# html=True zorgt voor SPA-fallback naar index.html.
 # -----------------------------------------------------------------------------
 from pathlib import Path
 
-from fastapi.responses import FileResponse, HTMLResponse
+from fastapi.staticfiles import StaticFiles
 
 FRONTEND_DIR = Path(__file__).resolve().parent.parent.parent
-
-
-@app.get("/{full_path:path}")
-async def serve_frontend(full_path: str):
-    """Serveert frontend statische bestanden.
-    Als het bestand niet bestaat, valt het terug op index.html (voor SPA-routing).
-    """
-    # Lege path = root, serveer index.html direct
-    if not full_path:
-        return FileResponse(FRONTEND_DIR / "index.html")
-
-    # Veiligheid: nooit backend/ of path traversal serveren
-    if full_path.startswith("backend/") or ".." in full_path or full_path.startswith("/"):
-        return HTMLResponse("Not Found", status_code=404)
-
-    file_path = (FRONTEND_DIR / full_path).resolve()
-    # Extra check: moet binnen FRONTEND_DIR blijven
-    if not str(file_path).startswith(str(FRONTEND_DIR.resolve())):
-        return HTMLResponse("Forbidden", status_code=403)
-
-    if file_path.is_file():
-        return FileResponse(file_path)
-
-    # SPA fallback
-    return FileResponse(FRONTEND_DIR / "index.html")
+app.mount("/", StaticFiles(directory=str(FRONTEND_DIR), html=True), name="frontend")
