@@ -20,6 +20,7 @@ import { breukenOefening } from "./exercises/breuken/index.js";
 import { complexOefening } from "./exercises/complex/index.js";
 import { metenOefening } from "./exercises/meten/index.js";
 import { robotOefening } from "./exercises/robot/index.js";
+import { redactiesommenOefening } from "./exercises/redactiesommen/index.js";
 import { statistiekOefening } from "./exercises/statistiek/index.js";
 import { procentenOefening } from "./exercises/procenten/index.js";
 import { groteGetallenOefening } from "./exercises/grote-getallen/index.js";
@@ -107,6 +108,16 @@ export const EXERCISES = [
     ...getallenOefening,
     groep: 7,
     instelbareOpties: "Vraagtype(s) (negatief-plus, negatief-min, komma-keer, komma-delen), aantal opgaven",
+  },
+  {
+    ...redactiesommenOefening,
+    groep: 7,
+    instelbareOpties: "Aantal opgaven (5, 10, 20)",
+  },
+  {
+    ...redactiesommenOefening,
+    groep: 8,
+    instelbareOpties: "Aantal opgaven (5, 10, 20)",
   },
 ];
 
