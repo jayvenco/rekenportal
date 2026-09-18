@@ -1717,6 +1717,111 @@ button {
   0% { transform: translateX(0); }
   100% { transform: translateX(120vw); }
 }
+
+/* Nyan Cat — CSS-regenboogkat */
+.nyan-cat {
+  position: absolute; z-index: 3;
+  width: 140px; height: 100px;
+  transition: left 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Regenboog (scrollende strepen achter kat) */
+.nyan-cat__regenboog {
+  position: absolute; left: -40px; top: 16px;
+  width: 180px; height: 12px; overflow: hidden;
+  display: flex;
+  animation: nyan-regenboog 0.6s linear infinite;
+}
+.nyan-cat__streep {
+  width: 16px; height: 100%; flex-shrink: 0;
+}
+.nyan-cat__streep:nth-child(1) { background: #f00; }
+.nyan-cat__streep:nth-child(2) { background: #f90; }
+.nyan-cat__streep:nth-child(3) { background: #ff0; }
+.nyan-cat__streep:nth-child(4) { background: #3f0; }
+.nyan-cat__streep:nth-child(5) { background: #09f; }
+.nyan-cat__streep:nth-child(6) { background: #639; }
+@keyframes nyan-regenboog {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-96px); }
+}
+
+/* Kat-lichaam */
+.nyan-cat__kat {
+  position: absolute; left: 20px; top: 20px;
+  width: 90px; height: 70px;
+}
+
+/* Kop (grijs met ogen) */
+.nyan-cat__kop {
+  position: absolute; right: -8px; top: -8px;
+  width: 32px; height: 28px;
+  border-radius: 50% 50% 40% 40%;
+  background: #a0a0a8;
+  z-index: 2;
+}
+.nyan-cat__kop::before {
+  content: ""; position: absolute;
+  width: 8px; height: 5px;
+  background: #f8f; border-radius: 50%;
+  left: 4px; top: 8px;
+}
+.nyan-cat__kop::after {
+  content: ""; position: absolute;
+  width: 6px; height: 5px;
+  background: #f8f; border-radius: 50%;
+  right: 4px; top: 8px;
+}
+
+/* Lijf (poptart) */
+.nyan-cat__lijf {
+  position: absolute; left: 4px; top: 18px;
+  width: 58px; height: 36px;
+  border-radius: 4px;
+  background: linear-gradient(135deg, #f9a, #f68, #f9a, #f68);
+  z-index: 1;
+}
+
+/* Staart */
+.nyan-cat__staart {
+  position: absolute; left: -14px; top: -2px;
+  width: 20px; height: 20px;
+}
+.nyan-cat__staart .nyan-cat__sprite {
+  width: 100%; height: 100%;
+  background: linear-gradient(135deg, #f9a, #f68);
+  clip-path: polygon(0 20%, 100% 0, 100% 80%, 0 100%);
+  animation: nyan-staart 0.3s ease-in-out infinite alternate;
+}
+@keyframes nyan-staart {
+  0% { transform: rotate(-15deg); }
+  100% { transform: rotate(15deg); }
+}
+
+/* Pootjes */
+.nyan-cat__pootjes {
+  position: absolute; left: 12px; bottom: -2px;
+  width: 40px; height: 10px;
+  display: flex; gap: 6px;
+}
+.nyan-cat__pootjes .nyan-cat__sprite {
+  width: 12px; height: 10px;
+  background: #a0a0a8;
+  border-radius: 0 0 4px 4px;
+  animation: nyan-pootjes 0.2s ease-in-out infinite alternate;
+}
+.nyan-cat__pootjes .nyan-cat__sprite:last-child {
+  animation-delay: 0.1s;
+}
+@keyframes nyan-pootjes {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-4px); }
+}
+
+/* Sterren bij Nyan (over scene) */
+.monster-hero__scene .nyan-cat ~ .monster-hero__speedlines {
+  opacity: 0.08;
+}
 .monster-hero__speedlines {
   position: absolute; inset: 0;
   opacity: 0.22;
@@ -1816,6 +1921,36 @@ button {
   35% { transform: scale(1.18); }
   65% { transform: scale(0.94); }
   100% { transform: scale(1); }
+}
+
+/* Powerup Nyan Cat */
+.nyan-cat.nyan-cat--powerup {
+  animation: nyan-powerup 0.6s ease-out;
+}
+.nyan-cat.nyan-cat--powerup .nyan-cat__kat {
+  filter: drop-shadow(0 0 16px rgba(255,216,60,0.9)) brightness(1.4);
+}
+@keyframes nyan-powerup {
+  0% { transform: scale(1); }
+  35% { transform: scale(1.18); }
+  65% { transform: scale(0.94); }
+  100% { transform: scale(1); }
+}
+
+/* Nyan Cat geraakt */
+.nyan-cat.nyan-cat--hit {
+  animation: nyan-hit 0.55s ease-out;
+}
+.nyan-cat.nyan-cat--hit .nyan-cat__kat {
+  filter: drop-shadow(0 0 12px rgba(255,77,77,0.8)) brightness(0.7) hue-rotate(340deg);
+}
+@keyframes nyan-hit {
+  0% { transform: translateX(0); }
+  15% { transform: translateX(10px) rotate(4deg); }
+  30% { transform: translateX(-14px) rotate(-5deg); }
+  50% { transform: translateX(6px) rotate(2deg); }
+  70% { transform: translateX(-4px) rotate(-1deg); }
+  100% { transform: translateX(0); }
 }
 
 /* Heldin geraakt */
