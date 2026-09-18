@@ -12,6 +12,15 @@
   <main id="app" class="pagina" aria-live="polite">
     <!-- De inhoud van elk scherm wordt hier door main.js ingevoegd. -->
   </main>
+
+  <!-- Floating muziek-control bar (altijd zichtbaar, ongeacht scherm) -->
+  <div id="muziek-bar" class="muziek-bar muziek-bar--hidden" role="region" aria-label="Muziekbediening">
+    <button id="muziek-toggle" class="muziek-bar__knop" aria-label="Muziek aan/uit">🎵</button>
+    <span id="muziek-track" class="muziek-bar__track">–</span>
+    <button id="muziek-mute" class="muziek-bar__knop muziek-bar__knop--klein" aria-label="Dempen">🔊</button>
+    <input type="range" id="muziek-volume" class="muziek-bar__slider" min="0" max="100" value="50" aria-label="Volume" />
+  </div>
+
   <script type="module" src="js/main.js?v=11"></script>
 </body>
 </html>

@@ -26,6 +26,12 @@ import { toonProfielkiezerScherm } from "./screens/profielkiezer.js";
 import { toonBeheerScherm } from "./screens/beheer.js";
 import { toonLeerplanScherm } from "./screens/leerplan.js";
 import { getActiefProfielId } from "./storage.js";
+import {
+  startMuziek, stopMuziek, setVolume, getVolume,
+  toggleMute, isMuted, laadMuziek,
+  volgendeTrack, vorigeTrack, toggleShuffle,
+  getHuidigeTrackNaam, getTotaalTracks, getHuidigeTrackIndex,
+} from "./utils/muziek.js";
 import { initialiseerCoinCounter, verversCoinCounter } from "./utils/rewards.js";
 
 const hoofdContainer = document.getElementById("app");
@@ -71,4 +77,89 @@ window.addEventListener("DOMContentLoaded", verwerkRoute);
 // (bv. bij een script met defer dat na het event laadt in sommige browsers).
 if (document.readyState === "interactive" || document.readyState === "complete") {
   verwerkRoute();
+}
+
+// -----------------------------------------------------------------------------
+// Floating muziek-bar initialisatie (altijd zichtbaar na load)
+// -----------------------------------------------------------------------------
+function initMuziekBar() {
+  const bar = document.getElementById("muziek-bar");
+  const toggle = document.getElementById("muziek-toggle");
+  const mute = document.getElementById("muziek-mute");
+  const track = document.getElementById("muziek-track");
+  const vol = document.getElementById("muziek-volume");
+
+  if (!bar || !toggle || !mute || !track || !vol) return;
+
+  let muziekAan = false;
+
+  toggle.textContent = "🎵";
+  toggle.title = "Muziek starten";
+  bar.classList.add("muziek-bar--hidden");
+  mute.textContent = "🔊";
+  vol.value = String(getVolume());
+
+  // Toon bar na 1 seconde (kleine vertraging voor UX)
+  setTimeout(() => bar.classList.remove("muziek-bar--hidden"), 1000);
+
+  function updateTrackInfo() {
+    if (muziekAan) {
+      track.textContent = `${getHuidigeTrackNaam()} (${getHuidigeTrackIndex() + 1}/${getTotaalTracks()})`;
+    } else {
+      track.textContent = "–";
+    }
+  }
+
+  toggle.addEventListener("click", async () => {
+    if (!muziekAan) {
+      const geladen = await laadMuziek();
+      if (geladen) {
+        startMuziek();
+        muziekAan = true;
+        toggle.textContent = "⏸";
+        toggle.title = "Muziek stoppen";
+        updateTrackInfo();
+      }
+    } else {
+      stopMuziek();
+      muziekAan = false;
+      toggle.textContent = "🎵";
+      toggle.title = "Muziek starten";
+      updateTrackInfo();
+    }
+  });
+
+  mute.addEventListener("click", () => {
+    const muted = toggleMute();
+    mute.textContent = muted ? "🔇" : "🔊";
+  });
+
+  vol.addEventListener("input", () => {
+    setVolume(Number(vol.value));
+    if (Number(vol.value) === 0) {
+      mute.textContent = "🔇";
+    } else if (isMuted()) {
+      toggleMute();
+      mute.textContent = "🔊";
+    }
+  });
+
+  // Update track info als een track wisselt (polling-vrij: via interval voor simpelheid)
+  let laatsteTrack = "";
+  setInterval(() => {
+    if (muziekAan) {
+      const huidig = getHuidigeTrackNaam();
+      if (huidig !== laatsteTrack) {
+        laatsteTrack = huidig;
+        updateTrackInfo();
+      }
+    }
+  }, 1000);
+}
+
+// Start muziekbar zodra DOM klaar is
+if (document.readyState === "complete") {
+  initMuziekBar();
+} else {
+  document.addEventListener("DOMContentLoaded", initMuziekBar);
 }

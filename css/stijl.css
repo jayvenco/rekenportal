@@ -2197,3 +2197,77 @@ button {
   border: 3px solid var(--kleur-oppervlak);
   cursor: pointer;
 }
+
+/* Floating muziek-control bar */
+.muziek-bar {
+  position: fixed;
+  bottom: 16px;
+  right: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  background: var(--kleur-oppervlak);
+  border: 2px solid var(--kleur-rand);
+  border-radius: 40px;
+  box-shadow: 0 4px 16px var(--kleur-schaduw);
+  z-index: 100;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+.muziek-bar--hidden {
+  opacity: 0;
+  transform: translateY(10px);
+  pointer-events: none;
+}
+.muziek-bar__knop {
+  background: none;
+  border: none;
+  font-size: 22px;
+  cursor: pointer;
+  padding: 4px;
+  line-height: 1;
+  border-radius: 50%;
+  transition: background 0.2s;
+}
+.muziek-bar__knop:hover {
+  background: var(--kleur-rand);
+}
+.muziek-bar__knop--klein {
+  font-size: 16px;
+}
+.muziek-bar__track {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--kleur-tekst-zacht);
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.muziek-bar__slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 60px;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--kleur-rand);
+  outline: none;
+  cursor: pointer;
+}
+.muziek-bar__slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--kleur-primair);
+  border: 2px solid var(--kleur-oppervlak);
+  cursor: pointer;
+}
+.muziek-bar__slider::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--kleur-primair);
+  border: 2px solid var(--kleur-oppervlak);
+  cursor: pointer;
+}
