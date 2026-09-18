@@ -307,6 +307,9 @@ export function maakRaketAnimatie(container, doelAantal) {
       fn(s.rotsWrap);
       toonPartikels(s.scene, { aantal: 14, symbols: ["★", "✦", "◆", "✧", "✨"] });
       s.bubble.textContent = kies(["Hyaa!", "Take that!", "Whoosh!", "Boom!"]);
+      // Powerup: heldin gloeit + pulseert bij elk goed antwoord
+      animatieHerstart(s.hero, "math-hero--powerup");
+      setTimeout(() => s.hero.classList.remove("math-hero--powerup"), 900);
       update();
     },
     foutAntwoord() {
