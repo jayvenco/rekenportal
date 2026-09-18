@@ -21,6 +21,9 @@ import { complexOefening } from "./exercises/complex/index.js";
 import { metenOefening } from "./exercises/meten/index.js";
 import { robotOefening } from "./exercises/robot/index.js";
 import { statistiekOefening } from "./exercises/statistiek/index.js";
+import { procentenOefening } from "./exercises/procenten/index.js";
+import { groteGetallenOefening } from "./exercises/grote-getallen/index.js";
+import { getallenOefening } from "./exercises/getallen/index.js";
 
 /**
  * Elke oefening in deze lijst heeft de vorm:
@@ -89,6 +92,21 @@ export const EXERCISES = [
     ...statistiekOefening,
     groep: 8,
     instelbareOpties: "Categorie (grafieken, gemiddelde/mediaan/modus, tabellen, turven), aantal opgaven",
+  },
+  {
+    ...procentenOefening,
+    groep: 7,
+    instelbareOpties: "Vraagtype(s) (procent-van, toename/afname, breuk→%, korting), aantal opgaven",
+  },
+  {
+    ...groteGetallenOefening,
+    groep: 7,
+    instelbareOpties: "Vraagtype(s) (naar-getal, plus-groot, hoeveel-nullen), aantal opgaven",
+  },
+  {
+    ...getallenOefening,
+    groep: 7,
+    instelbareOpties: "Vraagtype(s) (negatief-plus, negatief-min, komma-keer, komma-delen), aantal opgaven",
   },
 ];
 

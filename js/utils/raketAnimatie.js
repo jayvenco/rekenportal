@@ -1,18 +1,17 @@
 // utils/raketAnimatie.js
 // -----------------------------------------------------------------------------
-// Nyan Cat vs Monster: regenboog-kat vliegt naar rechts, monster op rechts.
-// Goed: powerup + boost. Fout: laser. Laatste opgave: monster kapot.
+// Nyan Cat Jump — kat springt over muur bij goed, botst bij fout.
+// Helemaal nieuw, alleen de nyan-cat.css wordt hergebruikt.
 // -----------------------------------------------------------------------------
 
 const CHECKPOINTS = [
-  { grens: 25, tekst: "NYAN STARTER" },
-  { grens: 50, tekst: "RAINBOW CAT" },
-  { grens: 75, tekst: "SUPER NYAN" },
+  { grens: 25, tekst: "KITTEN STEPS" },
+  { grens: 50, tekst: "JUMPER CAT" },
+  { grens: 75, tekst: "ACRO-CAT" },
   { grens: 100, tekst: "MATH MASTER" },
 ];
 
 const PARTIKEL_KLEUREN = ["#2f6ed4", "#38b26a", "#f5b942", "#f07a3d", "#9b5de5"];
-const REGENBOOG = ["#f00", "#f90", "#ff0", "#3f0", "#09f", "#639"];
 
 function begrens(g, mi, ma) { return Math.max(mi, Math.min(ma, g)); }
 function el(t, c, txt = "") {
@@ -24,12 +23,11 @@ function el(t, c, txt = "") {
 function kies(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
 
 // -----------------------------------------------------------------------
-// Nyan Cat — CSS-only regenboog kat
+// Cat (gebruikt nyan-cat.css via nyanCat())
 // -----------------------------------------------------------------------
 function nyanCat() {
   const w = el("div", "nyan-cat");
   w.setAttribute("aria-hidden", "true");
-  // Build stars (12 li with i)
   const sterren = document.createElement("ul");
   sterren.className = "nyan-stars";
   for (let s = 0; s < 12; s++) {
@@ -51,170 +49,110 @@ function nyanCat() {
 }
 
 // -----------------------------------------------------------------------
-// SVG: Monster (rechts, dreigend)
+// SVG: Bakstenen muur
 // -----------------------------------------------------------------------
-function svgMonster() {
-  const w = el("div", "monster-hero__monster");
-  w.innerHTML = `
-    <svg class="monster-hero__monster-svg" viewBox="0 0 160 160" role="img">
-      <defs>
-        <radialGradient id="monsterEye"><stop offset="0%" stop-color="#ff4d4d"/><stop offset="100%" stop-color="#8b0000"/></radialGradient>
-        <radialGradient id="monsterBelly"><stop offset="0%" stop-color="#5a3a2a"/><stop offset="100%" stop-color="#2a1a0a"/></radialGradient>
-      </defs>
-      <!-- Body -->
-      <ellipse cx="80" cy="100" rx="52" ry="40" fill="#3a2a1a" />
-      <ellipse cx="80" cy="105" rx="40" ry="30" fill="url(#monsterBelly)" />
-      <!-- Legs -->
-      <path d="M48 132 L36 160" stroke="#3a2a1a" stroke-width="18" stroke-linecap="round" />
-      <path d="M112 132 L124 160" stroke="#3a2a1a" stroke-width="18" stroke-linecap="round" />
-      <!-- Arms -->
-      <path d="M32 92 L12 112 L6 106" stroke="#3a2a1a" stroke-width="12" stroke-linecap="round" stroke-linejoin="round" />
-      <path d="M128 92 L148 112 L154 106" stroke="#3a2a1a" stroke-width="12" stroke-linecap="round" stroke-linejoin="round" />
-      <!-- Head -->
-      <ellipse cx="80" cy="54" rx="40" ry="34" fill="#4a3a2a" />
-      <!-- Horns -->
-      <path d="M52 36 L42 10 L62 26Z" fill="#2a1a0a" />
-      <path d="M108 36 L118 10 L98 26Z" fill="#2a1a0a" />
-      <!-- Eyes -->
-      <ellipse cx="62" cy="52" rx="11" ry="13" fill="url(#monsterEye)" />
-      <ellipse cx="98" cy="52" rx="11" ry="13" fill="url(#monsterEye)" />
-      <circle cx="64" cy="48" r="3" fill="#fff" />
-      <circle cx="100" cy="48" r="3" fill="#fff" />
-      <!-- Mouth -->
-      <path d="M60 70 Q80 80 100 70" fill="none" stroke="#1a0a00" stroke-width="4" stroke-linecap="round" />
-      <!-- Teeth -->
-      <path d="M68 70 L72 76 L76 70" fill="#fff" />
-      <path d="M84 70 L88 76 L92 70" fill="#fff" />
-      <!-- Scar -->
-      <path d="M74 40 L78 44 L74 48" stroke="#c42d55" stroke-width="2" fill="none" />
-    </svg>
+function svgMuur() {
+  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  svg.setAttribute("viewBox", "0 0 80 120");
+  svg.setAttribute("width", "100%");
+  svg.setAttribute("height", "100%");
+  svg.style.cssText = "display:block;";
+  svg.innerHTML = `
+    <defs>
+      <pattern id="baksteen" patternUnits="userSpaceOnUse" width="20" height="10">
+        <rect width="20" height="10" fill="#b85a3a" stroke="#7a3a2a" stroke-width="1"/>
+        <rect x="-10" y="5" width="20" height="10" fill="#b85a3a" stroke="#7a3a2a" stroke-width="1"/>
+      </pattern>
+    </defs>
+    <rect width="80" height="120" fill="url(#baksteen)" rx="3"/>
+    <rect width="80" height="120" fill="none" stroke="#5a2a1a" stroke-width="3" rx="3"/>
   `;
-  return w;
+  return svg;
 }
 
 // -----------------------------------------------------------------------
 // Scene bouwen
 // -----------------------------------------------------------------------
 function bouwScene() {
-  const blok = el("div", "monster-hero");
+  const blok = el("div", "cat-wall");
   blok.setAttribute("role", "img");
-  blok.setAttribute("aria-label", "Superheldin vliegt naar monster.");
+  blok.setAttribute("aria-label", "Nyan Cat springt over muur.");
 
-  const scene = el("div", "monster-hero__scene");
-  const speedlines = el("div", "monster-hero__speedlines");
+  const scene = el("div", "cat-wall__scene");
+  scene.style.cssText = "position:relative;height:200px;border-radius:var(--radius-md);overflow:hidden;background:linear-gradient(180deg,#87ceeb 0%,#b0e0ff 60%,#5a8a3a 88%,#3a6a2a 100%);";
 
-  // Nyan Cat (links starten)
-  const hero = nyanCat();
-  hero.style.left = "8%";
+  // Ground
+  const ground = el("div", "cat-wall__ground");
+  ground.style.cssText = "position:absolute;bottom:0;left:0;right:0;height:28%;background:linear-gradient(180deg,#5a8a3a,#3a6a2a);border-top:3px solid #2a5a1a;";
 
-  // Sterren (ruimte bovenin)
-  const sterren = el("div", "monster-hero__sterren");
-
-  // Wolken (bewegend)
-  const wolken = el("div", "monster-hero__wolken");
-  for (let i = 0; i < 4; i++) {
-    const w = el("div", "monster-hero__wolk");
-    w.style.cssText = `top:${20 + i * 42}%;left:${-20 + i * 30}%;opacity:${0.25 + Math.random() * 0.25};animation-delay:${(i * 1.5).toFixed(1)}s;`;
-    wolken.appendChild(w);
+  // Clouds
+  const clouds = el("div");
+  clouds.style.cssText = "position:absolute;inset:0;overflow:hidden;pointer-events:none;";
+  for (let i = 0; i < 3; i++) {
+    const c = el("div");
+    c.style.cssText = `position:absolute;width:${60+i*20}px;height:${18+i*6}px;border-radius:999px;background:rgba(255,255,255,0.5);top:${8+i*25}%;left:${-20+i*40}%;animation:cat-cloud 10s linear infinite;animation-delay:${i*3}s;`;
+    clouds.appendChild(c);
   }
 
-  // Monster (rechts)
-  const monster = svgMonster();
-  monster.classList.add("monster-hero__monster-wrap");
+  // Cat (links, start)
+  const cat = nyanCat();
+  cat.style.cssText = "position:absolute;left:8%;bottom:30%;z-index:3;width:160px;height:120px;";
 
-  // Laser (onzichtbaar, wordt getoond bij fout)
-  const laser = el("div", "monster-hero__laser");
+  // Wall (mid)
+  const muurWrap = el("div", "cat-wall__muur");
+  muurWrap.style.cssText = "position:absolute;left:46%;bottom:26%;width:60px;height:90px;z-index:2;transition:transform 0.3s;";
+  muurWrap.appendChild(svgMuur());
 
-  const badge = el("div", "monster-hero__badge");
-  const bubble = el("div", "monster-hero__bubble", "Vlieg erheen!");
+  // Badge
+  const badge = el("div", "cat-wall__badge");
+  badge.style.cssText = "position:absolute;left:50%;top:8%;z-index:6;padding:6px 18px;border-radius:999px;background:#2a4fc9;color:#fff;font-size:14px;font-weight:900;transform:translateX(-50%) scale(0.82);opacity:0;pointer-events:none;";
 
-  scene.append(sterren, wolken, speedlines, monster, laser, hero, badge, bubble);
-  blok.appendChild(scene);
+  scene.append(clouds, ground, muurWrap, cat, badge);
 
-  // Meter onder scene
-  const meter = el("div", "monster-hero__meter");
+  // Meter
+  const meter = el("div", "cat-wall__meter");
+  meter.style.cssText = "padding:10px 0;";
+  const pStyle = "font-size:13px;font-weight:800;color:#5b6472;";
   meter.innerHTML = `
-    <div class="monster-hero__meter-top">
-      <span class="monster-hero__label">MATH POWER</span>
-      <span class="monster-hero__percent">0%</span>
+    <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px;">
+      <span style="${pStyle}">MATH POWER</span>
+      <span class="cat-wall__pct" style="font-size:20px;font-weight:800;color:#2a4fc9;">0%</span>
     </div>
-    <div class="monster-hero__bar">
-      <div class="monster-hero__bar-fill"></div>
-      <div class="monster-hero__checkpoint monster-hero__checkpoint--25"></div>
-      <div class="monster-hero__checkpoint monster-hero__checkpoint--50"></div>
-      <div class="monster-hero__checkpoint monster-hero__checkpoint--75"></div>
-      <div class="monster-hero__checkpoint monster-hero__checkpoint--100"></div>
+    <div style="position:relative;height:12px;border-radius:6px;background:#e2e8f0;overflow:hidden;">
+      <div class="cat-wall__fill" style="height:100%;width:0%;border-radius:6px;background:linear-gradient(90deg,#38b26a,#ffd83d,#ff785a);transition:width 0.4s ease;"></div>
     </div>
-    <div class="monster-hero__meta">
-      <span class="monster-hero__rank">HELD IN TRAINING</span>
-      <span class="monster-hero__count">0 / 1 goed</span>
+    <div style="display:flex;justify-content:space-between;margin-top:4px;">
+      <span class="cat-wall__rank" style="font-size:13px;font-weight:700;color:#5b6472;">KITTEN STEPS</span>
+      <span class="cat-wall__count" style="font-size:13px;font-weight:700;color:#5b6472;">0 / 1 goed</span>
     </div>
   `;
+  blok.appendChild(scene);
   blok.appendChild(meter);
 
   return {
-    blok, hero, scene, monster, laser, badge, bubble,
-    percent: meter.querySelector(".monster-hero__percent"),
-    rank: meter.querySelector(".monster-hero__rank"),
-    count: meter.querySelector(".monster-hero__count"),
-    fill: meter.querySelector(".monster-hero__bar-fill"),
+    blok, cat, scene, muurWrap, badge,
+    percent: meter.querySelector(".cat-wall__pct"),
+    rank: meter.querySelector(".cat-wall__rank"),
+    count: meter.querySelector(".cat-wall__count"),
+    fill: meter.querySelector(".cat-wall__fill"),
   };
 }
 
 // -----------------------------------------------------------------------
 // Animaties
 // -----------------------------------------------------------------------
-function animHerstart(el, cls) {
-  el.classList.remove(cls);
-  void el.offsetWidth;
-  el.classList.add(cls);
-}
+function animHerstart(e, c) { e.classList.remove(c); void e.offsetWidth; e.classList.add(c); }
 
 function toonPartikels(laag, opties = {}) {
   const aant = opties.aantal ?? 12;
-  const sym = opties.symbols ?? ["★", "✦", "◆", "⚡"];
+  const sym = opties.symbols ?? ["★","✦","◆","⚡","✨"];
   for (let i = 0; i < aant; i++) {
     const p = document.createElement("span");
-    p.className = "monster-hero__particle";
     p.textContent = sym[i % sym.length];
-    p.style.cssText = `left:${20+Math.random()*60}%;top:${30+Math.random()*40}%;color:${PARTIKEL_KLEUREN[i%PARTIKEL_KLEUREN.length]};--dx:${(Math.random()-0.5)*140}px;--dy:${-40-Math.random()*80}px;animation-delay:${Math.random()*0.15}s;`;
+    p.style.cssText = `position:absolute;z-index:5;font-size:18px;font-weight:900;pointer-events:none;left:${20+Math.random()*60}%;top:${30+Math.random()*40}%;color:${PARTIKEL_KLEUREN[i%PARTIKEL_KLEUREN.length]};--dx:${(Math.random()-0.5)*140}px;--dy:${-40-Math.random()*80}px;animation:cat-particle 0.9s ease-out forwards;animation-delay:${Math.random()*0.15}s;`;
     laag.appendChild(p);
     setTimeout(() => p.remove(), 1200);
   }
-}
-
-function toonBadge(badge, tekst) {
-  badge.textContent = tekst;
-  animHerstart(badge, "monster-hero__badge--show");
-  setTimeout(() => badge.classList.remove("monster-hero__badge--show"), 1400);
-}
-
-function monsterSchud(monster) {
-  animHerstart(monster, "monster-hero__monster--schud");
-}
-
-function monsterLaser(laser, scene) {
-  animHerstart(laser, "monster-hero__laser--vuren");
-  setTimeout(() => laser.classList.remove("monster-hero__laser--vuren"), 500);
-}
-
-function monsterKapot(monster, scene) {
-  animHerstart(monster, "monster-hero__monster--kapot");
-  setTimeout(() => {
-    monster.classList.remove("monster-hero__monster--kapot");
-    monster.style.opacity = "0";
-  }, 800);
-  toonPartikels(scene, { aantal: 20, symbols: ["💥", "🔥", "💫", "⚡", "✨"] });
-}
-
-function heldPowerup(hero) {
-  animHerstart(hero, "nyan-cat--powerup");
-  setTimeout(() => hero.classList.remove("nyan-cat--powerup"), 700);
-}
-
-function heldGetroffen(hero) {
-  animHerstart(hero, "nyan-cat--hit");
-  setTimeout(() => hero.classList.remove("nyan-cat--hit"), 800);
 }
 
 // -----------------------------------------------------------------------
@@ -222,29 +160,75 @@ function heldGetroffen(hero) {
 // -----------------------------------------------------------------------
 export function toonEindAnimatie(container, pct) {
   const p = begrens(Math.round(pct || 0), 0, 100);
-  const v = el("div", "monster-hero-result");
   const suc = p >= 70;
-  v.setAttribute("aria-label", `${p >= 100 ? "MATH MASTER!" : suc ? "MONSTER VERBRIJZELD!" : "HELD IN TRAINING!"}`);
-  v.innerHTML = `
-    <div class="monster-hero-result__burst"></div>
-    <div class="monster-hero-result__hero"></div>
-    <h3>${p >= 100 ? "MATH MASTER!" : suc ? "MONSTER VERBRIJZELD!" : "HELD IN TRAINING!"}</h3>
-    <p>${suc ? "Het monster is verslagen!" : "Blijf oefenen, word sterker!"}</p>
-    <div class="monster-hero-result__meter"><div class="monster-hero-result__fill"></div></div>
-    <strong>${p}% goed</strong>
-  `;
-  v.querySelector(".monster-hero-result__hero").appendChild(nyanCat());
+  const v = el("div", "cat-wall-result");
+  v.style.cssText = "text-align:center;padding:20px 16px;margin:16px 0;border-radius:16px;background:linear-gradient(135deg,#f6f9fc,#ebf3ff);border:2px solid #dce7f5;";
+  const hero = nyanCat();
+  hero.style.cssText = "display:inline-block;width:100px;height:80px;";
+  v.innerHTML = "";
+  v.appendChild(hero);
+  const h3 = el("h3");
+  h3.style.cssText = "font-size:26px;font-weight:900;color:#2a4fc9;margin:8px 0;";
+  h3.textContent = p >= 100 ? "MATH MASTER!" : suc ? "MUUR GESPRONGEN!" : "KITTEN STEPS!";
+  v.appendChild(h3);
+  const pEl = el("p");
+  pEl.style.cssText = "margin:0 0 12px;font-size:17px;color:#5b6472;";
+  pEl.textContent = suc ? "De kat is over de muur!" : "Blijf oefenen!";
+  v.appendChild(pEl);
+  const meter = el("div");
+  meter.style.cssText = "height:10px;border-radius:5px;background:#e2e8f0;max-width:200px;margin:0 auto 6px;overflow:hidden;";
+  meter.innerHTML = `<div style="height:100%;border-radius:5px;background:linear-gradient(90deg,#38b26a,#ffd83d,#ff785a);width:${p}%;"></div>`;
+  v.appendChild(meter);
+  const strong = el("strong");
+  strong.style.cssText = "color:#2f6ed4;";
+  strong.textContent = `${p}% goed`;
+  v.appendChild(strong);
   container.appendChild(v);
-  if (suc) toonPartikels(v.querySelector(".monster-hero-result__burst"), { aantal: 20 });
   return v;
 }
 
 export function maakRaketAnimatie(container, doelAantal) {
   const totaal = Math.max(1, doelAantal);
   let aantalGoed = 0;
-  let monsterDood = false;
   const s = bouwScene();
   container.appendChild(s.blok);
+
+  // Inject keyframes once
+  if (!document.getElementById("cat-wall-kf")) {
+    const st = document.createElement("style");
+    st.id = "cat-wall-kf";
+    st.textContent = `
+      @keyframes cat-cloud {
+        0% { transform: translateX(0); }
+        100% { transform: translateX(120vw); }
+      }
+      @keyframes cat-particle {
+        0% { opacity:0; transform:translate(0,0) scale(0.5) rotate(0deg); }
+        20% { opacity:1; }
+        100% { opacity:0; transform:translate(var(--dx),var(--dy)) scale(1.2) rotate(20deg); }
+      }
+      .cat-wall__muur--bonk {
+        animation: cat-bonk 0.35s ease-out;
+      }
+      @keyframes cat-bonk {
+        0%,100% { transform: translateX(0); }
+        20% { transform: translateX(-4px) rotate(-2deg); }
+        40% { transform: translateX(4px) rotate(2deg); }
+        60% { transform: translateX(-2px); }
+        80% { transform: translateX(2px); }
+      }
+      .cat-wall__badge--show {
+        animation: cat-badge 1.3s ease-out forwards;
+      }
+      @keyframes cat-badge {
+        0% { opacity:0; transform:translate(-50%,-12px) scale(0.82); }
+        20% { opacity:1; transform:translate(-50%,0) scale(1.05); }
+        75% { opacity:1; transform:translate(-50%,0) scale(1); }
+        100% { opacity:0; transform:translate(-50%,-10px) scale(0.94); }
+      }
+    `;
+    document.head.appendChild(st);
+  }
 
   function update() {
     const v = Math.min(1, aantalGoed / totaal);
@@ -254,52 +238,47 @@ export function maakRaketAnimatie(container, doelAantal) {
     s.count.textContent = `${aantalGoed} / ${totaal} goed`;
     const cp = CHECKPOINTS.reduce((a, c) => pct >= c.grens ? c : a, CHECKPOINTS[0]);
     s.rank.textContent = cp.tekst;
+    s.cat.style.left = `${8 + v * 34}%`;
 
-    // Heldin vliegt naar rechts (8% → 62%)
-    const heroLeft = 8 + v * 54;
-    s.hero.style.left = `${heroLeft}%`;
-
-    // Monster wordt groter en dreigender
-    const monSchaal = 0.4 + v * 0.6;
-    s.monster.style.transform = `scale(${monSchaal})`;
-    s.monster.style.opacity = String(0.3 + v * 0.7);
-
-    // Laatste opgave: heldin bereikt monster
-    if (aantalGoed >= totaal && !monsterDood) {
-      monsterDood = true;
-      setTimeout(() => {
-        monsterKapot(s.monster, s.scene);
-        s.bubble.textContent = "YEAH! GEDAAN!";
-        toonBadge(s.badge, "MATH MASTER!");
-      }, 300);
+    if (aantalGoed >= totaal) {
+      setTimeout(() => toonBadge(s.badge, "MATH MASTER!"), 300);
     }
+  }
+
+  function toonBadge(badge, tekst) {
+    badge.style.opacity = "1";
+    badge.textContent = tekst;
+    badge.classList.remove("cat-wall__badge--show");
+    void badge.offsetWidth;
+    badge.classList.add("cat-wall__badge--show");
+    setTimeout(() => { badge.classList.remove("cat-wall__badge--show"); badge.style.opacity = "0"; }, 1400);
   }
 
   return {
     goedAntwoord() {
       aantalGoed += 1;
-      heldPowerup(s.hero);
-      monsterSchud(s.monster);
-      s.bubble.textContent = kies(["Hyaa!", "Take that!", "POW!", "Yes!"]);
-      toonPartikels(s.scene, { aantal: 8, symbols: ["★", "✦", "◆", "⚡"] });
+      // Cat JUMP over wall
+      s.cat.style.transition = "left 0.5s cubic-bezier(0.34,1.56,0.64,1), bottom 0.3s";
+      s.cat.style.left = "62%";
+      s.cat.style.bottom = "58%";
+      setTimeout(() => { s.cat.style.bottom = "30%"; }, 300);
+      animHerstart(s.muurWrap, "cat-wall__muur--bonk");
+      toonPartikels(s.scene, { aantal: 10, symbols: ["★","✦","◆"] });
       update();
     },
     foutAntwoord() {
-      // Scherm flitst donkerrood
-      animHerstart(s.blok, "monster-hero--flash");
-      setTimeout(() => s.blok.classList.remove("monster-hero--flash"), 500);
-      monsterLaser(s.laser, s.scene);
-      setTimeout(() => {
-        heldGetroffen(s.hero);
-        s.bubble.textContent = kies(["Oof!", "Dat doet pijn!", "Nee!", "Grrr!"]);
-      }, 200);
+      // Cat BONK into wall
+      s.cat.style.transition = "left 0.25s, bottom 0.1s";
+      s.cat.style.left = "40%";
+      s.cat.style.bottom = "26%";
+      animHerstart(s.muurWrap, "cat-wall__muur--bonk");
+      s.cat.style.filter = "brightness(0.5) hue-rotate(340deg)";
+      setTimeout(() => { s.cat.style.bottom = "30%"; s.cat.style.filter = ""; }, 500);
     },
     reset() {
       aantalGoed = 0;
-      monsterDood = false;
-      s.monster.style.opacity = "1";
-      s.monster.style.transform = "scale(0.4)";
-      s.hero.style.left = "8%";
+      s.cat.style.left = "8%"; s.cat.style.bottom = "30%";
+      s.cat.style.transition = ""; s.cat.style.filter = "";
       update();
     },
     element: s.blok,

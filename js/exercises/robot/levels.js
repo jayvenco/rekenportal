@@ -424,3 +424,12 @@ export const LEVELS = [
     mode: "code",
   },
 ];
+
+/**
+ * Vindt een level op id.
+ * @param {number} id - level id (1-12)
+ * @returns {Object|null} level data of null
+ */
+export function laadLevel(id) {
+  return LEVELS.find(l => l.id === id) || null;
+}

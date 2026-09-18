@@ -493,5 +493,10 @@ export function genereerOpgave(instellingen) {
 
 /** Maakt een unieke sleutel van een opgave, om herhaling binnen een sessie te voorkomen. */
 export function opgaveNaarSleutel(opgave) {
-  return `${opgave.type}_${opgave.meta.categorie}_${opgave.vraagTekst.slice(0, 80)}`;
+  if (opgave.htmlVraag) {
+    // Use the clean text (strip HTML) + answer to make a unique key
+    const clean = opgave.vraagTekst.replace(/<[^>]+>/g, "");
+    return `${opgave.type}_${opgave.antwoordGoed}_${clean.slice(0, 120)}`;
+  }
+  return `${opgave.type}_${opgave.meta.categorie}_${opgave.vraagTekst.slice(0, 120)}`;
 }
