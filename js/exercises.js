@@ -19,6 +19,7 @@ import { verhoudingenOefening } from "./exercises/verhoudingen/index.js";
 import { breukenOefening } from "./exercises/breuken/index.js";
 import { complexOefening } from "./exercises/complex/index.js";
 import { metenOefening } from "./exercises/meten/index.js";
+import { robotOefening } from "./exercises/robot/index.js";
 
 /**
  * Elke oefening in deze lijst heeft de vorm:
@@ -73,9 +74,22 @@ export const EXERCISES = [
     groep: 8,
     instelbareOpties: "Categorie (recepten, schaal, mix), aantal opgaven",
   },
+  {
+    ...robotOefening,
+    groep: 4,
+    instelbareOpties: "Pijltjesmodus, 6 levels",
+  },
+  {
+    ...robotOefening,
+    groep: 8,
+    instelbareOpties: "Code modus, 12 levels",
+  },
 ];
 
-/** Zoekt een oefening op id, of undefined als die niet bestaat. */
-export function vindOefening(id) {
-  return EXERCISES.find((oefening) => oefening.id === id);
+/** Zoekt een oefening op id, of undefined als die niet bestaat.
+ * Optioneel: filter op groep (voor oefeningen die in meerdere groepen voorkomen). */
+export function vindOefening(id, groep) {
+  return EXERCISES.find((oefening) =>
+    oefening.id === id && (groep === undefined || oefening.groep === groep)
+  );
 }

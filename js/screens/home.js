@@ -200,7 +200,7 @@ export async function toonHomepage(container) {
       tegel.type = "button";
       tegel.setAttribute("aria-label", `Start de oefening ${oefening.titel}`);
       tegel.addEventListener("click", () => {
-        window.location.hash = `#/oefening/${oefening.id}`;
+        window.location.hash = `#/oefening/${oefening.id}${oefening.groep ? `?groep=${oefening.groep}` : ""}`;
       });
 
       const icoonVlak = document.createElement("div");

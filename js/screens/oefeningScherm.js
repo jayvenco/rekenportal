@@ -30,7 +30,12 @@ export async function toonOefeningScherm(container, exerciseId) {
   container.innerHTML = "";
   container.classList.add("opgave-pagina");
   container.style.setProperty("--opgave-achtergrond", `url("${achtergrondVoorOefening(exerciseId)}")`);
-  const oefening = vindOefening(exerciseId);
+  // Parse optional ?groep= parameter from hash
+  const groep = exerciseId.includes("?groep=")
+    ? Number(exerciseId.split("?groep=")[1])
+    : undefined;
+  const cleanId = exerciseId.split("?")[0];
+  const oefening = vindOefening(cleanId, groep);
 
   if (!oefening) {
     const kaart = document.createElement("div");
