@@ -34,6 +34,18 @@ export function startOefensessie(container, instellingen, opKlaar) {
 
   container.innerHTML = "";
 
+  let profielNaam = "";
+
+  // Haal de profielnaam op voor persoonlijke complimenten.
+  (async () => {
+    const profielId = getActiefProfielId();
+    if (profielId !== null) {
+      const profielen = await listProfielen();
+      const profiel = profielen.find((p) => p.id === profielId);
+      if (profiel) profielNaam = profiel.naam;
+    }
+  })();
+
   // --- Koppen: voortgang ---
   const koppenRij = document.createElement("div");
   koppenRij.className = "oefen-koppen";
