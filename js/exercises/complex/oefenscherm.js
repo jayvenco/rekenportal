@@ -156,6 +156,7 @@ export function startOefensessie(container, instellingen, opKlaar) {
       } else if (pogingNummer === 1) {
         // Eerste poging fout: oranje, nog een kans
         pogingNummer = 2;
+        raket.foutAntwoord();
         rewardTracker.registreerFout();
         feedbackVlak.className = "feedback-vlak feedback-vlak--fout";
         feedbackVlak.textContent = `${geefFoutmelding()} Probeer het nog eens.`;
@@ -175,6 +176,7 @@ export function startOefensessie(container, instellingen, opKlaar) {
       } else {
         // Tweede poging ook fout: toon juiste antwoord
         bezigMetFeedback = true;
+        raket.foutAntwoord();
         await recordAnswer({
           exerciseId: EXERCISE_ID,
           correct: false,
