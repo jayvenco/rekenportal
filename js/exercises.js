@@ -20,6 +20,7 @@ import { breukenOefening } from "./exercises/breuken/index.js";
 import { complexOefening } from "./exercises/complex/index.js";
 import { metenOefening } from "./exercises/meten/index.js";
 import { robotOefening } from "./exercises/robot/index.js";
+import { statistiekOefening } from "./exercises/statistiek/index.js";
 
 /**
  * Elke oefening in deze lijst heeft de vorm:
@@ -83,6 +84,11 @@ export const EXERCISES = [
     ...robotOefening,
     groep: 8,
     instelbareOpties: "Code modus, 12 levels",
+  },
+  {
+    ...statistiekOefening,
+    groep: 8,
+    instelbareOpties: "Categorie (grafieken, gemiddelde/mediaan/modus, tabellen, turven), aantal opgaven",
   },
 ];
 

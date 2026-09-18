@@ -29,17 +29,24 @@ function kies(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
 function nyanCat() {
   const w = el("div", "nyan-cat");
   w.setAttribute("aria-hidden", "true");
+  // Build stars (12 li with i)
+  const sterren = document.createElement("ul");
+  sterren.className = "nyan-stars";
+  for (let s = 0; s < 12; s++) {
+    const li = document.createElement("li");
+    li.appendChild(document.createElement("i"));
+    sterren.appendChild(li);
+  }
   w.innerHTML = `
-    <div class="nyan-cat__regenboog">
-      ${REGENBOOG.map(() => '<div class="nyan-cat__streep"></div>').join("")}
-    </div>
-    <div class="nyan-cat__kat">
-      <div class="nyan-cat__staart"><div class="nyan-cat__sprite"></div></div>
-      <div class="nyan-cat__pootjes"><div class="nyan-cat__sprite"></div></div>
-      <div class="nyan-cat__lijf"></div>
-      <div class="nyan-cat__kop"></div>
+    <div class="nyan-regenboog"><div class="nyan-sprite"></div></div>
+    <div class="nyan-lichaam">
+      <div class="nyan-staart"><div class="nyan-sprite"></div></div>
+      <div class="nyan-pootjes"><div class="nyan-sprite"></div></div>
+      <div class="nyan-poptart"></div>
+      <div class="nyan-kop"></div>
     </div>
   `;
+  w.querySelector(".nyan-lichaam").prepend(sterren);
   return w;
 }
 
