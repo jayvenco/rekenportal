@@ -7,7 +7,7 @@ Gebruikt SQLite met een bestand in backend/data/rekenportal.db (sibling van app/
 
 import os
 
-from sqlalchemy import create_engine, event
+from sqlalchemy import create_engine, event, inspect, text
 from sqlalchemy.orm import declarative_base, sessionmaker
 
 # app/ ligt in backend/app/, dus data/ is backend/data/ (één niveau omhoog van app/)
@@ -44,6 +44,22 @@ def init_db() -> None:
     from app import models  # noqa: F401
 
     Base.metadata.create_all(bind=engine)
+    _run_lightweight_migrations()
+
+
+def _run_lightweight_migrations() -> None:
+    """Voegt kleine schema-uitbreidingen toe voor bestaande SQLite-installaties."""
+    inspector = inspect(engine)
+    if "profielen" not in inspector.get_table_names():
+        return
+
+    profiel_kolommen = {kolom["name"] for kolom in inspector.get_columns("profielen")}
+    with engine.begin() as verbinding:
+        if "laatste_activiteit_op" not in profiel_kolommen:
+            verbinding.execute(text("ALTER TABLE profielen ADD COLUMN laatste_activiteit_op DATETIME"))
+            verbinding.execute(
+                text("UPDATE profielen SET laatste_activiteit_op = COALESCE(aangemaakt_op, CURRENT_TIMESTAMP)")
+            )
 
 
 def get_db():

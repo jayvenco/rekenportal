@@ -12,6 +12,7 @@ import { speelGoedGeluid, speelFoutGeluid } from "../../utils/geluid.js";
 import { maakRaketAnimatie, toonEindAnimatie } from "../../utils/raketAnimatie.js";
 import { maakVoortgangCirkels } from "../../utils/voortgangCirkels.js";
 import { bouwGetallenlijn, xNaarGetal } from "../../utils/getallenlijnSvg.js";
+import { maakRewardTracker, toonBadgeUnlocks, toonRewardResultaat, verversCoinCounter } from "../../utils/rewards.js";
 
 const EXERCISE_ID = "getallenlijn";
 
@@ -45,6 +46,7 @@ export function startOefensessie(container, instellingen, opKlaar) {
 
   // --- Raket-animatie ---
   const raket = maakRaketAnimatie(container, instellingen.aantalOpgaven);
+  const rewardTracker = maakRewardTracker(EXERCISE_ID, instellingen.aantalOpgaven);
 
   // --- Vraagtekst ---
   const vraagVlak = document.createElement("div");
@@ -269,6 +271,7 @@ export function startOefensessie(container, instellingen, opKlaar) {
       }
       speelGoedGeluid();
       raket.goedAntwoord();
+      rewardTracker.registreerGoed(pogingNummer, feedbackVlak);
       bijwerkenVoortgang();
       setTimeout(() => {
         opgaveIndex += 1;
@@ -277,6 +280,7 @@ export function startOefensessie(container, instellingen, opKlaar) {
     } else if (pogingNummer === 1) {
       // Eerste poging fout: oranje feedback, antwoord nog niet verklappen, nog een kans.
       pogingNummer = 2;
+      rewardTracker.registreerFout();
       feedbackVlak.className = "feedback-vlak feedback-vlak--fout";
       feedbackVlak.textContent = `${geefFoutmelding()} Probeer het nog eens.`;
       speelFoutGeluid();
@@ -340,6 +344,9 @@ export function startOefensessie(container, instellingen, opKlaar) {
     resultaatTekst.textContent = `Je had ${aantalGoedTotaal} van de ${instellingen.aantalOpgaven} goed!`;
     kaart.appendChild(resultaatTekst);
 
+    const rewardVlak = document.createElement("div");
+    kaart.appendChild(rewardVlak);
+
     const complimentTekst = document.createElement("p");
     complimentTekst.style.fontSize = "20px";
     complimentTekst.textContent = geefCompliment();
@@ -363,6 +370,13 @@ export function startOefensessie(container, instellingen, opKlaar) {
     actiesRij.append(nogEenKeerKnop, terugKnop);
     kaart.appendChild(actiesRij);
     container.appendChild(kaart);
+
+    (async () => {
+      const rewards = await rewardTracker.voltooi();
+      toonRewardResultaat(rewardVlak, rewards);
+      await verversCoinCounter();
+      await toonBadgeUnlocks(rewards?.badgesEarned || []);
+    })();
   }
 
   toonOpgave();

@@ -19,6 +19,7 @@ class Profiel(Base):
     naam = Column(String, nullable=False)
     avatar = Column(String, nullable=False)
     aangemaakt_op = Column(DateTime, default=datetime.utcnow, nullable=False)
+    laatste_activiteit_op = Column(DateTime, default=datetime.utcnow, nullable=False)
 
     antwoorden = relationship(
         "Antwoord",
@@ -28,6 +29,25 @@ class Profiel(Base):
     )
     instellingen = relationship(
         "Instelling",
+        back_populates="profiel",
+        cascade="all, delete-orphan",
+        passive_deletes=True,
+    )
+    reward = relationship(
+        "ProfielReward",
+        back_populates="profiel",
+        cascade="all, delete-orphan",
+        passive_deletes=True,
+        uselist=False,
+    )
+    badges = relationship(
+        "BadgeAward",
+        back_populates="profiel",
+        cascade="all, delete-orphan",
+        passive_deletes=True,
+    )
+    reward_events = relationship(
+        "RewardEvent",
         back_populates="profiel",
         cascade="all, delete-orphan",
         passive_deletes=True,

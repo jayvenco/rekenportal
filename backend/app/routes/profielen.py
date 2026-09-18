@@ -5,6 +5,7 @@ CRUD voor kindprofielen.
 """
 
 from datetime import datetime
+from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel
@@ -28,6 +29,7 @@ class ProfielOut(BaseModel):
     naam: str
     avatar: str
     aangemaakt_op: datetime
+    laatste_activiteit_op: Optional[datetime] = None
 
     model_config = {"from_attributes": True}
 

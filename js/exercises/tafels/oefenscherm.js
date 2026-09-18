@@ -5,7 +5,6 @@
 // -----------------------------------------------------------------------------
 
 import { recordAnswer, getActiefProfielId, listProfielen } from "../../storage.js";
-import { berekenPunten, slaSessieOp, toonPuntenAnimatie } from "../../utils/punten.js";
 import { bouwCijferInvoer, bouwMeerkeuzeInvoer, genereerFouteKeerAntwoorden } from "../../utils/invoerModus.js";
 import { genereerOpgave, opgaveNaarSleutel } from "./opgaven.js";
 import { genereerUniekeOpgave } from "../../utils/willekeurig.js";
@@ -13,6 +12,7 @@ import { geefCompliment, geefFoutmelding } from "../../utils/complimenten.js";
 import { speelGoedGeluid, speelFoutGeluid } from "../../utils/geluid.js";
 import { maakRaketAnimatie, toonEindAnimatie } from "../../utils/raketAnimatie.js";
 import { maakVoortgangCirkels } from "../../utils/voortgangCirkels.js";
+import { maakRewardTracker, toonBadgeUnlocks, toonRewardResultaat, verversCoinCounter } from "../../utils/rewards.js";
 
 const EXERCISE_ID = "tafels";
 
@@ -58,6 +58,7 @@ export function startOefensessie(container, instellingen, opKlaar) {
 
   // --- Raket-animatie ---
   const raket = maakRaketAnimatie(container, instellingen.aantalOpgaven);
+  const rewardTracker = maakRewardTracker(EXERCISE_ID, instellingen.aantalOpgaven);
 
   // --- Vraagtekst ---
   const vraagVlak = document.createElement("div");
@@ -141,6 +142,7 @@ export function startOefensessie(container, instellingen, opKlaar) {
       }
       speelGoedGeluid();
       raket.goedAntwoord();
+      rewardTracker.registreerGoed(pogingNummer, feedbackVlak);
       bijwerkenVoortgang();
       setTimeout(() => {
         opgaveIndex += 1;
@@ -149,6 +151,7 @@ export function startOefensessie(container, instellingen, opKlaar) {
     } else if (pogingNummer === 1) {
       // Eerste poging fout: oranje feedback, antwoord nog niet verklappen, nog een kans.
       pogingNummer = 2;
+      rewardTracker.registreerFout();
       feedbackVlak.className = "feedback-vlak feedback-vlak--fout";
       feedbackVlak.textContent = `${geefFoutmelding()} Probeer het nog eens.`;
       speelFoutGeluid();
@@ -197,13 +200,6 @@ export function startOefensessie(container, instellingen, opKlaar) {
   function toonEindscherm() {
     container.innerHTML = "";
 
-    // Punten berekenen en opslaan
-    const puntenResultaat = berekenPunten(aantalGoedTotaal, instellingen.aantalOpgaven);
-    const profielId = getActiefProfielId();
-    if (profielId !== null) {
-      slaSessieOp(profielId, EXERCISE_ID, aantalGoedTotaal, instellingen.aantalOpgaven);
-    }
-
     const kaart = document.createElement("div");
     kaart.className = "kaart";
     kaart.style.textAlign = "center";
@@ -222,10 +218,8 @@ export function startOefensessie(container, instellingen, opKlaar) {
     resultaatTekst.textContent = `Je had ${aantalGoedTotaal} van de ${instellingen.aantalOpgaven} goed!`;
     kaart.appendChild(resultaatTekst);
 
-    // Punten animatie
-    const puntenVlak = document.createElement("div");
-    kaart.appendChild(puntenVlak);
-    toonPuntenAnimatie(puntenVlak, puntenResultaat.punten, puntenResultaat.label);
+    const rewardVlak = document.createElement("div");
+    kaart.appendChild(rewardVlak);
 
     const complimentTekst = document.createElement("p");
     complimentTekst.style.fontSize = "20px";
@@ -250,6 +244,13 @@ export function startOefensessie(container, instellingen, opKlaar) {
     actiesRij.append(nogEenKeerKnop, terugKnop);
     kaart.appendChild(actiesRij);
     container.appendChild(kaart);
+
+    (async () => {
+      const rewards = await rewardTracker.voltooi();
+      toonRewardResultaat(rewardVlak, rewards);
+      await verversCoinCounter();
+      await toonBadgeUnlocks(rewards?.badgesEarned || []);
+    })();
   }
 
   toonOpgave();

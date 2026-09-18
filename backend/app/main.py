@@ -13,14 +13,14 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.database import init_db
-from app.routes import antwoorden, export, instellingen, profielen, statistieken
+from app.routes import antwoorden, export, instellingen, profielen, rewards, sessies, statistieken
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     init_db()
     yield
-from app.routes import antwoorden, export, instellingen, profielen, sessies, statistieken
+
 
 app = FastAPI(title="Rekenportal API", version="1.1.0", lifespan=lifespan)
 
@@ -37,6 +37,7 @@ app.include_router(antwoorden.router)
 app.include_router(statistieken.router)
 app.include_router(instellingen.router)
 app.include_router(export.router)
+app.include_router(rewards.router)
 app.include_router(sessies.router)
 
 

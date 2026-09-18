@@ -8,6 +8,7 @@
 
 import { EXERCISES } from "../exercises.js";
 import { getAantalGoedVandaag, listProfielen, getActiefProfielId } from "../storage.js";
+import { haalProfielRewards, toonBadgeCollectie } from "../utils/rewards.js";
 
 /** Zoekt het huidige actieve profiel op in de lijst van profielen (of null). */
 async function haalActiefProfielOp() {
@@ -31,6 +32,20 @@ function vulProfielBadge(badge, profiel) {
     badge.append(img, document.createTextNode(profiel.naam));
   } else {
     badge.textContent = `${profiel.avatar} ${profiel.naam}`;
+  }
+}
+
+function vulAvatarCirkel(cirkel, profiel) {
+  cirkel.innerHTML = "";
+  if (isAfbeeldingAvatar(profiel.avatar)) {
+    const img = document.createElement("img");
+    img.className = "profiel-badge__avatar";
+    img.src = profiel.avatar;
+    img.alt = "";
+    img.loading = "lazy";
+    cirkel.appendChild(img);
+  } else {
+    cirkel.textContent = profiel.avatar || "⭐";
   }
 }
 
@@ -102,6 +117,39 @@ export async function toonHomepage(container) {
   introTekst.textContent = "Kies een oefening om mee te beginnen.";
   introTekst.style.marginBottom = "24px";
   container.appendChild(introTekst);
+
+  if (actiefProfiel) {
+    const rewards = await haalProfielRewards(actiefProfiel.id).catch(() => null);
+    if (rewards) {
+      const profielKaart = document.createElement("section");
+      profielKaart.className = "hero-profile-card";
+      profielKaart.innerHTML = `
+        <div class="hero-profile-card__avatar"></div>
+        <div class="hero-profile-card__body">
+          <p>Math Hero profiel</p>
+          <h2>${actiefProfiel.naam}</h2>
+          <div class="hero-profile-card__stats">
+            <strong>🪙 ${rewards.coins}</strong>
+            <strong>⚡ Power level ${rewards.level}</strong>
+            <strong>🏆 ${rewards.earnedBadgeCount}/${rewards.totalBadgeCount}</strong>
+          </div>
+          <div class="hero-profile-card__badges"></div>
+        </div>
+        <button type="button" class="knop knop--primair">Badge collection</button>
+      `;
+      vulAvatarCirkel(profielKaart.querySelector(".hero-profile-card__avatar"), actiefProfiel);
+      const badgesRij = profielKaart.querySelector(".hero-profile-card__badges");
+      for (const badge of rewards.badges.slice(0, 10)) {
+        const item = document.createElement("span");
+        item.className = `hero-profile-card__badge ${badge.earned ? "" : "hero-profile-card__badge--locked"}`;
+        item.textContent = badge.earned ? badge.icon : "🔒";
+        item.title = badge.name;
+        badgesRij.appendChild(item);
+      }
+      profielKaart.querySelector("button").addEventListener("click", toonBadgeCollectie);
+      container.appendChild(profielKaart);
+    }
+  }
 
   const grid = document.createElement("div");
   grid.className = "tegel-grid";

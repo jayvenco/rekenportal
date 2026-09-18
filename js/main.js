@@ -26,6 +26,7 @@ import { toonProfielkiezerScherm } from "./screens/profielkiezer.js";
 import { toonBeheerScherm } from "./screens/beheer.js";
 import { toonLeerplanScherm } from "./screens/leerplan.js";
 import { getActiefProfielId } from "./storage.js";
+import { initialiseerCoinCounter, verversCoinCounter } from "./utils/rewards.js";
 
 const hoofdContainer = document.getElementById("app");
 
@@ -35,6 +36,8 @@ async function verwerkRoute() {
 
   window.scrollTo(0, 0);
   hoofdContainer.className = "pagina";
+  initialiseerCoinCounter();
+  verversCoinCounter();
 
   // Cruciale gate: geen actief profiel en geen beheer-route? Toon de profielkiezer.
   if (hash !== "#/profielen" && hash !== "#/beheer" && hash !== "#/leerplan" && getActiefProfielId() === null) {
