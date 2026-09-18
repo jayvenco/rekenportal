@@ -15,6 +15,10 @@ import { getallenlijnOefening } from "./exercises/getallenlijn/index.js";
 import { tafelsOefening } from "./exercises/tafels/index.js";
 import { plusMinOefening } from "./exercises/plusmin/index.js";
 import { verhaaltjesOefening } from "./exercises/verhaaltjes/index.js";
+import { verhoudingenOefening } from "./exercises/verhoudingen/index.js";
+import { breukenOefening } from "./exercises/breuken/index.js";
+import { complexOefening } from "./exercises/complex/index.js";
+import { metenOefening } from "./exercises/meten/index.js";
 
 /**
  * Elke oefening in deze lijst heeft de vorm:
@@ -31,19 +35,43 @@ import { verhaaltjesOefening } from "./exercises/verhaaltjes/index.js";
 export const EXERCISES = [
   {
     ...getallenlijnOefening,
+    groep: 4,
     instelbareOpties: "Bereik, stapgrootte, aantal opgaven, opgavetype",
   },
   {
     ...tafelsOefening,
+    groep: 4,
     instelbareOpties: "Welke tafel(s), aantal opgaven",
   },
   {
     ...plusMinOefening,
+    groep: 4,
     instelbareOpties: "Bereik, plus/min/beide, aantal opgaven",
   },
   {
     ...verhaaltjesOefening,
+    groep: 4,
     instelbareOpties: "Aantal opgaven",
+  },
+  {
+    ...complexOefening,
+    groep: 8,
+    instelbareOpties: "Moeilijkheid (2 of 3 stappen), aantal opgaven",
+  },
+  {
+    ...breukenOefening,
+    groep: 8,
+    instelbareOpties: "Conversietype (breuk→%, %→komma, komma→breuk), aantal opgaven",
+  },
+  {
+    ...metenOefening,
+    groep: 8,
+    instelbareOpties: "Categorie (omtrek/oppervlakte, inhoud, gewicht, tijd), aantal opgaven",
+  },
+  {
+    ...verhoudingenOefening,
+    groep: 8,
+    instelbareOpties: "Categorie (recepten, schaal, mix), aantal opgaven",
   },
 ];
 

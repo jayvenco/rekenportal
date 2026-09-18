@@ -7,7 +7,7 @@
 // -----------------------------------------------------------------------------
 
 import { EXERCISES } from "../exercises.js";
-import { getAantalGoedVandaag, listProfielen, getActiefProfielId } from "../storage.js";
+import { listProfielen, getActiefProfielId } from "../storage.js";
 import { haalProfielRewards, toonBadgeCollectie } from "../utils/rewards.js";
 
 /** Zoekt het huidige actieve profiel op in de lijst van profielen (of null). */
@@ -160,43 +160,74 @@ export async function toonHomepage(container) {
     }
   }
 
+  // Groep-tabs
+  const groepen = [...new Set(EXERCISES.map((e) => e.groep))].sort();
+  let actieveGroep = groepen[0] || 4;
+  const tabRij = document.createElement("div");
+  tabRij.className = "groep-tabs";
+  tabRij.style.cssText = "display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;";
+  const tabKnoppen = [];
+  for (const g of groepen) {
+    const knop = document.createElement("button");
+    knop.type = "button";
+    knop.className = "knop knop--klein";
+    knop.textContent = `Groep ${g}`;
+    knop.dataset.groep = String(g);
+    if (g === actieveGroep) knop.classList.add("knop--primair");
+    else knop.classList.add("knop--zacht");
+    knop.addEventListener("click", () => {
+      actieveGroep = g;
+      for (const k of tabKnoppen) {
+        k.classList.toggle("knop--primair", Number(k.dataset.groep) === g);
+        k.classList.toggle("knop--zacht", Number(k.dataset.groep) !== g);
+      }
+      filterOefeningen();
+    });
+    tabKnoppen.push(knop);
+    tabRij.appendChild(knop);
+  }
+  container.appendChild(tabRij);
+
   const grid = document.createElement("div");
   grid.className = "tegel-grid";
 
-  for (const oefening of EXERCISES) {
-    const tegel = document.createElement(oefening.mount ? "button" : "div");
-    tegel.className = "tegel";
-    tegel.type = "button";
-    tegel.setAttribute("aria-label", `Start de oefening ${oefening.titel}`);
-    tegel.addEventListener("click", () => {
-      window.location.hash = `#/oefening/${oefening.id}`;
-    });
+  function filterOefeningen() {
+    grid.innerHTML = "";
+    for (const oefening of EXERCISES) {
+      if (oefening.groep !== actieveGroep) continue;
+      const tegel = document.createElement(oefening.mount ? "button" : "div");
+      tegel.className = "tegel";
+      tegel.type = "button";
+      tegel.setAttribute("aria-label", `Start de oefening ${oefening.titel}`);
+      tegel.addEventListener("click", () => {
+        window.location.hash = `#/oefening/${oefening.id}`;
+      });
 
-    const icoonVlak = document.createElement("div");
-    icoonVlak.className = "tegel__icoon";
-    icoonVlak.style.background = `${oefening.kleurthema}22`;
-    icoonVlak.innerHTML = oefening.icoonSvg;
-    tegel.appendChild(icoonVlak);
+      const icoonVlak = document.createElement("div");
+      icoonVlak.className = "tegel__icoon";
+      icoonVlak.style.background = `${oefening.kleurthema}22`;
+      icoonVlak.innerHTML = oefening.icoonSvg;
+      tegel.appendChild(icoonVlak);
 
-    const titelEl = document.createElement("h2");
-    titelEl.className = "tegel__titel";
-    titelEl.textContent = oefening.titel;
-    tegel.appendChild(titelEl);
+      const titelEl = document.createElement("h2");
+      titelEl.className = "tegel__titel";
+      titelEl.textContent = oefening.titel;
+      tegel.appendChild(titelEl);
 
-    const omschrijvingEl = document.createElement("p");
-    omschrijvingEl.className = "tegel__omschrijving";
-    omschrijvingEl.textContent = oefening.omschrijving;
-    tegel.appendChild(omschrijvingEl);
+      const omschrijvingEl = document.createElement("p");
+      omschrijvingEl.className = "tegel__omschrijving";
+      omschrijvingEl.textContent = oefening.omschrijving;
+      tegel.appendChild(omschrijvingEl);
 
-    const aantalGoedVandaag = await getAantalGoedVandaag(oefening.id);
-    const voortgangEl = document.createElement("span");
-    voortgangEl.className = "tegel__voortgang";
-    voortgangEl.textContent =
-      aantalGoedVandaag > 0 ? `vandaag ${aantalGoedVandaag} goed` : "nog niet geoefend vandaag";
-    tegel.appendChild(voortgangEl);
+      const voortgangEl = document.createElement("span");
+      voortgangEl.className = "tegel__voortgang";
+      voortgangEl.textContent = "nog niet geoefend vandaag";
+      tegel.appendChild(voortgangEl);
 
-    grid.appendChild(tegel);
+      grid.appendChild(tegel);
+    }
   }
 
+  filterOefeningen();
   container.appendChild(grid);
 }

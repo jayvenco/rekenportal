@@ -56,3 +56,19 @@ export function icoonPlusMin() {
     </svg>
   `;
 }
+
+/** Icoon voor de verhoudingen-oefening: een eenvoudige balansweegschaal. */
+export function icoonWeegschaal() {
+  return `
+    <svg viewBox="0 0 64 64" width="40" height="40" aria-hidden="true">
+      <line x1="32" y1="56" x2="32" y2="20" stroke="#2f6ed4" stroke-width="3" stroke-linecap="round" />
+      <path d="M16 60 L48 60" stroke="#2f6ed4" stroke-width="3" stroke-linecap="round" />
+      <line x1="6" y1="22" x2="58" y2="22" stroke="#2f6ed4" stroke-width="3" stroke-linecap="round" />
+      <line x1="6" y1="22" x2="12" y2="42" stroke="#2f6ed4" stroke-width="2" stroke-linecap="round" />
+      <rect x="6" y="42" width="12" height="4" rx="1" fill="none" stroke="#2f6ed4" stroke-width="2" />
+      <line x1="58" y1="22" x2="52" y2="42" stroke="#2f6ed4" stroke-width="2" stroke-linecap="round" />
+      <rect x="46" y="42" width="12" height="4" rx="1" fill="none" stroke="#2f6ed4" stroke-width="2" />
+      <polygon points="32,14 28,22 36,22" fill="#2f6ed4" />
+    </svg>
+  `;
+}

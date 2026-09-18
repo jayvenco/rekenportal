@@ -13,6 +13,7 @@ const OPGAVE_ACHTERGRONDEN = {
   tafels: "/img/opgave-achtergronden/ruimte.png?v=1",
   plusmin: "/img/opgave-achtergronden/anime-fantasie.png?v=1",
   verhaaltjes: "/img/opgave-achtergronden/onderwater.png?v=1",
+  meten: "/img/opgave-achtergronden/natuur-bos.png?v=1",
   standaard: "/img/opgave-achtergronden/bergen.png?v=1",
 };
 
