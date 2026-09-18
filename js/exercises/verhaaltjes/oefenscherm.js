@@ -183,6 +183,12 @@ export function startOefensessie(container, instellingen, opKlaar) {
         toonOpgave();
       }, 1900);
     }
+    } catch (fout) {
+      console.error("Kon antwoord niet verwerken:", fout);
+      bezigMetFeedback = false;
+      feedbackVlak.className = "feedback-vlak feedback-vlak--fout";
+      feedbackVlak.textContent = "Er ging iets mis. Probeer het antwoord nog eens.";
+    }
   }
 
   function toonEindscherm() {
