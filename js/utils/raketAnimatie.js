@@ -229,8 +229,14 @@ const GOEDE_FN = [animRotsPunch, animRotsKick, animRotsLaser];
 const FOUTE_FN = [animGetroffen, animBliksem, animVuurbal];
 
 // -----------------------------------------------------------------------
-// Helper: partikels tonen
+// Helper
 // -----------------------------------------------------------------------
+function animatieHerstart(element, className) {
+  element.classList.remove(className);
+  void element.offsetWidth;
+  element.classList.add(className);
+}
+
 function toonPartikels(laag, opties = {}) {
   const aant = opties.aantal ?? 12;
   const sym = opties.symbols ?? ["★", "✦", "◆", "⚡", "✨"];
