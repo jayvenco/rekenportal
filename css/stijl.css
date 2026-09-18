@@ -1902,14 +1902,19 @@ button {
   .monster-hero *, .monster-hero-result * { animation: none !important; transition: none !important; }
 }
 
-/* Full-screen 100% score animatie */
+/* Full-screen 100% score animatie — 2 sec donder & bliksem */
 .perfect-overlay {
   position: fixed; inset: 0; z-index: 9999;
   pointer-events: none;
 }
 .perfect-overlay__bliksem {
   position: absolute; inset: 0;
-  background: radial-gradient(ellipse at 50% 0%, rgba(255,255,255,0.9) 0%, transparent 60%);
+  background: radial-gradient(ellipse at 50% 0%, rgba(255,255,255,0.95) 0%, transparent 60%);
+  opacity: 0;
+}
+.perfect-overlay__donder {
+  position: absolute; inset: 0;
+  background: rgba(0,0,0,0.5);
   opacity: 0;
 }
 .perfect-overlay__gloed {
@@ -1917,40 +1922,59 @@ button {
   background: radial-gradient(circle at 50% 50%, rgba(255,216,60,0.3) 0%, transparent 60%);
   opacity: 0;
 }
+.perfect-overlay--actief .perfect-overlay__donder {
+  animation: donder-flits 2s ease-out forwards;
+}
 .perfect-overlay--actief .perfect-overlay__bliksem {
-  animation: bliksem-flits 0.3s ease-out 3;
+  animation: bliksem-flits 2s ease-out forwards;
 }
 .perfect-overlay--actief .perfect-overlay__gloed {
-  animation: gloed-puls 1.5s ease-out forwards;
+  animation: gloed-puls 2s ease-out forwards;
+}
+@keyframes donder-flits {
+  0% { opacity: 0; }
+  5% { opacity: 0.6; }
+  10% { opacity: 0.2; }
+  15% { opacity: 0.4; }
+  25% { opacity: 0.1; }
+  35% { opacity: 0.3; }
+  45% { opacity: 0; }
+  100% { opacity: 0; }
 }
 @keyframes bliksem-flits {
   0% { opacity: 0; }
-  10% { opacity: 0.9; filter: brightness(3); }
-  20% { opacity: 0.2; }
-  30% { opacity: 0.7; filter: brightness(2); }
-  40% { opacity: 0; }
+  5% { opacity: 0.95; filter: brightness(3); }
+  8% { opacity: 0.3; }
+  12% { opacity: 0.9; filter: brightness(2.5); }
+  16% { opacity: 0.1; }
+  22% { opacity: 0.7; filter: brightness(2); }
+  28% { opacity: 0; }
   100% { opacity: 0; }
 }
 @keyframes gloed-puls {
-  0% { opacity: 0; transform: scale(0.8); }
-  20% { opacity: 1; transform: scale(1.2); }
-  50% { opacity: 0.4; transform: scale(1.5); }
-  100% { opacity: 0; transform: scale(1.8); }
+  0% { opacity: 0; transform: scale(0.6); }
+  10% { opacity: 0.8; transform: scale(1.1); }
+  30% { opacity: 0.5; transform: scale(1.3); }
+  50% { opacity: 0.2; transform: scale(1.6); }
+  70% { opacity: 0.1; transform: scale(2); }
+  100% { opacity: 0; transform: scale(2.5); }
 }
 .perfect-schud {
-  animation: perfect-schud 0.6s ease-out;
+  animation: perfect-schud 2s ease-out;
 }
 @keyframes perfect-schud {
   0% { transform: translateX(0); }
-  5% { transform: translateX(-8px) rotate(-0.5deg); }
-  10% { transform: translateX(8px) rotate(0.5deg); }
-  15% { transform: translateX(-6px) rotate(-0.3deg); }
-  20% { transform: translateX(6px) rotate(0.3deg); }
-  25% { transform: translateX(-4px); }
-  30% { transform: translateX(4px); }
-  35% { transform: translateX(-2px); }
-  40% { transform: translateX(2px); }
-  45% { transform: translateX(0); }
+  2% { transform: translateX(-10px) rotate(-0.8deg); }
+  4% { transform: translateX(10px) rotate(0.8deg); }
+  6% { transform: translateX(-8px) rotate(-0.5deg); }
+  8% { transform: translateX(8px) rotate(0.5deg); }
+  10% { transform: translateX(-6px); }
+  12% { transform: translateX(6px); }
+  14% { transform: translateX(-4px); }
+  16% { transform: translateX(4px); }
+  18% { transform: translateX(-2px); }
+  20% { transform: translateX(2px); }
+  22% { transform: translateX(0); }
   100% { transform: translateX(0); }
 }
 

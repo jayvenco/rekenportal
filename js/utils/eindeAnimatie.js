@@ -26,10 +26,10 @@ export function toonPerfecteScoreAnimatie() {
   // Schud de hele pagina
   document.body.classList.add("perfect-schud");
 
-  // Na 1.5s alles opruimen
+  // Na 2.2s alles opruimen (iets langer dan animaties van 2s)
   setTimeout(() => {
     document.body.classList.remove("perfect-schud");
     overlay.classList.remove("perfect-overlay--actief");
-    setTimeout(() => overlay.remove(), 400);
-  }, 1500);
+    setTimeout(() => overlay.remove(), 500);
+  }, 2200);
 }
