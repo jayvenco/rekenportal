@@ -1251,3 +1251,59 @@ button {
     min-height: 150px;
   }
 }
+
+/* Opgaveschermen: per oefening een eigen achtergrond, met leesbare inhoud. */
+.pagina.opgave-pagina {
+  width: 100%;
+  max-width: none;
+  min-height: 100vh;
+  margin: 0;
+  padding: clamp(14px, 3vw, 36px);
+  background:
+    linear-gradient(180deg, rgba(246, 248, 252, 0.18), rgba(246, 248, 252, 0.84)),
+    var(--opgave-achtergrond) center / cover no-repeat fixed;
+}
+
+.opgave-pagina__terug {
+  width: min(1040px, 100%);
+  margin: 0 auto 16px;
+}
+
+.opgave-pagina__terug .terug-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 8px 16px;
+  border-radius: var(--radius-vol);
+  background: rgba(255, 255, 255, 0.86);
+  box-shadow: var(--schaduw-zacht);
+  color: #17324d;
+  text-decoration: none;
+}
+
+.opgave-pagina__inhoud {
+  width: min(1040px, 100%);
+  margin: 0 auto;
+  padding: clamp(18px, 3vw, 32px);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  border-radius: 28px;
+  background: rgba(255, 255, 255, 0.84);
+  box-shadow: 0 24px 70px rgba(31, 41, 55, 0.18);
+  backdrop-filter: blur(14px);
+}
+
+.opgave-pagina__inhoud > .kaart:last-child {
+  margin-bottom: 0;
+}
+
+@media (max-width: 640px) {
+  .pagina.opgave-pagina {
+    padding: 12px;
+    background-attachment: scroll;
+  }
+
+  .opgave-pagina__inhoud {
+    padding: 16px;
+    border-radius: 22px;
+  }
+}
