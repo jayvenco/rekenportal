@@ -288,6 +288,9 @@ export function maakRaketAnimatie(container, doelAantal) {
       update();
     },
     foutAntwoord() {
+      // Scherm flitst donkerrood
+      animHerstart(s.blok, "monster-hero--flash");
+      setTimeout(() => s.blok.classList.remove("monster-hero--flash"), 500);
       monsterLaser(s.laser, s.scene);
       setTimeout(() => {
         heldGetroffen(s.hero);

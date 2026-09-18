@@ -203,6 +203,7 @@ export function startOefensessie(container, instellingen, opKlaar) {
 
     const titel = document.createElement("h2");
     const percentageGoedVoorTitel = (aantalGoedTotaal / instellingen.aantalOpgaven) * 100;
+    if (percentageGoedVoorTitel === 100) toonPerfecteScoreAnimatie();
     titel.textContent = percentageGoedVoorTitel >= 70 ? "Goed gedaan!" : "Bijna! Nog even oefenen.";
     kaart.appendChild(titel);
 
