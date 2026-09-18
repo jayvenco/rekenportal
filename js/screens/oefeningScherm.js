@@ -30,10 +30,9 @@ export async function toonOefeningScherm(container, exerciseId) {
   container.innerHTML = "";
   container.classList.add("opgave-pagina");
   container.style.setProperty("--opgave-achtergrond", `url("${achtergrondVoorOefening(exerciseId)}")`);
-  // Parse optional ?groep= parameter from hash
-  const groep = exerciseId.includes("?groep=")
-    ? Number(exerciseId.split("?groep=")[1])
-    : undefined;
+  // Parse optional ?groep= parameter from hash (string or number)
+  const hashGroep = exerciseId.includes("?groep=") ? exerciseId.split("?groep=")[1] : undefined;
+  const groep = hashGroep !== undefined ? (isNaN(Number(hashGroep)) ? hashGroep : Number(hashGroep)) : undefined;
   const cleanId = exerciseId.split("?")[0];
   const oefening = vindOefening(cleanId, groep);
 

@@ -171,7 +171,7 @@ export async function toonHomepage(container) {
     const knop = document.createElement("button");
     knop.type = "button";
     knop.className = "knop knop--klein";
-    knop.textContent = `Groep ${g}`;
+    knop.textContent = g === "games" ? "🎮 Spellen" : `Groep ${g}`;
     knop.dataset.groep = String(g);
     if (g === actieveGroep) knop.classList.add("knop--primair");
     else knop.classList.add("knop--zacht");

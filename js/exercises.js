@@ -21,6 +21,7 @@ import { complexOefening } from "./exercises/complex/index.js";
 import { metenOefening } from "./exercises/meten/index.js";
 import { robotOefening } from "./exercises/robot/index.js";
 import { redactiesommenOefening } from "./exercises/redactiesommen/index.js";
+import { SPELEN } from "./exercises/games.js";
 import { statistiekOefening } from "./exercises/statistiek/index.js";
 import { procentenOefening } from "./exercises/procenten/index.js";
 import { groteGetallenOefening } from "./exercises/grote-getallen/index.js";
@@ -119,6 +120,10 @@ export const EXERCISES = [
     groep: 8,
     instelbareOpties: "Aantal opgaven (5, 10, 20)",
   },
+  ...SPELEN.map(s => ({
+    ...s,
+    groep: "games",
+  })),
 ];
 
 /** Zoekt een oefening op id, of undefined als die niet bestaat.
