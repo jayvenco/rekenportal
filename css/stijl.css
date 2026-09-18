@@ -1642,6 +1642,266 @@ button {
   }
 }
 
+/* ============================================================
+   Monster Hero — superheldin vliegt naar monster
+   ============================================================ */
+.monster-hero {
+  position: relative;
+  min-height: 300px;
+  padding: 14px 16px 10px;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(135deg, #ebf3ff 0%, #f6f9fc 100%);
+  display: grid;
+  grid-template-rows: 1fr auto;
+  gap: 10px;
+  overflow: hidden;
+}
+.monster-hero__scene {
+  position: relative;
+  height: 200px;
+  border-radius: var(--radius-md);
+  background: linear-gradient(170deg, #d4e6ff 0%, #b8d2ff 30%, #a0c2f0 100%);
+  overflow: hidden;
+}
+.monster-hero__speedlines {
+  position: absolute; inset: 0;
+  opacity: 0.22;
+  background: linear-gradient(105deg, transparent 0 40%, rgba(255,255,255,0.5) 40% 41%, transparent 41% 60%, rgba(255,255,255,0.4) 60% 61%, transparent 61% 80%, rgba(255,255,255,0.3) 80% 81%, transparent 81%);
+  transform: translateX(-20px);
+  animation: monster-speed 1.2s linear infinite;
+}
+@keyframes monster-speed {
+  0% { transform: translateX(-30px); }
+  100% { transform: translateX(30px); }
+}
+
+/* Heldin */
+.monster-hero__character {
+  position: absolute;
+  width: 120px; height: 120px;
+  z-index: 3;
+  transition: left 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  animation: monster-float 2.5s ease-in-out infinite;
+}
+@keyframes monster-float {
+  0%,100% { transform: translateY(0) rotate(-1deg); }
+  50% { transform: translateY(-8px) rotate(1deg); }
+}
+.monster-hero__svg {
+  width: 100%; height: 100%; display: block; overflow: visible;
+  filter: drop-shadow(0 12px 20px rgba(38,59,131,0.2));
+}
+.monster-hero__cape { animation: monster-cape 1.8s ease-in-out infinite; }
+@keyframes monster-cape {
+  0%,100% { transform: skewX(0deg) translateY(0); }
+  50% { transform: skewX(-4deg) translateY(3px); }
+}
+
+/* Monster */
+.monster-hero__monster-wrap {
+  position: absolute;
+  right: 4%;
+  top: 14%;
+  width: 130px; height: 130px;
+  z-index: 2;
+  transition: transform 0.5s ease, opacity 0.5s ease;
+  transform-origin: center bottom;
+}
+.monster-hero__monster-svg { width: 100%; height: 100%; display: block; }
+.monster-hero__monster--schud {
+  animation: monster-schud 0.35s ease-out;
+}
+@keyframes monster-schud {
+  0%,100% { transform: translateX(0); }
+  20% { transform: translateX(-8px) rotate(-2deg); }
+  40% { transform: translateX(8px) rotate(2deg); }
+  60% { transform: translateX(-5px); }
+  80% { transform: translateX(5px); }
+}
+.monster-hero__monster--kapot {
+  animation: monster-kapot 0.7s ease-out forwards;
+}
+@keyframes monster-kapot {
+  0% { transform: scale(1); opacity: 1; }
+  40% { transform: scale(1.4); opacity: 0.7; filter: brightness(2); }
+  100% { transform: scale(0.1); opacity: 0; filter: blur(4px); }
+}
+
+/* Laser */
+.monster-hero__laser {
+  position: absolute;
+  left: 72%;
+  top: 42%;
+  width: 28%;
+  height: 6px;
+  background: linear-gradient(90deg, transparent 0%, #ff4d4d 30%, #ff8888 60%, transparent 100%);
+  border-radius: 3px;
+  z-index: 4;
+  opacity: 0;
+  transform-origin: right center;
+}
+.monster-hero__laser--vuren {
+  animation: laser-vuren 0.45s ease-out forwards;
+}
+@keyframes laser-vuren {
+  0% { opacity: 0; transform: scaleX(0); }
+  20% { opacity: 1; transform: scaleX(1); filter: brightness(1.5); }
+  60% { opacity: 1; transform: scaleX(1); filter: brightness(1); }
+  100% { opacity: 0; transform: scaleX(0.3); }
+}
+
+/* Powerup heldin */
+.monster-hero__hero--powerup {
+  animation: hero-powerup 0.6s ease-out;
+}
+.monster-hero__hero--powerup .monster-hero__svg {
+  filter: drop-shadow(0 0 16px rgba(255,216,60,0.9)) brightness(1.3);
+}
+@keyframes hero-powerup {
+  0% { transform: scale(1); }
+  35% { transform: scale(1.18); }
+  65% { transform: scale(0.94); }
+  100% { transform: scale(1); }
+}
+
+/* Heldin geraakt */
+.monster-hero__hero--hit {
+  animation: hero-hit 0.55s ease-out;
+}
+.monster-hero__hero--hit .monster-hero__svg {
+  filter: drop-shadow(0 0 12px rgba(255,77,77,0.8)) brightness(0.68) hue-rotate(340deg);
+}
+@keyframes hero-hit {
+  0% { transform: translateX(0); }
+  15% { transform: translateX(10px) rotate(4deg); }
+  30% { transform: translateX(-14px) rotate(-5deg); }
+  50% { transform: translateX(6px) rotate(2deg); }
+  70% { transform: translateX(-4px) rotate(-1deg); }
+  100% { transform: translateX(0); }
+}
+
+/* Partikels */
+.monster-hero__particle {
+  position: absolute;
+  z-index: 5;
+  font-size: 18px; font-weight: 900;
+  pointer-events: none;
+  animation: monster-particle 0.9s ease-out forwards;
+}
+@keyframes monster-particle {
+  0% { opacity: 0; transform: translate(0,0) scale(0.5) rotate(0deg); }
+  20% { opacity: 1; }
+  100% { opacity: 0; transform: translate(var(--dx),var(--dy)) scale(1.2) rotate(20deg); }
+}
+
+/* Badge + bubble */
+.monster-hero__badge {
+  position: absolute;
+  left: 50%; top: 8%;
+  z-index: 6;
+  padding: 6px 18px;
+  border-radius: 999px;
+  background: #2a4fc9;
+  color: #fff;
+  font-size: 14px; font-weight: 900;
+  transform: translateX(-50%) scale(0.82);
+  opacity: 0;
+  pointer-events: none;
+}
+.monster-hero__badge--show {
+  animation: monster-badge 1.3s ease-out forwards;
+}
+@keyframes monster-badge {
+  0% { opacity: 0; transform: translate(-50%,-12px) scale(0.82); }
+  20% { opacity: 1; transform: translate(-50%,0) scale(1.05); }
+  75% { opacity: 1; transform: translate(-50%,0) scale(1); }
+  100% { opacity: 0; transform: translate(-50%,-10px) scale(0.94); }
+}
+.monster-hero__bubble {
+  position: absolute; right: 12px; bottom: 12px; z-index: 5;
+  padding: 6px 14px; border-radius: 999px;
+  background: rgba(255,255,255,0.88);
+  color: #1f2937; font-size: 15px; font-weight: 700;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+  pointer-events: none;
+}
+
+/* Meter */
+.monster-hero__meter {
+  padding: 10px 0;
+}
+.monster-hero__meter-top {
+  display: flex; justify-content: space-between; align-items: baseline;
+  margin-bottom: 6px;
+}
+.monster-hero__label { font-size: 13px; font-weight: 800; color: #5b6472; }
+.monster-hero__percent { font-size: 20px; font-weight: 800; color: #2a4fc9; }
+.monster-hero__bar {
+  position: relative; height: 12px; border-radius: 6px;
+  background: #e2e8f0; overflow: hidden;
+}
+.monster-hero__bar-fill {
+  height: 100%; width: 0%; border-radius: 6px;
+  background: linear-gradient(90deg, #38b26a, #ffd83d, #ff785a);
+  transition: width 0.4s ease;
+}
+.monster-hero__checkpoint {
+  position: absolute; top: 0; width: 4px; height: 12px;
+  background: rgba(255,255,255,0.5);
+}
+.monster-hero__checkpoint--25 { left: 25%; }
+.monster-hero__checkpoint--50 { left: 50%; }
+.monster-hero__checkpoint--75 { left: 75%; }
+.monster-hero__checkpoint--100 { left: calc(100% - 3px); }
+.monster-hero__meta {
+  display: flex; justify-content: space-between; align-items: baseline;
+  margin-top: 4px;
+}
+.monster-hero__rank { font-size: 13px; font-weight: 700; color: #5b6472; }
+.monster-hero__count { font-size: 13px; font-weight: 700; color: #5b6472; }
+
+/* Eindscherm */
+.monster-hero-result {
+  text-align: center; padding: 20px 16px; margin: 16px 0;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #f6f9fc, #ebf3ff);
+  border: 2px solid #dce7f5;
+}
+.monster-hero-result__burst {
+  position: relative; height: 80px;
+}
+.monster-hero-result__hero {
+  display: flex; justify-content: center; margin: 8px 0;
+}
+.monster-hero-result__hero .monster-hero__character {
+  position: relative; left: auto !important; width: 100px; height: 100px;
+}
+.monster-hero-result h3 {
+  font-size: 26px; font-weight: 900; color: #2a4fc9; margin: 8px 0;
+}
+.monster-hero-result p { margin: 0 0 12px; font-size: 17px; color: #5b6472; }
+.monster-hero-result__meter {
+  height: 10px; border-radius: 5px; background: #e2e8f0;
+  max-width: 200px; margin: 0 auto 6px; overflow: hidden;
+}
+.monster-hero-result__fill {
+  height: 100%; border-radius: 5px;
+  background: linear-gradient(90deg, #38b26a, #ffd83d, #ff785a);
+  width: var(--power-progress, 0%);
+}
+.monster-hero-result strong { color: #2f6ed4; }
+
+@media (max-width: 520px) {
+  .monster-hero { min-height: 260px; padding: 10px; }
+  .monster-hero__scene { height: 170px; }
+  .monster-hero__character { width: 100px; height: 100px; }
+  .monster-hero__monster-wrap { width: 110px; height: 110px; }
+  .monster-hero__bubble { font-size: 13px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .monster-hero *, .monster-hero-result * { animation: none !important; transition: none !important; }
+}
+
 /* Statistieken */
 .stat-grid {
   display: grid;
