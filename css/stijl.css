@@ -902,6 +902,14 @@ button {
 .hero-profile-card__body h2 {
   margin: 0;
 }
+.hero-profile-card__body p {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--coin-gold);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 2px;
+}
 
 .hero-profile-card__stats {
   display: flex;
