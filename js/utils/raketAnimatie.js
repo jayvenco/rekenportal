@@ -121,6 +121,17 @@ function bouwScene() {
   const hero = svgSuperheldin();
   hero.style.left = "8%";
 
+  // Sterren (ruimte bovenin)
+  const sterren = el("div", "monster-hero__sterren");
+
+  // Wolken (bewegend)
+  const wolken = el("div", "monster-hero__wolken");
+  for (let i = 0; i < 4; i++) {
+    const w = el("div", "monster-hero__wolk");
+    w.style.cssText = `top:${20 + i * 42}%;left:${-20 + i * 30}%;opacity:${0.25 + Math.random() * 0.25};animation-delay:${(i * 1.5).toFixed(1)}s;`;
+    wolken.appendChild(w);
+  }
+
   // Monster (rechts)
   const monster = svgMonster();
   monster.classList.add("monster-hero__monster-wrap");
@@ -131,7 +142,7 @@ function bouwScene() {
   const badge = el("div", "monster-hero__badge");
   const bubble = el("div", "monster-hero__bubble", "Vlieg erheen!");
 
-  scene.append(speedlines, monster, laser, hero, badge, bubble);
+  scene.append(sterren, wolken, speedlines, monster, laser, hero, badge, bubble);
   blok.appendChild(scene);
 
   // Meter onder scene

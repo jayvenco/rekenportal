@@ -1660,8 +1660,62 @@ button {
   position: relative;
   height: 200px;
   border-radius: var(--radius-md);
-  background: linear-gradient(170deg, #d4e6ff 0%, #b8d2ff 30%, #a0c2f0 100%);
+  background: linear-gradient(180deg, #0a0a2e 0%, #1a1a4e 20%, #2a3a6e 40%, #4a7abe 65%, #7ab8e8 85%, #a0d0f0 100%);
   overflow: hidden;
+}
+
+/* Sterren (ruimte bovenin scene) */
+.monster-hero__sterren {
+  position: absolute; inset: 0; z-index: 0;
+  overflow: hidden;
+}
+.monster-hero__sterren::before {
+  content: "";
+  position: absolute;
+  width: 100%; height: 60%;
+  background-image:
+    radial-gradient(2px 2px at 10% 15%, #fff 100%, transparent),
+    radial-gradient(1px 1px at 25% 5%, #fff 100%, transparent),
+    radial-gradient(2px 2px at 40% 20%, #fff 100%, transparent),
+    radial-gradient(1px 1px at 55% 10%, #fff 100%, transparent),
+    radial-gradient(2px 2px at 70% 18%, #fff 100%, transparent),
+    radial-gradient(1px 1px at 85% 8%, #fff 100%, transparent),
+    radial-gradient(2px 2px at 15% 35%, #fff 100%, transparent),
+    radial-gradient(1px 1px at 35% 28%, #fff 100%, transparent),
+    radial-gradient(2px 2px at 50% 38%, #fff 100%, transparent),
+    radial-gradient(1px 1px at 65% 30%, #fff 100%, transparent),
+    radial-gradient(2px 2px at 80% 42%, #fff 100%, transparent),
+    radial-gradient(1px 1px at 92% 32%, #fff 100%, transparent),
+    radial-gradient(2px 2px at 5% 45%, #fff 100%, transparent),
+    radial-gradient(1px 1px at 22% 48%, #fff 100%, transparent),
+    radial-gradient(2px 2px at 45% 40%, #fff 100%, transparent),
+    radial-gradient(1px 1px at 75% 45%, #fff 100%, transparent),
+    radial-gradient(2px 2px at 95% 48%, #fff 100%, transparent),
+    radial-gradient(1px 1px at 18% 50%, #fff 100%, transparent);
+  background-repeat: no-repeat;
+  animation: sterren-twinkel 3s ease-in-out infinite alternate;
+}
+@keyframes sterren-twinkel {
+  0% { opacity: 0.6; }
+  100% { opacity: 1; }
+}
+
+/* Wolken (bewegen langzaam van links naar rechts) */
+.monster-hero__wolken {
+  position: absolute; inset: 0; z-index: 1;
+  pointer-events: none;
+}
+.monster-hero__wolk {
+  position: absolute;
+  width: 80px; height: 28px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.18);
+  filter: blur(2px);
+  animation: wolk-drijven 12s linear infinite;
+}
+@keyframes wolk-drijven {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(120vw); }
 }
 .monster-hero__speedlines {
   position: absolute; inset: 0;
