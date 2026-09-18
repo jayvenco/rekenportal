@@ -22,12 +22,12 @@ export function berekenPunten(aantalGoed, totaal) {
   // Geen opgaven gedaan
   if (totaal === 0) return { punten: 0, percentage: 0, label: "Geen opgaven gedaan." };
 
-  // Minder dan 50% → 5 punten aftrek
+  // Minder dan 50% → 2 punten aftrek (gehalveerd van 5)
   if (pct < 50) {
     return {
-      punten: -5,
+      punten: -2,
       percentage: g,
-      label: "Minder dan 50% goed — 5 punten aftrek.",
+      label: "Minder dan 50% goed — 2 punten aftrek.",
     };
   }
 
@@ -40,11 +40,10 @@ export function berekenPunten(aantalGoed, totaal) {
     };
   }
 
-  // Tussen 70% en 99% → 5 punten basis + bonus per extra %
+  // Tussen 70% en 99% → 3 punten basis + bonus per extra % (gehalveerd)
   if (pct < 100) {
-    // Per extra procent boven 70%: bonus van 5 punten verdeeld over 30%
-    const extraPunten = Math.round(((pct - 70) / 30) * 5);
-    const totaalPunten = 5 + extraPunten;
+    const extraPunten = Math.round(((pct - 70) / 30) * 3);
+    const totaalPunten = 3 + extraPunten;
     return {
       punten: totaalPunten,
       percentage: g,
@@ -52,11 +51,11 @@ export function berekenPunten(aantalGoed, totaal) {
     };
   }
 
-  // 100% → 10 punten
+  // 100% → 5 punten (gehalveerd van 10)
   return {
-    punten: 10,
+    punten: 5,
     percentage: 100,
-    label: "Perfect — 10 punten!",
+    label: "Perfect — 5 punten!",
   };
 }
 
