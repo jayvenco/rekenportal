@@ -17,6 +17,23 @@ async function haalActiefProfielOp() {
   return profielen.find((p) => p.id === profielId) || null;
 }
 
+function isAfbeeldingAvatar(avatar) {
+  return typeof avatar === "string" && avatar.includes("img/profiel-afbeeldingen/");
+}
+
+function vulProfielBadge(badge, profiel) {
+  if (isAfbeeldingAvatar(profiel.avatar)) {
+    const img = document.createElement("img");
+    img.className = "profiel-badge__avatar";
+    img.src = profiel.avatar;
+    img.alt = "";
+    img.loading = "lazy";
+    badge.append(img, document.createTextNode(profiel.naam));
+  } else {
+    badge.textContent = `${profiel.avatar} ${profiel.naam}`;
+  }
+}
+
 /** Tekent de homepage in de gegeven container. */
 export async function toonHomepage(container) {
   container.innerHTML = "";
@@ -45,7 +62,7 @@ export async function toonHomepage(container) {
     const profielBadge = document.createElement("span");
     profielBadge.className = "knop knop--zacht knop--klein";
     profielBadge.setAttribute("aria-label", `Actief profiel: ${actiefProfiel.naam}`);
-    profielBadge.textContent = `${actiefProfiel.avatar} ${actiefProfiel.naam}`;
+    vulProfielBadge(profielBadge, actiefProfiel);
     actiesBlok.appendChild(profielBadge);
   }
 

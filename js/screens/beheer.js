@@ -22,6 +22,23 @@ function formatTijd(ms) {
   return `${(ms / 1000).toFixed(1)}s`;
 }
 
+function isAfbeeldingAvatar(avatar) {
+  return typeof avatar === "string" && avatar.includes("img/profiel-afbeeldingen/");
+}
+
+function vulProfielTitel(element, profiel) {
+  if (isAfbeeldingAvatar(profiel.avatar)) {
+    const img = document.createElement("img");
+    img.className = "profiel-badge__avatar";
+    img.src = profiel.avatar;
+    img.alt = "";
+    img.loading = "lazy";
+    element.append(img, document.createTextNode(profiel.naam));
+  } else {
+    element.textContent = `${profiel.avatar} ${profiel.naam}`;
+  }
+}
+
 /** Bouwt de rij met exportknoppen (JSON + CSV) als <a download>-links. */
 function bouwExportRij(jsonHref, csvHref) {
   const rij = document.createElement("div");
@@ -91,7 +108,8 @@ export async function toonBeheerScherm(container) {
     const profielTitelBlok = document.createElement("div");
     profielTitelBlok.className = "kop-balk__titel";
     const profielTitel = document.createElement("h2");
-    profielTitel.textContent = `${profiel.avatar} ${profiel.naam}`;
+    profielTitel.className = "profiel-beheer-titel";
+    vulProfielTitel(profielTitel, profiel);
     profielTitelBlok.appendChild(profielTitel);
     kopRij.appendChild(profielTitelBlok);
 

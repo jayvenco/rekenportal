@@ -12,7 +12,21 @@ import {
   setActiefProfielId,
 } from "../storage.js";
 
-const AVATAR_KEUZES = ["🧑‍🚀", "👧", "👦", "🦸", "⭐", "🌈", "🦊", "🐻"];
+const AVATAR_KEUZES = [
+  { waarde: "img/profiel-afbeeldingen/anime-meisje-blauw.png?v=1", label: "Anime meisje blauw" },
+  { waarde: "img/profiel-afbeeldingen/anime-meisje-roze.png?v=1", label: "Anime meisje roze" },
+  { waarde: "img/profiel-afbeeldingen/anime-avonturier.png?v=1", label: "Anime avonturier" },
+  { waarde: "img/profiel-afbeeldingen/katje-oranje.png?v=1", label: "Oranje katje" },
+  { waarde: "img/profiel-afbeeldingen/katje-grijs.png?v=1", label: "Grijs katje" },
+  { waarde: "img/profiel-afbeeldingen/katje-tovenaar.png?v=1", label: "Tovenaar katje" },
+  { waarde: "img/profiel-afbeeldingen/prinses-roze.png?v=1", label: "Prinses roze" },
+  { waarde: "img/profiel-afbeeldingen/kroon-blauw.png?v=1", label: "Blauwe kroon" },
+  { waarde: "img/profiel-afbeeldingen/demon-hunter-blauw.png?v=1", label: "Demon hunter blauw" },
+  { waarde: "img/profiel-afbeeldingen/demon-hunter-paars.png?v=1", label: "Demon hunter paars" },
+  { waarde: "🧑‍🚀", label: "Ruimtevaarder" },
+  { waarde: "⭐", label: "Ster" },
+  { waarde: "🌈", label: "Regenboog" },
+];
 
 function maakElement(tag, className, textContent = "") {
   const element = document.createElement(tag);
@@ -23,6 +37,24 @@ function maakElement(tag, className, textContent = "") {
 
 function profielAvatar(profiel) {
   return profiel.avatar || "⭐";
+}
+
+function isAfbeeldingAvatar(avatar) {
+  return typeof avatar === "string" && avatar.includes("img/profiel-afbeeldingen/");
+}
+
+function vulAvatarElement(element, avatar, alt = "") {
+  element.textContent = "";
+  if (isAfbeeldingAvatar(avatar)) {
+    const img = document.createElement("img");
+    img.className = "profiel-start__avatar-img";
+    img.src = avatar;
+    img.alt = alt;
+    img.loading = "lazy";
+    element.appendChild(img);
+  } else {
+    element.textContent = avatar || "⭐";
+  }
 }
 
 function toonFormulier(formulierKaart, naamInvoer, foutmeldingEl) {
@@ -98,24 +130,24 @@ export async function toonProfielkiezerScherm(container) {
   const avatarRij = maakElement("div", "profiel-start__avatar-rij");
   avatarRij.setAttribute("role", "radiogroup");
   avatarRij.setAttribute("aria-label", "Avatar kiezen");
-  let gekozenAvatar = AVATAR_KEUZES[0];
+  let gekozenAvatar = AVATAR_KEUZES[0].waarde;
   const avatarKnoppen = [];
 
-  for (const avatarEmoji of AVATAR_KEUZES) {
+  for (const avatarKeuze of AVATAR_KEUZES) {
     const knop = document.createElement("button");
     knop.type = "button";
     knop.className = "profiel-start__avatar-keuze";
-    knop.textContent = avatarEmoji;
     knop.setAttribute("role", "radio");
-    knop.setAttribute("aria-label", `Avatar ${avatarEmoji}`);
-    knop.setAttribute("aria-checked", String(avatarEmoji === gekozenAvatar));
+    knop.setAttribute("aria-label", `Avatar ${avatarKeuze.label}`);
+    knop.setAttribute("aria-checked", String(avatarKeuze.waarde === gekozenAvatar));
+    vulAvatarElement(knop, avatarKeuze.waarde, avatarKeuze.label);
     knop.addEventListener("click", () => {
-      gekozenAvatar = avatarEmoji;
+      gekozenAvatar = avatarKeuze.waarde;
       for (const item of avatarKnoppen) {
-        item.knop.setAttribute("aria-checked", String(item.avatarEmoji === avatarEmoji));
+        item.knop.setAttribute("aria-checked", String(item.waarde === avatarKeuze.waarde));
       }
     });
-    avatarKnoppen.push({ knop, avatarEmoji });
+    avatarKnoppen.push({ knop, waarde: avatarKeuze.waarde });
     avatarRij.appendChild(knop);
   }
   formulierKaart.appendChild(avatarRij);
@@ -169,7 +201,8 @@ export async function toonProfielkiezerScherm(container) {
         window.location.hash = "#/";
       });
 
-      const cirkel = maakElement("span", "profiel-start__cirkel", profielAvatar(profiel));
+      const cirkel = maakElement("span", "profiel-start__cirkel");
+      vulAvatarElement(cirkel, profielAvatar(profiel), profiel.naam);
       const naam = maakElement("span", "profiel-start__profielnaam", profiel.naam);
       knop.append(cirkel, naam);
       profielenRij.appendChild(knop);
