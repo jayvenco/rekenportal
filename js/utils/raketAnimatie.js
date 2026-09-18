@@ -309,20 +309,25 @@ export function maakRaketAnimatie(container, doelAantal) {
   return {
     goedAntwoord() {
       aantalGoed += 1;
-      const fn = GOEDE_FN[Math.floor(Math.random() * GOEDE_FN.length)];
-      fn(s.rotsWrap);
-      toonPartikels(s.scene, { aantal: 14, symbols: ["★", "✦", "◆", "✧", "✨"] });
-      s.bubble.textContent = kies(["Hyaa!", "Take that!", "Whoosh!", "Boom!"]);
-      // Powerup: heldin gloeit + pulseert bij elk goed antwoord
-      animatieHerstart(s.hero, "math-hero--powerup");
-      setTimeout(() => s.hero.classList.remove("math-hero--powerup"), 900);
+      // Dash naar rechts (naar de rots toe)
+      animatieHerstart(s.hero, "math-hero--dash");
+      setTimeout(() => {
+        const fn = GOEDE_FN[Math.floor(Math.random() * GOEDE_FN.length)];
+        fn(s.rotsWrap);
+        toonPartikels(s.scene, { aantal: 14, symbols: ["★", "✦", "◆", "✧", "✨"] });
+        s.bubble.textContent = kies(["Hyaa!", "Take that!", "Whoosh!", "Boom!"]);
+        animatieHerstart(s.hero, "math-hero--powerup");
+        setTimeout(() => s.hero.classList.remove("math-hero--powerup"), 700);
+      }, 250);
       update();
     },
     foutAntwoord() {
       const fn = FOUTE_FN[Math.floor(Math.random() * FOUTE_FN.length)];
-      fn(s.hero);
-      s.bubble.textContent = kies(["Oof!", "That hurt!", "No way!", "Grr..."]);
-      // Geen update() — teller blijft gelijk
+      animatieHerstart(s.hero, "math-hero--knockback");
+      setTimeout(() => {
+        fn(s.hero);
+        s.bubble.textContent = kies(["Oof!", "That hurt!", "No way!", "Grr..."]);
+      }, 150);
     },
     reset() {
       aantalGoed = 0;
