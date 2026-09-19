@@ -23,3 +23,7 @@ serve_no_cache.py
 deploy-*.sh
 Dockerfile
 .dockerignore
+
+# Node (spellen)
+**/node_modules/
+**/package-lock.json

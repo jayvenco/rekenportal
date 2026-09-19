@@ -7,6 +7,7 @@ COPY index.html /app/
 COPY css/ /app/css/
 COPY js/ /app/js/
 COPY img/ /app/img/
+COPY games/ /app/games/
 
 # Python dependencies
 RUN pip install --no-cache-dir -r /app/backend/requirements.txt
