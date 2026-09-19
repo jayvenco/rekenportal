@@ -315,7 +315,7 @@ export async function toonOefeningScherm(container, instellingen, opKlaar) {
         cel.style.background = "";
       }
     });
-    const start = levelData?.start || { rij: 0, kol: 0 };
+    const start = levelData?.robot || { row: 0, col: 0 };
     verplaatsRobot(start.row, start.col);
     coinsCollected = 0;
     collisionError = null;
@@ -359,7 +359,7 @@ export async function toonOefeningScherm(container, instellingen, opKlaar) {
     resetGrid();
     feedbackEl.style.color = "#374151";
 
-    const start = levelData?.start || { rij: 0, kol: 0 };
+    const start = levelData?.robot || { row: 0, col: 0 };
     let robotRij = start.row;
     let robotKol = start.col;
 
