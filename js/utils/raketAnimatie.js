@@ -35,7 +35,6 @@ function nyanCat() {
     sterren.appendChild(li);
   }
   w.innerHTML = `
-    <div class="nyan-regenboog"><div class="nyan-sprite"></div></div>
     <div class="nyan-lichaam">
       <div class="nyan-staart"><div class="nyan-sprite"></div></div>
       <div class="nyan-pootjes"><div class="nyan-sprite"></div></div>
@@ -56,30 +55,17 @@ function bouwScene() {
   blok.setAttribute("aria-label", "Nyan Cat vliegt door de ruimte.");
 
   const scene = el("div", "nyan-space__scene");
-  scene.style.cssText = "position:relative;height:200px;border-radius:12px;overflow:hidden;background:linear-gradient(180deg,#0a0a2e 0%,#1a1a4e 25%,#2a3a6e 45%,#4a6abe 65%,#7ab8e8 80%,#b0e0ff 92%,#5a8a3a 100%);";
-
-  // Grond (donkergroen)
-  const ground = el("div");
-  ground.style.cssText = "position:absolute;bottom:0;left:0;right:0;height:12%;background:linear-gradient(180deg,#4a7a3a,#2a5a2a);border-top:2px solid #1a3a1a;z-index:2;";
-
-  // Wolken (onderaan, bewegen)
-  const wolkLayer = el("div");
-  wolkLayer.style.cssText = "position:absolute;bottom:15%;left:0;right:0;height:80px;overflow:hidden;z-index:3;pointer-events:none;";
-  for (let i = 0; i < 4; i++) {
-    const w = el("div");
-    w.style.cssText = `position:absolute;bottom:${8+i*15}px;width:${80+i*20}px;height:${16+i*4}px;border-radius:999px;background:rgba(255,255,255,${0.3-i*0.05});left:${-30+i*35}%;animation:nyan-cloud ${8-i}s linear infinite;animation-delay:${i*2}s;filter:blur(1px);`;
-    wolkLayer.appendChild(w);
-  }
+  scene.style.cssText = "position:relative;height:200px;border-radius:12px;overflow:hidden;background:linear-gradient(180deg,#0a0a2e 0%,#1a1a4e 25%,#2a3a6e 50%,#1a1a4e 75%,#0a0a2e 100%);";
 
   // Cat (links start)
   const cat = nyanCat();
-  cat.style.cssText = "position:absolute;left:5%;bottom:22%;z-index:5;width:150px;height:110px;transition:left 0.6s cubic-bezier(0.34,1.56,0.64,1), bottom 0.3s;";
+  cat.style.cssText = "position:absolute;left:5%;bottom:38%;z-index:5;width:150px;height:110px;transition:left 0.6s cubic-bezier(0.34,1.56,0.64,1), bottom 0.3s;";
 
   // Badge
   const badge = el("div", "nyan-space__badge");
   badge.style.cssText = "position:absolute;left:50%;top:6%;z-index:6;padding:5px 16px;border-radius:999px;background:#2a4fc9;color:#fff;font-size:13px;font-weight:900;transform:translateX(-50%) scale(0.82);opacity:0;pointer-events:none;";
 
-  scene.append(ground, wolkLayer, cat, badge);
+  scene.append(cat, badge);
 
   // Meter
   const meter = el("div", "nyan-space__meter");
@@ -105,7 +91,6 @@ function bouwScene() {
     const st = document.createElement("style");
     st.id = "nyan-space-kf";
     st.textContent = `
-      @keyframes nyan-cloud { 0%{transform:translateX(0)} 100%{transform:translateX(120vw)} }
       @keyframes nyan-particle { 0%{opacity:0;transform:translate(0,0) scale(0.5) rotate(0)} 20%{opacity:1} 100%{opacity:0;transform:translate(var(--dx),var(--dy)) scale(1.2) rotate(20deg)} }
     `;
     document.head.appendChild(st);
@@ -185,7 +170,7 @@ export function maakRaketAnimatie(container, doelAantal) {
     const catLeft = 5 + v * 70;
     s.cat.style.left = `${catLeft}%`;
     // Slight altitude gain
-    const catBottom = 22 + v * 8;
+    const catBottom = 38 + v * 6;
     s.cat.style.bottom = `${catBottom}%`;
 
     if (aantalGoed >= totaal) {
@@ -207,7 +192,7 @@ export function maakRaketAnimatie(container, doelAantal) {
     },
     reset() {
       aantalGoed = 0;
-      s.cat.style.left = "5%"; s.cat.style.bottom = "22%";
+      s.cat.style.left = "5%"; s.cat.style.bottom = "38%";
       s.cat.style.filter = "";
       update();
     },
