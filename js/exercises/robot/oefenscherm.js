@@ -445,6 +445,7 @@ export async function toonOefeningScherm(container, instellingen, opKlaar) {
 
     // Als de loop zonder goal eindigt
     if (!isFinished) {
+      rewardTracker.registreerFout();
       huidigeStap = -1;
       herstelCommandoLijst();
       feedbackEl.textContent = "⏹ Robot staat stil, maar het doel is niet bereikt.";
@@ -463,6 +464,7 @@ export async function toonOefeningScherm(container, instellingen, opKlaar) {
 
   // ─── 7. Succes / beloningen ─────────────────────────────────────────
   async function verwerkSucces() {
+    rewardTracker.registreerGoed(1, feedbackEl);
     const tijdBesteed = performance.now(); // ruwe timestamp
     await recordAnswer({
       exerciseId: EXERCISE_ID,
