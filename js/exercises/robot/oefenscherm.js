@@ -295,11 +295,14 @@ export async function toonOefeningScherm(container, instellingen, opKlaar) {
 
   /** Verplaatst het robot-icoon naar een bepaalde cel. */
   function verplaatsRobot(rij, kol) {
-    // Verwijder robot-icoon uit alle cellen
+    // De vorige robotcel wordt onderdeel van het afgelegde pad (oranje).
     gridEl.querySelectorAll(".robot-cel").forEach((cel) => {
-      if (cel.textContent === "🤖") cel.textContent = "";
+      if (cel.textContent === "🤖") {
+        cel.textContent = "";
+        cel.style.background = "#f0883e";
+      }
     });
-    // Zet robot op nieuwe positie
+    // Zet robot op nieuwe positie (lichtblauw = huidige plek).
     const celDoel = gridEl.querySelector(`#cel-${rij}-${kol}`);
     if (celDoel) {
       celDoel.textContent = "🤖";
@@ -307,16 +310,31 @@ export async function toonOefeningScherm(container, instellingen, opKlaar) {
     }
   }
 
-  /** Reset de grid naar de start-positie. */
+  /** Reset de grid naar de oorspronkelijke beginsituatie. */
   function resetGrid() {
     gridEl.querySelectorAll(".robot-cel").forEach((cel) => {
-      if (cel.textContent === "🤖") {
-        cel.textContent = "";
-        cel.style.background = "";
-      }
+      const rij = Number(cel.dataset.rij);
+      const kol = Number(cel.dataset.kol);
+
+      let achtergrond = "#fff";
+      let tekst = "";
+
+      const isMuur = levelData?.obstacles?.some((m) => m.row === rij && m.col === kol);
+      if (isMuur) { achtergrond = "#94a3b8"; tekst = "🧱"; }
+
+      const isDoel = levelData?.target?.row === rij && levelData?.target?.col === kol;
+      if (isDoel) { achtergrond = "#fef9c3"; tekst = "🎯"; }
+
+      const isMunt = levelData?.coins?.some((c) => c.row === rij && c.col === kol);
+      if (isMunt) { tekst = "💰"; }
+
+      const isStart = levelData?.robot?.row === rij && levelData?.robot?.col === kol;
+      if (isStart) { achtergrond = "#dbeafe"; tekst = "🤖"; }
+
+      cel.style.background = achtergrond;
+      cel.textContent = tekst;
     });
-    const start = levelData?.robot || { row: 0, col: 0 };
-    verplaatsRobot(start.row, start.col);
+
     coinsCollected = 0;
     collisionError = null;
     werkScoreBij();
