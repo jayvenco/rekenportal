@@ -177,7 +177,7 @@ export function bouwGetallenlijn({ min, max, stap, verborgenGetallen = [], marke
     refY: 9,
     orient: "auto",
   });
-  marker.appendChild(svgEl("path", { d: "M0,0 L10,0 L5,10 Z", fill: "#4f8fe8" }));
+  marker.appendChild(svgEl("path", { d: "M0,0 L10,0 L5,10 Z", fill: "#e8735a" }));
   defs.appendChild(marker);
   svg.insertBefore(defs, svg.firstChild);
 

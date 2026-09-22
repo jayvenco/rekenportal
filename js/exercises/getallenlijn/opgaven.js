@@ -38,7 +38,7 @@ export function genereerWelkGetal({ min, max, stap }) {
     meta: { opgaveType: "welkGetal", stap, bereikMin: min, bereikMax: max },
     weergave: {
       min, max, stap,
-      markeringen: [{ getal, pijl: true, kleur: "#4f8fe8" }],
+      markeringen: [{ getal, pijl: true, kleur: "#e8735a" }],
     },
     invoerType: "cijfers",
   };
@@ -88,7 +88,7 @@ export function genereerVulAan({ min, max, stap }) {
     weergave: {
       min, max, stap,
       verborgenGetallen: verborgen,
-      markeringen: [{ getal: gevraagdGetal, pijl: true, kleur: "#f5b942" }],
+      markeringen: [{ getal: gevraagdGetal, pijl: true, kleur: "#e8735a" }],
     },
     invoerType: "cijfers",
   };
