@@ -7,6 +7,7 @@
 
 import { vindOefening } from "../exercises.js";
 import { getInstellingen } from "../storage.js";
+import { getTelraam, vernietigTelraam } from "../utils/telraam.js";
 
 const OPGAVE_ACHTERGRONDEN = {
   getallenlijn: "/img/opgave-achtergronden/natuur-bos.png?v=1",
@@ -65,4 +66,15 @@ export async function toonOefeningScherm(container, exerciseId) {
 
   const settings = (await getInstellingen(oefening.id)) || {};
   oefening.mount(oefenContainer, settings);
+
+  // Telraam: voeg toggle-knop en widget toe aan de pagina
+  const telraam = getTelraam();
+  const bestaandeToggle = document.querySelector(".telraam-toggle");
+  if (!bestaandeToggle) {
+    document.body.appendChild(telraam.getToggleKnop());
+  }
+  const bestaandeWidget = document.querySelector(".telraam-widget");
+  if (!bestaandeWidget) {
+    document.body.appendChild(telraam.getElement());
+  }
 }

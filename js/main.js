@@ -26,6 +26,7 @@ import { toonProfielkiezerScherm } from "./screens/profielkiezer.js";
 import { toonBeheerScherm } from "./screens/beheer.js";
 import { toonLeerplanScherm } from "./screens/leerplan.js";
 import { getActiefProfielId } from "./storage.js";
+import { vernietigTelraam } from "./utils/telraam.js";
 import {
   startMuziek, stopMuziek, setVolume, getVolume,
   toggleMute, isMuted, laadMuziek,
@@ -44,6 +45,11 @@ async function verwerkRoute() {
   hoofdContainer.className = "pagina";
   initialiseerCoinCounter();
   verversCoinCounter();
+
+  // Telraam opruimen als we niet naar een oefening gaan
+  if (!hash.startsWith("#/oefening/")) {
+    vernietigTelraam();
+  }
 
   // Cruciale gate: geen actief profiel en geen beheer-route? Toon de profielkiezer.
   if (hash !== "#/profielen" && hash !== "#/beheer" && hash !== "#/leerplan" && getActiefProfielId() === null) {
