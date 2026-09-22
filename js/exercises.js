@@ -26,6 +26,7 @@ import { statistiekOefening } from "./exercises/statistiek/index.js";
 import { procentenOefening } from "./exercises/procenten/index.js";
 import { groteGetallenOefening } from "./exercises/grote-getallen/index.js";
 import { getallenOefening } from "./exercises/getallen/index.js";
+import { klokkijkenOefening } from "./exercises/klokkijken/index.js";
 
 /**
  * Elke oefening in deze lijst heeft de vorm:
@@ -59,6 +60,11 @@ export const EXERCISES = [
     ...verhaaltjesOefening,
     groep: 4,
     instelbareOpties: "Aantal opgaven",
+  },
+  {
+    ...klokkijkenOefening,
+    groep: 4,
+    instelbareOpties: "Hele uren, halve uren of mix, aantal opgaven",
   },
   {
     ...complexOefening,

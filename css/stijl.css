@@ -432,6 +432,18 @@ button {
   display: block;
 }
 
+.klok-houder {
+  width: 100%;
+  max-width: 300px;
+  margin: var(--ruimte-lg) auto;
+}
+
+.klok-houder svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
 .feedback-vlak {
   min-height: 64px;
   display: flex;
