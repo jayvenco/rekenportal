@@ -57,9 +57,12 @@ function bouwScene() {
   const scene = el("div", "nyan-space__scene");
   scene.style.cssText = "position:relative;height:200px;border-radius:12px;overflow:hidden;background:linear-gradient(180deg,#0a0a2e 0%,#1a1a4e 25%,#2a3a6e 50%,#1a1a4e 75%,#0a0a2e 100%);";
 
-  // Cat (links start)
+  // Cat (links start) + regenboogspoor
   const cat = nyanCat();
   cat.style.cssText = "position:absolute;left:5%;bottom:38%;z-index:5;width:150px;height:110px;transition:left 0.6s cubic-bezier(0.34,1.56,0.64,1), bottom 0.3s;";
+  const regenboog = el("div", "nyan-regenboog");
+  regenboog.innerHTML = '<div class="nyan-sprite"></div>';
+  cat.prepend(regenboog);
 
   // Badge
   const badge = el("div", "nyan-space__badge");
@@ -91,7 +94,8 @@ function bouwScene() {
     const st = document.createElement("style");
     st.id = "nyan-space-kf";
     st.textContent = `
-      @keyframes nyan-particle { 0%{opacity:0;transform:translate(0,0) scale(0.5) rotate(0)} 20%{opacity:1} 100%{opacity:0;transform:translate(var(--dx),var(--dy)) scale(1.2) rotate(20deg)} }
+      @keyframes nyan-flash { 0%{opacity:.95;transform:translate(-50%,-50%) scale(.2)} 100%{opacity:0;transform:translate(-50%,-50%) scale(2.8)} }
+      @keyframes nyan-burst { 0%{opacity:1;transform:translate(0,0) scale(.4)} 60%{opacity:1} 100%{opacity:0;transform:translate(var(--tx),var(--ty)) scale(1)} }
     `;
     document.head.appendChild(st);
   }
@@ -110,16 +114,27 @@ function bouwScene() {
 // -----------------------------------------------------------------------
 function animHerstart(e, c) { e.classList.remove(c); void e.offsetWidth; e.classList.add(c); }
 
-function toonPartikels(laag, opties = {}) {
-  const aant = opties.aantal ?? 10;
-  const sym = opties.symbols ?? ["★","✦","◆","✨"];
-  for (let i = 0; i < aant; i++) {
+/** Vuurwerk-effect: een flits + radiale deeltjes die vanuit een anker (de kat) wegschieten. */
+function toonVuurwerk(laag, xPct = 50, yPct = 30, aantal = 26) {
+  const b = document.createElement("div");
+  b.style.cssText = `position:absolute;left:${xPct}%;top:${yPct}%;z-index:6;pointer-events:none;`;
+
+  // Flits
+  const flits = document.createElement("span");
+  flits.style.cssText = "position:absolute;left:0;top:0;width:16px;height:16px;border-radius:50%;background:radial-gradient(circle,#fff 0%,#ffe27a 55%,transparent 72%);box-shadow:0 0 26px 10px rgba(255,226,122,0.75);animation:nyan-flash 0.5s ease-out forwards;";
+  b.appendChild(flits);
+
+  // Radiale deeltjes (vuurwerk-uitbarsting)
+  for (let i = 0; i < aantal; i += 1) {
+    const hoek = (i / aantal) * Math.PI * 2 + (Math.random() - 0.5) * 0.25;
+    const afstand = 46 + Math.random() * 46;
     const p = document.createElement("span");
-    p.textContent = sym[i % sym.length];
-    p.style.cssText = `position:absolute;z-index:5;font-size:16px;font-weight:900;pointer-events:none;left:${20+Math.random()*60}%;top:${30+Math.random()*40}%;color:${PARTIKEL_KLEUREN[i%PARTIKEL_KLEUREN.length]};--dx:${(Math.random()-0.5)*120}px;--dy:${-30-Math.random()*60}px;animation:nyan-particle 0.8s ease-out forwards;animation-delay:${Math.random()*0.12}s;`;
-    laag.appendChild(p);
-    setTimeout(() => p.remove(), 1100);
+    const kleur = PARTIKEL_KLEUREN[i % PARTIKEL_KLEUREN.length];
+    p.style.cssText = `position:absolute;left:0;top:0;width:7px;height:7px;border-radius:50%;background:${kleur};box-shadow:0 0 6px ${kleur};--tx:${(Math.cos(hoek) * afstand).toFixed(1)}px;--ty:${(Math.sin(hoek) * afstand).toFixed(1)}px;animation:nyan-burst 0.75s cubic-bezier(.2,.7,.3,1) forwards;animation-delay:${(Math.random() * 0.08).toFixed(2)}s;`;
+    b.appendChild(p);
   }
+  laag.appendChild(b);
+  setTimeout(() => b.remove(), 850);
 }
 
 function toonBadge(badge, tekst) {
@@ -154,6 +169,8 @@ export function toonEindAnimatie(container, pct) {
 export function maakRaketAnimatie(container, doelAantal) {
   const totaal = Math.max(1, doelAantal);
   let aantalGoed = 0;
+  let catLeftPct = 5;
+  let catCenterTopPct = 30;
   const s = bouwScene();
   container.appendChild(s.blok);
 
@@ -166,12 +183,14 @@ export function maakRaketAnimatie(container, doelAantal) {
     const cp = CHECKPOINTS.reduce((a, c) => pct >= c.grens ? c : a, CHECKPOINTS[0]);
     s.rank.textContent = cp.tekst;
 
-    // Cat flies from 5% to 75% left
+    // Kat vliegt van 5% naar 75% van links, met wat hoogtewinst
     const catLeft = 5 + v * 70;
+    catLeftPct = catLeft;
     s.cat.style.left = `${catLeft}%`;
-    // Slight altitude gain
     const catBottom = 38 + v * 6;
     s.cat.style.bottom = `${catBottom}%`;
+    // Vuurwerk-anker: bovenkant kat t.o.v. de 200px-scene (kat is 110px hoog).
+    catCenterTopPct = 100 - catBottom - 40;
 
     if (aantalGoed >= totaal) {
       setTimeout(() => toonBadge(s.badge, "MATH MASTER!"), 300);
@@ -181,10 +200,10 @@ export function maakRaketAnimatie(container, doelAantal) {
   return {
     goedAntwoord() {
       aantalGoed += 1;
+      update();
       animHerstart(s.cat, "nyan-space--powerup");
       setTimeout(() => s.cat.classList.remove("nyan-space--powerup"), 700);
-      toonPartikels(s.scene, { aantal: 8, symbols: ["★","✦","◆","✨"] });
-      update();
+      toonVuurwerk(s.scene, catLeftPct, catCenterTopPct);
     },
     foutAntwoord() {
       animHerstart(s.cat, "nyan-space--hit");
