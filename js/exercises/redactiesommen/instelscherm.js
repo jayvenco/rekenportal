@@ -2,14 +2,20 @@
 import { getInstellingen, saveInstellingen } from "../../storage.js";
 import { STANDAARD_INSTELLINGEN } from "./opgaven.js";
 
+const OMSCHRIJVING_PER_GROEP = {
+  7: "Optellen, aftrekken, keer en delen met getallen tot 1000.",
+  8: "Optellen/aftrekken tot 1000, breuken, procenten, kommagetallen, omrekenen, meten en oppervlakte — alles door elkaar.",
+};
+
 export async function toonInstellingenScherm(container, opgeslagen, startOefening) {
   const saved = (await getInstellingen("redactiesommen")) || {};
-  const instellingen = { ...STANDAARD_INSTELLINGEN, ...saved, ...opgeslagen };
+  const instellingen = { ...STANDAARD_INSTELLINGEN, ...saved };
+  const groep = opgeslagen && opgeslagen.groep === 8 ? 8 : 7;
 
-  container.innerHTML = \`
+  container.innerHTML = `
     <div class="kaart" style="text-align:center;">
-      <h2>✏️ Redactiesommen</h2>
-      <p style="color:#5b6472;margin-bottom:20px;">Verhaaltjessommen tot 1000</p>
+      <h2>✏️ Redactiesommen — groep ${groep}</h2>
+      <p style="color:#5b6472;margin-bottom:20px;">${OMSCHRIJVING_PER_GROEP[groep]}</p>
       <div style="margin-bottom:16px;">
         <label style="display:block;font-weight:700;margin-bottom:8px;">Aantal opgaven:</label>
         <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;">
@@ -20,7 +26,7 @@ export async function toonInstellingenScherm(container, opgeslagen, startOefenin
       </div>
       <button type="button" class="knop knop--primair" style="font-size:20px;padding:14px 40px;" id="rc-start">▶ START</button>
     </div>
-  \`;
+  `;
 
   container.querySelectorAll("[data-aantal]").forEach(b => {
     b.addEventListener("click", () => {
@@ -32,6 +38,6 @@ export async function toonInstellingenScherm(container, opgeslagen, startOefenin
 
   container.querySelector("#rc-start").addEventListener("click", async () => {
     await saveInstellingen("redactiesommen", instellingen);
-    startOefening(instellingen);
+    startOefening({ ...instellingen, groep });
   });
 }

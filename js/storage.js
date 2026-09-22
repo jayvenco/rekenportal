@@ -132,9 +132,27 @@ export async function listProfielen() {
   }
 }
 
-/** Geeft de laatste fout bij het ophalen van profielen terug, of null na succes. */
+/** Geeft het laatste fout bij het ophalen van profielen terug, of null na succes. */
 export function getLaatsteProfielenLaadfout() {
   return laatsteProfielenLaadfout;
+}
+
+/**
+ * Vraagt een hint/rekenhulp aan voor een opgave. De backend gebruikt een
+ * OpenAI-compatibele API wanneer OPENAI_API_KEY is gezet, anders een offline
+ * strategie-hint. Geeft het hint-object terug, of null bij een netwerkfout.
+ */
+export async function vraagHint(opgave, categorie, poging) {
+  try {
+    const resultaat = await fetchJson("/hint", {
+      method: "POST",
+      body: JSON.stringify({ opgave, categorie, poging }),
+    });
+    return resultaat && resultaat.hint ? resultaat : null;
+  } catch (fout) {
+    console.error("Kon geen hint ophalen:", fout);
+    return null;
+  }
 }
 
 /** Maakt een nieuw profiel aan. Gooit de fout door zodat de UI kan reageren. */

@@ -13,7 +13,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.database import init_db
-from app.routes import antwoorden, export, instellingen, profielen, rewards, sessies, statistieken
+from app.routes import antwoorden, export, hint, instellingen, profielen, rewards, sessies, statistieken
 
 
 @asynccontextmanager
@@ -39,6 +39,7 @@ app.include_router(instellingen.router)
 app.include_router(export.router)
 app.include_router(rewards.router)
 app.include_router(sessies.router)
+app.include_router(hint.router)
 
 
 @app.get("/api/health")

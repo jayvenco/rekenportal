@@ -1,5 +1,5 @@
 // exercises/redactiesommen/oefenscherm.js
-import { recordAnswer } from "../../storage.js";
+import { recordAnswer, vraagHint } from "../../storage.js";
 import { genereerOpgave, opgaveNaarSleutel } from "./opgaven.js";
 import { genereerUniekeOpgave } from "../../utils/willekeurig.js";
 import { geefCompliment, geefFoutmelding } from "../../utils/complimenten.js";
@@ -10,6 +10,7 @@ import { maakRaketAnimatie, toonEindAnimatie } from "../../utils/raketAnimatie.j
 import { toonPerfecteScoreAnimatie } from "../../utils/eindeAnimatie.js";
 
 const EXERCISE_ID = "redactiesommen";
+const MAX_INVOER = 12; // groter dan voorheen, voor grote getallen (bv. 12.550.000.000) en decimalen
 
 export function toonOefeningScherm(container, instellingen) {
   const gebruikteSleutels = new Set();
@@ -42,19 +43,43 @@ export function toonOefeningScherm(container, instellingen) {
   const invoerVlak = document.createElement("div");
   container.appendChild(invoerVlak);
 
+  // --- Hint ---
+  const hintKnop = document.createElement("button");
+  hintKnop.type = "button";
+  hintKnop.className = "knop knop--zacht";
+  hintKnop.style.cssText = "display:block;margin:0 auto 8px;font-size:15px;";
+  hintKnop.textContent = "💡 Hint";
+  hintKnop.addEventListener("click", toonHint);
+  container.appendChild(hintKnop);
+
+  const hintVlak = document.createElement("div");
+  hintVlak.setAttribute("aria-live", "polite");
+  container.appendChild(hintVlak);
+
   function bijwerkenVoortgang() {
     voortgangTekst.textContent = "Opgave " + Math.min(opgaveIndex + 1, instellingen.aantalOpgaven) + " van " + instellingen.aantalOpgaven + " — " + aantalGoedTotaal + " goed";
+  }
+
+  async function toonHint() {
+    if (!huidigeOpgave || bezigMetFeedback) return;
+    hintVlak.style.cssText = "font-size:15px;line-height:1.55;color:#4a5568;text-align:left;padding:10px 14px;margin:4px 0 8px;background:#fef7e6;border:2px solid #f0d48a;border-radius:10px;";
+    hintVlak.textContent = "Even nadenken…";
+    const resultaat = await vraagHint(huidigeOpgave.vraagTekst, huidigeOpgave.meta?.categorie, pogingNummer);
+    if (hintVlak.textContent === "Even nadenken…") {
+      hintVlak.textContent = resultaat && resultaat.hint ? "💡 " + resultaat.hint : "💡 Lees de som rustig. Bedenk wat er wordt gevraagd en welke bewerking je nodig hebt.";
+    }
   }
 
   function toonOpgave() {
     if (opgaveIndex >= instellingen.aantalOpgaven) { toonEindscherm(); return; }
     bezigMetFeedback = false; pogingNummer = 1; huidigeWaarde = "";
     feedbackVlak.className = "feedback-vlak"; feedbackVlak.textContent = "";
+    hintVlak.textContent = "";
     if (opruimHuidigeInvoer) { opruimHuidigeInvoer(); opruimHuidigeInvoer = null; }
     huidigeOpgave = genereerUniekeOpgave(() => genereerOpgave(instellingen), opgaveNaarSleutel, gebruikteSleutels);
     startTijdOpgave = performance.now();
     bijwerkenVoortgang();
-    vraagVlak.innerHTML = "<div style="font-size:18px;line-height:1.6;padding:12px;background:#f8faff;border-radius:12px;border:2px solid #e2e8f0;">" + huidigeOpgave.vraagTekst + "</div>";
+    vraagVlak.innerHTML = "<div style=\"font-size:18px;line-height:1.6;padding:12px;background:#f8faff;border-radius:12px;border:2px solid #e2e8f0;\">" + huidigeOpgave.vraagTekst + "</div>";
     bouwInvoer(invoerVlak);
   }
 
@@ -67,27 +92,38 @@ export function toonOefeningScherm(container, instellingen) {
     const pad = document.createElement("div");
     pad.className = "cijfer-pad";
 
-    function toon() { scherm.textContent = huidigeWaarde.replace(".", ","); }
+    function toon() { scherm.textContent = huidigeWaarde; }
+
+    function voegToe(c) {
+      if (huidigeWaarde.length >= MAX_INVOER) return;
+      huidigeWaarde += c;
+      toon();
+    }
 
     [ [1,2,3], [4,5,6], [7,8,9] ].forEach(rij => {
       rij.forEach(c => {
         const b = document.createElement("button");
         b.type = "button"; b.className = "cijfer-toets"; b.textContent = String(c);
-        b.addEventListener("click", () => { if (huidigeWaarde.length < 7) { huidigeWaarde += String(c); toon(); } });
+        b.addEventListener("click", () => voegToe(String(c)));
         pad.appendChild(b);
       });
     });
 
-    const m = document.createElement("div"); m.style.display = "contents";
-    const minKnop = document.createElement("button");
-    minKnop.type = "button"; minKnop.className = "cijfer-toets"; minKnop.textContent = "−";
-    minKnop.addEventListener("click", () => { if (huidigeWaarde === "") huidigeWaarde = "-"; toon(); });
-    pad.appendChild(minKnop);
-
     const nul = document.createElement("button");
     nul.type = "button"; nul.className = "cijfer-toets"; nul.textContent = "0";
-    nul.addEventListener("click", () => { if (huidigeWaarde.length < 7) { huidigeWaarde += "0"; toon(); } });
+    nul.addEventListener("click", () => voegToe("0"));
     pad.appendChild(nul);
+
+    // Komma-toets (voor decimale antwoorden)
+    const komma = document.createElement("button");
+    komma.type = "button"; komma.className = "cijfer-toets"; komma.textContent = ",";
+    komma.style.background = "#4f8fe8"; komma.style.color = "#fff";
+    komma.setAttribute("aria-label", "Komma");
+    komma.addEventListener("click", () => {
+      if (huidigeWaarde === "" || huidigeWaarde.includes(",")) return;
+      voegToe(",");
+    });
+    pad.appendChild(komma);
 
     const wis = document.createElement("button");
     wis.type = "button"; wis.className = "cijfer-toets"; wis.textContent = "⌫";
@@ -96,17 +132,18 @@ export function toonOefeningScherm(container, instellingen) {
 
     const bevestig = document.createElement("button");
     bevestig.type = "button"; bevestig.className = "cijfer-toets";
-    bevestig.style.cssText = "background:#38b26a;color:#fff;grid-column:span 2;";
+    bevestig.style.cssText = "background:#38b26a;color:#fff;grid-column:span 3;";
     bevestig.textContent = "✓ Bevestig";
-    bevestig.addEventListener("click", () => { if (huidigeWaarde !== "" && huidigeWaarde !== "-") verwerkAntwoord(huidigeWaarde); });
+    bevestig.addEventListener("click", () => { const v = huidigeWaarde.replace(",", "."); if (v !== "" && v !== "-") verwerkAntwoord(v); });
     pad.appendChild(bevestig);
 
     container.appendChild(pad);
     const h = (e) => {
       const k = e.key;
-      if (/^[0-9]$/.test(k)) { if (huidigeWaarde.length < 7) { huidigeWaarde += k; toon(); } }
+      if (/^[0-9]$/.test(k)) voegToe(k);
+      else if ((k === "," || k === ".") && huidigeWaarde !== "" && !huidigeWaarde.includes(",")) voegToe(",");
       else if (k === "Backspace") { huidigeWaarde = huidigeWaarde.slice(0, -1); toon(); }
-      else if (k === "Enter" && huidigeWaarde !== "" && huidigeWaarde !== "-") verwerkAntwoord(huidigeWaarde);
+      else if (k === "Enter") { const v = huidigeWaarde.replace(",", "."); if (v !== "" && v !== "-") verwerkAntwoord(v); }
     };
     document.addEventListener("keydown", h);
     opruimHuidigeInvoer = () => document.removeEventListener("keydown", h);
@@ -114,15 +151,15 @@ export function toonOefeningScherm(container, instellingen) {
 
   function verwerkAntwoord(ingave) {
     if (bezigMetFeedback) return;
-    const ingaveNum = Number(ingave.replace(",", "."));
-    const isGoed = Number.isFinite(ingaveNum) && ingaveNum === huidigeOpgave.antwoordGoed.normaal;
+    const ingaveNum = Number(ingave);
+    const isGoed = Number.isFinite(ingaveNum) && Math.abs(ingaveNum - huidigeOpgave.antwoordGoed.normaal) < 1e-6;
     const tijd = Math.round(performance.now() - startTijdOpgave);
 
     if (isGoed) {
       bezigMetFeedback = true;
       aantalGoedTotaal += 1;
       raket.goedAntwoord();
-      recordAnswer({ exerciseId: EXERCISE_ID, correct: true, timeMs: tijd, meta: { pogingen: pogingNummer } }).catch(() => {});
+      recordAnswer({ exerciseId: EXERCISE_ID, correct: true, timeMs: tijd, meta: { ...huidigeOpgave.meta, pogingen: pogingNummer } }).catch(() => {});
       if (pogingNummer === 1) {
         feedbackVlak.className = "feedback-vlak feedback-vlak--goed";
         feedbackVlak.textContent = "✓ " + geefCompliment();
@@ -147,12 +184,12 @@ export function toonOefeningScherm(container, instellingen) {
     } else {
       bezigMetFeedback = true;
       raket.foutAntwoord();
-      recordAnswer({ exerciseId: EXERCISE_ID, correct: false, timeMs: tijd, meta: { pogingen: 2 } }).catch(() => {});
+      recordAnswer({ exerciseId: EXERCISE_ID, correct: false, timeMs: tijd, meta: { ...huidigeOpgave.meta, pogingen: 2 } }).catch(() => {});
       feedbackVlak.className = "feedback-vlak feedback-vlak--fout";
       feedbackVlak.textContent = geefFoutmelding() + " Het juiste antwoord is " + huidigeOpgave.antwoordGoed.display + ".";
       speelFoutGeluid();
       voortgangCirkels.zetStatus(opgaveIndex, "fout");
-      setTimeout(() => { opgaveIndex += 1; toonOpgave(); }, 1600);
+      setTimeout(() => { opgaveIndex += 1; toonOpgave(); }, 1800);
     }
   }
 
@@ -164,7 +201,7 @@ export function toonOefeningScherm(container, instellingen) {
     if (pct === 100) toonPerfecteScoreAnimatie();
     titel.textContent = pct >= 70 ? "Goed gedaan!" : "Bijna! Nog even oefenen.";
     kaart.appendChild(titel);
-    const raketEind = toonEindAnimatie(kaart, pct);
+    toonEindAnimatie(kaart, pct);
     const r = document.createElement("p"); r.style.cssText = "font-size:24px;font-weight:700;color:#1f2937;";
     r.textContent = "Je had " + aantalGoedTotaal + " van de " + instellingen.aantalOpgaven + " goed!";
     kaart.appendChild(r);

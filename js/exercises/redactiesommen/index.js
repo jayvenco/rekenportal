@@ -6,18 +6,27 @@ function icoonRedactie() {
 </svg>`;
 }
 
+/** Leest de groep uit de URL-hash (#/oefening/redactiesommen?groep=8). */
+function leesGroepUitHash() {
+  const match = window.location.hash.match(/groep=(\d+)/);
+  const g = match ? Number(match[1]) : null;
+  return g === 8 ? 8 : 7;
+}
+
 export async function mount(container, settings) {
+  const groep = leesGroepUitHash();
   const { toonInstellingenScherm } = await import("./instelscherm.js");
-  await toonInstellingenScherm(container, settings || {}, async (inst) => {
-    const { toonOefeningScherm } = await import("./oefenscherm.js");
-    toonOefeningScherm(container, inst);
+  await toonInstellingenScherm(container, { ...(settings || {}), groep }, (inst) => {
+    import("./oefenscherm.js").then(({ toonOefeningScherm }) =>
+      toonOefeningScherm(container, { ...inst, groep })
+    );
   });
 }
 
 export const redactiesommenOefening = {
   id: "redactiesommen",
   titel: "Redactiesommen",
-  omschrijving: "Verhaaltjessommen tot 1000",
+  omschrijving: "Verhaaltjessommen: optellen, aftrekken, breuken, procenten en meten",
   icoonSvg: icoonRedactie(),
   kleurthema: "#f08b28",
   mount,
