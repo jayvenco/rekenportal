@@ -64,7 +64,7 @@ export const EXERCISES = [
   {
     ...klokkijkenOefening,
     groep: 4,
-    instelbareOpties: "Hele uren, halve uren of mix, aantal opgaven",
+    instelbareOpties: "Lezen of tekenen, hele/halve uren of mix, aantal opgaven",
   },
   {
     ...complexOefening,

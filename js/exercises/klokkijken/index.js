@@ -6,6 +6,7 @@
 
 import { bouwInstelscherm } from "./instelscherm.js";
 import { startOefensessie } from "./oefenscherm.js";
+import { startTekenSessie } from "./tekenScherm.js";
 
 /**
  * mount() — verplichte functie die elke oefening moet leveren aan het register.
@@ -21,13 +22,17 @@ export async function mount(container) {
   }
 
   function toonOefenscherm(instellingen) {
-    startOefensessie(container, instellingen, ({ opnieuw }) => {
-      if (opnieuw) {
-        toonOefenscherm(instellingen);
-      } else {
-        window.location.hash = "#/";
-      }
-    });
+    if (instellingen.modus === "tekenen") {
+      startTekenSessie(container, instellingen, ({ opnieuw }) => {
+        if (opnieuw) toonOefenscherm(instellingen);
+        else window.location.hash = "#/";
+      });
+    } else {
+      startOefensessie(container, instellingen, ({ opnieuw }) => {
+        if (opnieuw) toonOefenscherm(instellingen);
+        else window.location.hash = "#/";
+      });
+    }
   }
 }
 
