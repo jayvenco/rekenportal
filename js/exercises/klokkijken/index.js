@@ -36,9 +36,9 @@ export const klokkijkenOefening = {
   titel: "Klokkijken",
   omschrijving: "Lees de klok: hele uren en halve uren.",
   icoonSvg: `<svg viewBox="0 0 64 64" width="40" height="40" aria-hidden="true">
-    <circle cx="32" cy="32" r="26" fill="none" stroke="#4f8fe8" stroke-width="4"/>
-    <line x1="32" y1="32" x2="32" y2="15" stroke="#1f2937" stroke-width="4" stroke-linecap="round"/>
-    <line x1="32" y1="32" x2="46" y2="32" stroke="#e8735a" stroke-width="3" stroke-linecap="round"/>
+    <circle cx="32" cy="32" r="26" fill="none" stroke="#c9d2dd" stroke-width="4"/>
+    <line x1="32" y1="32" x2="32" y2="19" stroke="#e8735a" stroke-width="4" stroke-linecap="round"/>
+    <line x1="32" y1="32" x2="47" y2="32" stroke="#4f8fe8" stroke-width="3" stroke-linecap="round"/>
     <circle cx="32" cy="32" r="3" fill="#1f2937"/>
   </svg>`,
   kleurthema: "#4f8fe8",

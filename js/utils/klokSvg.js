@@ -95,7 +95,7 @@ export function bouwKlok({ uur, minuten }) {
     svg.appendChild(tekst);
   }
 
-  // Kleine wijzer = uurwijzer (kort, dik, donker)
+  // Kleine wijzer = uurwijzer (kort, dik, rood)
   const uurHoek = (uur % 12) * 30 + minuten * 0.5;
   const uurPunt = puntOpKlok(uurHoek, STRAAL * 0.5);
   svg.appendChild(
@@ -104,13 +104,13 @@ export function bouwKlok({ uur, minuten }) {
       y1: CY,
       x2: uurPunt.x,
       y2: uurPunt.y,
-      stroke: "#1f2937",
+      stroke: "#e8735a",
       "stroke-width": 13,
       "stroke-linecap": "round",
     })
   );
 
-  // Grote wijzer = minuutwijzer (lang, dun, rood)
+  // Grote wijzer = minuutwijzer (lang, dun, blauw)
   const minuutHoek = minuten * 6;
   const minuutPunt = puntOpKlok(minuutHoek, STRAAL * 0.74);
   svg.appendChild(
@@ -119,7 +119,7 @@ export function bouwKlok({ uur, minuten }) {
       y1: CY,
       x2: minuutPunt.x,
       y2: minuutPunt.y,
-      stroke: "#e8735a",
+      stroke: "#4f8fe8",
       "stroke-width": 8,
       "stroke-linecap": "round",
     })
