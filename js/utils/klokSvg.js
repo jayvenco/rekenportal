@@ -87,7 +87,7 @@ export function bouwKlok({ uur, minuten }) {
       y: cijfer.y,
       "text-anchor": "middle",
       "dominant-baseline": "central",
-      "font-size": "30",
+      "font-size": "24",
       "font-weight": "800",
       fill: "#1f2937",
     });
