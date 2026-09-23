@@ -6,7 +6,7 @@ import { geefCompliment, geefFoutmelding } from "../../utils/complimenten.js";
 import { speelGoedGeluid, speelFoutGeluid } from "../../utils/geluid.js";
 import { maakVoortgangCirkels } from "../../utils/voortgangCirkels.js";
 import { maakRewardTracker, toonRewardResultaat, verversCoinCounter, toonBadgeUnlocks } from "../../utils/rewards.js";
-import { maakRaketAnimatie, toonEindAnimatie } from "../../utils/raketAnimatie.js";
+import { maakRaketAnimatie, toonEindAnimatie } from "../../utils/voortgangAnimatie.js";
 import { toonPerfecteScoreAnimatie } from "../../utils/eindeAnimatie.js";
 
 const EXERCISE_ID = "redactiesommen";

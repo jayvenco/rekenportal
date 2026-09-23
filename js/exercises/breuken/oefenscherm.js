@@ -13,7 +13,7 @@ import { maakVoortgangCirkels } from "../../utils/voortgangCirkels.js";
 import { toonPerfecteScoreAnimatie } from "../../utils/eindeAnimatie.js";
 import { berekenPunten, slaSessieOp, toonPuntenAnimatie } from "../../utils/punten.js";
 import { maakRewardTracker, toonBadgeUnlocks, toonRewardResultaat, verversCoinCounter } from "../../utils/rewards.js";
-import { maakRaketAnimatie, toonEindAnimatie } from "../../utils/raketAnimatie.js";
+import { maakRaketAnimatie, toonEindAnimatie } from "../../utils/voortgangAnimatie.js";
 
 const EXERCISE_ID = "breuken";
 

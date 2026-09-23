@@ -9,7 +9,7 @@ import { genereerUniekeOpgave } from "../../utils/willekeurig.js";
 import { bouwCijferInvoer } from "../../utils/invoerModus.js";
 import { geefCompliment, geefFoutmelding } from "../../utils/complimenten.js";
 import { speelGoedGeluid, speelFoutGeluid } from "../../utils/geluid.js";
-import { maakRaketAnimatie, toonEindAnimatie } from "../../utils/raketAnimatie.js";
+import { maakRaketAnimatie, toonEindAnimatie } from "../../utils/voortgangAnimatie.js";
 import { maakVoortgangCirkels } from "../../utils/voortgangCirkels.js";
 import { maakRewardTracker, toonBadgeUnlocks, toonRewardResultaat, verversCoinCounter } from "../../utils/rewards.js";
 import { berekenPunten, slaSessieOp, toonPuntenAnimatie } from "../../utils/punten.js";

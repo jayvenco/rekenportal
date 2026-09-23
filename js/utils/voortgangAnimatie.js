@@ -1,4 +1,4 @@
-// utils/raketAnimatie.js
+// utils/voortgangAnimatie.js
 // -----------------------------------------------------------------------------
 // Nyan Cat — kat vliegt door de ruimte met een regenboog vlak achter zich.
 // Voortgang = aantal vragen goed. Goed = powerup. Fout = schudden.
