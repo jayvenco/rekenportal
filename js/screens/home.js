@@ -2,8 +2,8 @@
 // -----------------------------------------------------------------------------
 // De homepage van de Rekenportal: genereert automatisch een tegel per
 // geregistreerde oefening (uit exercises.js), plus een kop-balk met het
-// actieve profiel, een knop om te wisselen van profiel, een link naar het
-// ouder/beheer-scherm, en de bestaande Statistieken/Instellingen-knoppen.
+// actieve profiel, een knop om te wisselen van profiel en een link naar
+// Instellingen (vanwaar Beheer, Leerplan en Statistieken bereikbaar zijn).
 // -----------------------------------------------------------------------------
 
 import { EXERCISES } from "../exercises.js";
@@ -87,29 +87,11 @@ export async function toonHomepage(container) {
   wisselProfielKnop.textContent = "🔄 Wissel profiel";
   actiesBlok.appendChild(wisselProfielKnop);
 
-  const beheerLink = document.createElement("a");
-  beheerLink.className = "knop knop--zacht";
-  beheerLink.href = "#/beheer";
-  beheerLink.textContent = "👪 Beheer";
-  actiesBlok.appendChild(beheerLink);
-
-  const leerplanLink = document.createElement("a");
-  leerplanLink.className = "knop knop--zacht";
-  leerplanLink.href = "#/leerplan";
-  leerplanLink.textContent = "📚 Leerplan";
-  actiesBlok.appendChild(leerplanLink);
-
-  const statistiekenKnop = document.createElement("a");
-  statistiekenKnop.className = "knop knop--zacht";
-  statistiekenKnop.href = "#/statistieken";
-  statistiekenKnop.textContent = "📊 Statistieken";
-
   const instellingenKnop = document.createElement("a");
   instellingenKnop.className = "knop knop--zacht";
   instellingenKnop.href = "#/instellingen";
   instellingenKnop.textContent = "⚙️ Instellingen";
-
-  actiesBlok.append(statistiekenKnop, instellingenKnop);
+  actiesBlok.appendChild(instellingenKnop);
   koppenRij.appendChild(actiesBlok);
   container.appendChild(koppenRij);
 

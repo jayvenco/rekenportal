@@ -54,11 +54,33 @@ def _run_lightweight_migrations() -> None:
         return
 
     profiel_kolommen = {kolom["name"] for kolom in inspector.get_columns("profielen")}
+    wachtwoord_kolom_toegevoegd = False
     with engine.begin() as verbinding:
         if "laatste_activiteit_op" not in profiel_kolommen:
             verbinding.execute(text("ALTER TABLE profielen ADD COLUMN laatste_activiteit_op DATETIME"))
             verbinding.execute(
                 text("UPDATE profielen SET laatste_activiteit_op = COALESCE(aangemaakt_op, CURRENT_TIMESTAMP)")
+            )
+        if "wachtwoord_hash" not in profiel_kolommen:
+            verbinding.execute(text("ALTER TABLE profielen ADD COLUMN wachtwoord_hash VARCHAR"))
+            wachtwoord_kolom_toegevoegd = True
+
+    if wachtwoord_kolom_toegevoegd:
+        _backfill_standaard_wachtwoorden()
+
+
+def _backfill_standaard_wachtwoorden() -> None:
+    """Profielen van vóór het wachtwoordsysteem krijgen standaardwachtwoord 'user'."""
+    from app.security import hash_wachtwoord
+
+    with engine.begin() as verbinding:
+        rijen = verbinding.execute(
+            text("SELECT id FROM profielen WHERE wachtwoord_hash IS NULL")
+        ).fetchall()
+        for (profiel_id,) in rijen:
+            verbinding.execute(
+                text("UPDATE profielen SET wachtwoord_hash = :hash WHERE id = :id"),
+                {"hash": hash_wachtwoord("user"), "id": profiel_id},
             )
 
 

@@ -1,7 +1,8 @@
 """
 profiel.py
 -----------------------------------------------------------------------------
-Kindprofiel: naam + avatar, met cascade-relaties naar antwoorden en instellingen.
+Kindprofiel: naam, avatar en wachtwoord (gehasht), met cascade-relaties naar
+antwoorden en instellingen.
 """
 
 from datetime import datetime
@@ -18,6 +19,7 @@ class Profiel(Base):
     id = Column(Integer, primary_key=True, index=True)
     naam = Column(String, nullable=False)
     avatar = Column(String, nullable=False)
+    wachtwoord_hash = Column(String, nullable=True)
     aangemaakt_op = Column(DateTime, default=datetime.utcnow, nullable=False)
     laatste_activiteit_op = Column(DateTime, default=datetime.utcnow, nullable=False)
 

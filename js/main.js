@@ -7,16 +7,23 @@
 // Routes:
 //   #/                      -> homepage met tegels
 //   #/oefening/<id>         -> een specifieke oefening
-//   #/statistieken          -> statistiekenscherm
-//   #/instellingen          -> instellingenscherm
+//   #/statistieken          -> statistiekenscherm (achter instellingen-slot)
+//   #/instellingen          -> instellingenscherm (incl. wachtwoord-gate)
 //   #/profielen             -> profielkiezer (wie ben jij?)
-//   #/beheer                -> ouder/beheer-scherm (altijd toegankelijk)
+//   #/beheer                -> ouder/beheer-scherm (achter instellingen-slot)
+//   #/leerplan              -> leerplan-overzicht (achter instellingen-slot)
 //
 // BELANGRIJK: als er nog geen actief profiel gekozen is, wordt ALTIJD de
 // profielkiezer getoond, ongeacht welke route er gevraagd werd — behalve
-// voor #/beheer, die moet altijd toegankelijk blijven (ook zonder profiel,
-// want daar kun je profielen beheren/verwijderen).
+// voor #/beheer, #/leerplan en #/instellingen, die moeten ook zonder profiel
+// toegankelijk blijven (bv. om een kapot profiel te herstellen via Beheer).
+//
+// Beheer, Leerplan en Statistieken zijn niet langer los vanuit het hoofdmenu
+// bereikbaar: je komt er alleen via de link in Instellingen, dat zelf is
+// afgeschermd met een wachtwoord (zie utils/instellingenSlot.js).
 // -----------------------------------------------------------------------------
+
+const BEVEILIGDE_ROUTES = ["#/beheer", "#/leerplan", "#/statistieken"];
 
 import { toonHomepage } from "./screens/home.js";
 import { toonOefeningScherm } from "./screens/oefeningScherm.js";
@@ -27,6 +34,7 @@ import { toonBeheerScherm } from "./screens/beheer.js";
 import { toonLeerplanScherm } from "./screens/leerplan.js";
 import { getActiefProfielId } from "./storage.js";
 import { vernietigTelraam } from "./utils/telraam.js";
+import { isInstellingenOntgrendeld, setBestemmingNaOntgrendeling } from "./utils/instellingenSlot.js";
 import {
   startMuziek, stopMuziek, setVolume, getVolume,
   toggleMute, isMuted, laadMuziek,
@@ -51,8 +59,25 @@ async function verwerkRoute() {
     vernietigTelraam();
   }
 
-  // Cruciale gate: geen actief profiel en geen beheer-route? Toon de profielkiezer.
-  if (hash !== "#/profielen" && hash !== "#/beheer" && hash !== "#/leerplan" && getActiefProfielId() === null) {
+  // Wachtwoord-gate: Beheer, Leerplan en Statistieken zijn alleen te bereiken
+  // via Instellingen (die zelf achter het instellingen-wachtwoord zit). Nog
+  // niet ontgrendeld in deze sessie? Onthoud de gewenste bestemming en stuur
+  // eerst naar Instellingen.
+  if (BEVEILIGDE_ROUTES.includes(hash) && !isInstellingenOntgrendeld()) {
+    setBestemmingNaOntgrendeling(hash);
+    window.location.hash = "#/instellingen";
+    return;
+  }
+
+  // Cruciale gate: geen actief profiel en geen beheer/leerplan/instellingen-route?
+  // Toon de profielkiezer.
+  if (
+    hash !== "#/profielen" &&
+    hash !== "#/beheer" &&
+    hash !== "#/leerplan" &&
+    hash !== "#/instellingen" &&
+    getActiefProfielId() === null
+  ) {
     await toonProfielkiezerScherm(hoofdContainer);
     return;
   }

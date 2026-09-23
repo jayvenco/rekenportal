@@ -1,9 +1,10 @@
 // screens/beheer.js
 // -----------------------------------------------------------------------------
-// Ouder/beheer-scherm: apart van het kind-menu. Toont alle profielen met hun
-// statistieken, biedt verwijderen en exporteren (JSON/CSV) per profiel, en
-// een export van alle profielen samen. Geen PIN/login — lokale huis-app,
-// geen publieke deployment.
+// Ouder/beheer-scherm: apart van het kind-menu, alleen bereikbaar via
+// Instellingen (afgeschermd met het instellingen-wachtwoord, zie
+// utils/instellingenSlot.js). Toont alle profielen met hun statistieken,
+// biedt verwijderen en exporteren (JSON/CSV) per profiel, en een export van
+// alle profielen samen.
 // -----------------------------------------------------------------------------
 
 import {

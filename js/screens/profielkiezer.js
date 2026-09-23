@@ -10,6 +10,7 @@ import {
   listProfielen,
   maakProfiel,
   setActiefProfielId,
+  verifieerProfielWachtwoord,
 } from "../storage.js";
 
 const AVATAR_KEUZES = [
@@ -124,6 +125,28 @@ export async function toonProfielkiezerScherm(container) {
   naamInvoer.className = "profiel-start__naam-invoer";
   formulierKaart.appendChild(naamInvoer);
 
+  const wachtwoordNieuwLabel = maakElement("label", "profiel-start__label", "Wachtwoord");
+  wachtwoordNieuwLabel.setAttribute("for", "profielkiezer-nieuw-wachtwoord");
+  formulierKaart.appendChild(wachtwoordNieuwLabel);
+
+  const wachtwoordNieuwInvoer = document.createElement("input");
+  wachtwoordNieuwInvoer.type = "password";
+  wachtwoordNieuwInvoer.id = "profielkiezer-nieuw-wachtwoord";
+  wachtwoordNieuwInvoer.autocomplete = "new-password";
+  wachtwoordNieuwInvoer.className = "profiel-start__naam-invoer";
+  formulierKaart.appendChild(wachtwoordNieuwInvoer);
+
+  const wachtwoordBevestigLabel = maakElement("label", "profiel-start__label", "Herhaal wachtwoord");
+  wachtwoordBevestigLabel.setAttribute("for", "profielkiezer-nieuw-wachtwoord-bevestig");
+  formulierKaart.appendChild(wachtwoordBevestigLabel);
+
+  const wachtwoordBevestigInvoer = document.createElement("input");
+  wachtwoordBevestigInvoer.type = "password";
+  wachtwoordBevestigInvoer.id = "profielkiezer-nieuw-wachtwoord-bevestig";
+  wachtwoordBevestigInvoer.autocomplete = "new-password";
+  wachtwoordBevestigInvoer.className = "profiel-start__naam-invoer";
+  formulierKaart.appendChild(wachtwoordBevestigInvoer);
+
   const avatarLabel = maakElement("span", "profiel-start__label", "Kies een afbeelding");
   formulierKaart.appendChild(avatarLabel);
 
@@ -170,11 +193,91 @@ export async function toonProfielkiezerScherm(container) {
     formulierKaart.hidden = true;
     foutmeldingEl.hidden = true;
     naamInvoer.value = "";
+    wachtwoordNieuwInvoer.value = "";
+    wachtwoordBevestigInvoer.value = "";
   });
 
   acties.append(bevestigKnop, annuleerKnop);
   formulierKaart.appendChild(acties);
   shell.appendChild(formulierKaart);
+
+  // --- Wachtwoord-prompt voor een bestaand profiel ---------------------------
+  const wachtwoordFormulier = maakElement("form", "profiel-start__formulier");
+  wachtwoordFormulier.hidden = true;
+  wachtwoordFormulier.noValidate = true;
+
+  const wachtwoordFormulierTitel = maakElement("h2", "profiel-start__formulier-titel", "Wachtwoord");
+  wachtwoordFormulier.appendChild(wachtwoordFormulierTitel);
+
+  const wachtwoordNaamRegel = maakElement("p", "profiel-start__subtitel", "");
+  wachtwoordFormulier.appendChild(wachtwoordNaamRegel);
+
+  const wachtwoordLabel = maakElement("label", "profiel-start__label", "Wachtwoord");
+  wachtwoordLabel.setAttribute("for", "profielkiezer-wachtwoord-invoer");
+  wachtwoordFormulier.appendChild(wachtwoordLabel);
+
+  const wachtwoordInvoer = document.createElement("input");
+  wachtwoordInvoer.type = "password";
+  wachtwoordInvoer.id = "profielkiezer-wachtwoord-invoer";
+  wachtwoordInvoer.autocomplete = "current-password";
+  wachtwoordInvoer.className = "profiel-start__naam-invoer";
+  wachtwoordFormulier.appendChild(wachtwoordInvoer);
+
+  const wachtwoordFoutEl = maakElement("p", "profiel-start__fout");
+  wachtwoordFoutEl.hidden = true;
+  wachtwoordFormulier.appendChild(wachtwoordFoutEl);
+
+  const wachtwoordActies = maakElement("div", "profiel-start__acties");
+  const wachtwoordBevestigKnop = document.createElement("button");
+  wachtwoordBevestigKnop.type = "submit";
+  wachtwoordBevestigKnop.className = "knop knop--primair";
+  wachtwoordBevestigKnop.textContent = "Verder";
+
+  const wachtwoordAnnuleerKnop = document.createElement("button");
+  wachtwoordAnnuleerKnop.type = "button";
+  wachtwoordAnnuleerKnop.className = "knop knop--zacht";
+  wachtwoordAnnuleerKnop.textContent = "Annuleren";
+
+  wachtwoordActies.append(wachtwoordBevestigKnop, wachtwoordAnnuleerKnop);
+  wachtwoordFormulier.appendChild(wachtwoordActies);
+  shell.appendChild(wachtwoordFormulier);
+
+  let gekozenProfielVoorWachtwoord = null;
+
+  function sluitWachtwoordFormulier() {
+    wachtwoordFormulier.hidden = true;
+    wachtwoordFoutEl.hidden = true;
+    wachtwoordInvoer.value = "";
+    gekozenProfielVoorWachtwoord = null;
+  }
+
+  wachtwoordAnnuleerKnop.addEventListener("click", sluitWachtwoordFormulier);
+
+  wachtwoordFormulier.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    if (!gekozenProfielVoorWachtwoord) return;
+    const wachtwoord = wachtwoordInvoer.value;
+    wachtwoordBevestigKnop.disabled = true;
+    wachtwoordFoutEl.hidden = true;
+    try {
+      const ok = await verifieerProfielWachtwoord(gekozenProfielVoorWachtwoord.id, wachtwoord);
+      if (ok) {
+        setActiefProfielId(gekozenProfielVoorWachtwoord.id);
+        window.location.hash = "#/";
+      } else {
+        wachtwoordFoutEl.textContent = "Wachtwoord onjuist. Probeer opnieuw.";
+        wachtwoordFoutEl.hidden = false;
+        wachtwoordInvoer.value = "";
+        wachtwoordInvoer.focus();
+      }
+    } catch (fout) {
+      console.error("Kon wachtwoord niet controleren:", fout);
+      wachtwoordFoutEl.textContent = "Controleren mislukt. Controleer of de server draait.";
+      wachtwoordFoutEl.hidden = false;
+    } finally {
+      wachtwoordBevestigKnop.disabled = false;
+    }
+  });
 
   function voegPlusCirkelToe() {
     const plusKnop = document.createElement("button");
@@ -185,7 +288,10 @@ export async function toonProfielkiezerScherm(container) {
     const cirkel = maakElement("span", "profiel-start__cirkel", "+");
     const label = maakElement("span", "profiel-start__profielnaam", "Nieuw");
     plusKnop.append(cirkel, label);
-    plusKnop.addEventListener("click", () => toonFormulier(formulierKaart, naamInvoer, foutmeldingEl));
+    plusKnop.addEventListener("click", () => {
+      sluitWachtwoordFormulier();
+      toonFormulier(formulierKaart, naamInvoer, foutmeldingEl);
+    });
     profielenRij.appendChild(plusKnop);
   }
 
@@ -197,8 +303,14 @@ export async function toonProfielkiezerScherm(container) {
       knop.className = "profiel-start__profiel";
       knop.setAttribute("aria-label", `Ga verder als ${profiel.naam}`);
       knop.addEventListener("click", () => {
-        setActiefProfielId(profiel.id);
-        window.location.hash = "#/";
+        formulierKaart.hidden = true;
+        foutmeldingEl.hidden = true;
+        gekozenProfielVoorWachtwoord = profiel;
+        wachtwoordNaamRegel.textContent = `Vul het wachtwoord van ${profiel.naam} in.`;
+        wachtwoordFoutEl.hidden = true;
+        wachtwoordInvoer.value = "";
+        wachtwoordFormulier.hidden = false;
+        wachtwoordInvoer.focus();
       });
 
       const cirkel = maakElement("span", "profiel-start__cirkel");
@@ -237,17 +349,31 @@ export async function toonProfielkiezerScherm(container) {
   formulierKaart.addEventListener("submit", async (event) => {
     event.preventDefault();
     const naam = naamInvoer.value.trim();
+    const wachtwoord = wachtwoordNieuwInvoer.value;
+    const wachtwoordBevestig = wachtwoordBevestigInvoer.value;
     if (!naam) {
       foutmeldingEl.textContent = "Vul eerst je naam in.";
       foutmeldingEl.hidden = false;
       naamInvoer.focus();
       return;
     }
+    if (!wachtwoord) {
+      foutmeldingEl.textContent = "Kies een wachtwoord.";
+      foutmeldingEl.hidden = false;
+      wachtwoordNieuwInvoer.focus();
+      return;
+    }
+    if (wachtwoord !== wachtwoordBevestig) {
+      foutmeldingEl.textContent = "De wachtwoorden komen niet overeen.";
+      foutmeldingEl.hidden = false;
+      wachtwoordBevestigInvoer.focus();
+      return;
+    }
 
     bevestigKnop.disabled = true;
     foutmeldingEl.hidden = true;
     try {
-      const nieuwProfiel = await maakProfiel(naam, gekozenAvatar);
+      const nieuwProfiel = await maakProfiel(naam, gekozenAvatar, wachtwoord);
       setActiefProfielId(nieuwProfiel.id);
       window.location.hash = "#/";
     } catch (fout) {
