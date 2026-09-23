@@ -32,6 +32,16 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Forceer revalidatie voor frontend-assets (.html/.js/.css) zodat wijzigingen
+# direct zichtbaar zijn — ook de ES-module imports zonder versie-query.
+# Voorkomt dat de browser een oude (gecachte) animatie/JS blijft tonen.
+@app.middleware("http")
+async def no_cache_assets(request, call_next):
+    response = await call_next(request)
+    if request.url.path.endswith((".html", ".js", ".css")):
+        response.headers["Cache-Control"] = "no-cache"
+    return response
+
 app.include_router(profielen.router)
 app.include_router(antwoorden.router)
 app.include_router(statistieken.router)
