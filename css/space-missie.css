@@ -1,0 +1,458 @@
+/* css/space-missie.css
+------------------------------------------------------------------------------
+"Space Math Mission" — tweede voortgangsanimatie die om en om met de
+mijntunnel-animatie wordt getoond (zie utils/voortgangAnimatie.js). Een eigen
+2D-raket vliegt van links naar rechts door de ruimte; de positie volgt de
+voortgang van de oefensessie. Alle klassen gebruiken de prefix
+"space-missie-" zodat er geen conflicten ontstaan met de rest van de
+stijlen. Puur CSS/inline-SVG, geen externe assets, geen frameworks.
+------------------------------------------------------------------------------ */
+
+.space-missie-container {
+  position: relative;
+  margin: 14px 0;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: var(--schaduw-diep, 0 8px 24px rgba(20, 30, 50, 0.12));
+}
+
+.space-missie-world {
+  position: relative;
+  height: clamp(120px, 22vw, 190px);
+  overflow: hidden;
+  background: linear-gradient(180deg, #0b1030 0%, #161c4a 55%, #1e2a5e 100%);
+}
+
+/* --- Parallax sterrenlagen (puur CSS, geen DOM per ster) -------------------- */
+
+.space-missie-sterren {
+  position: absolute;
+  inset: 0;
+  background-repeat: repeat;
+  will-change: background-position;
+}
+
+.space-missie-sterren--ver {
+  background-image:
+    radial-gradient(1.5px 1.5px at 10% 20%, #dfe7ff 0 100%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 35% 65%, #dfe7ff 0 100%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 60% 30%, #dfe7ff 0 100%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 82% 75%, #dfe7ff 0 100%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 95% 15%, #dfe7ff 0 100%, transparent 100%);
+  background-size: 220px 140px;
+  opacity: 0.5;
+  animation: space-missie-drift 60s linear infinite;
+}
+
+.space-missie-sterren--groot {
+  background-image:
+    radial-gradient(2.2px 2.2px at 18% 40%, #fff 0 100%, transparent 100%),
+    radial-gradient(2.2px 2.2px at 48% 15%, #fff 0 100%, transparent 100%),
+    radial-gradient(2.2px 2.2px at 70% 55%, #ffe9a8 0 100%, transparent 100%),
+    radial-gradient(2.2px 2.2px at 90% 30%, #fff 0 100%, transparent 100%);
+  background-size: 260px 160px;
+  opacity: 0.75;
+  animation: space-missie-drift 34s linear infinite;
+}
+
+.space-missie-nevel {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(closest-side, rgba(122, 92, 255, 0.18), transparent),
+    radial-gradient(closest-side, rgba(66, 160, 255, 0.14), transparent);
+  background-position: 20% 30%, 80% 70%;
+  background-size: 55% 90%, 60% 100%;
+  background-repeat: no-repeat;
+}
+
+@keyframes space-missie-drift {
+  from { background-position: 0 0; }
+  to { background-position: -400px 0; }
+}
+
+/* --- Decoratieve planeet/maan --------------------------------------------- */
+
+.space-missie-planeet {
+  position: absolute;
+  top: 12%;
+  right: 6%;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #9fc7ff, #4a6fd4 65%, #33509e 100%);
+  box-shadow: 0 0 18px 2px rgba(122, 160, 255, 0.35);
+  opacity: 0.85;
+}
+
+/* --- Mijlpalen (ster / maan / raket / trofee) ------------------------------ */
+
+.space-missie-milestone {
+  position: absolute;
+  top: 50%;
+  width: 28px;
+  height: 28px;
+  transform: translate(-50%, -50%) scale(0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.12);
+  filter: grayscale(1) brightness(0.6);
+  opacity: 0.5;
+  transition: filter 0.4s ease, opacity 0.4s ease, transform 0.4s ease;
+  z-index: 3;
+}
+
+.space-missie-milestone--bereikt {
+  filter: none;
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1.08);
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.35), 0 0 16px 4px rgba(122, 200, 255, 0.7);
+}
+
+.space-missie-milestone--bereikt.space-missie-milestone--pulse {
+  animation: space-missie-milestone-pulse 0.7s ease-out;
+}
+
+@keyframes space-missie-milestone-pulse {
+  0% { transform: translate(-50%, -50%) scale(0.7); }
+  55% { transform: translate(-50%, -50%) scale(1.35); }
+  100% { transform: translate(-50%, -50%) scale(1.08); }
+}
+
+/* --- De raket --------------------------------------------------------------- */
+
+.space-missie-rocket {
+  position: absolute;
+  top: 30%;
+  height: 40%;
+  width: 50px;
+  left: 0%;
+  z-index: 4;
+  transform: translate(-50%, 0);
+  transition: left 700ms ease-out;
+}
+
+.space-missie-rocket__sprite {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  animation: space-missie-float 2.6s ease-in-out infinite;
+}
+
+.space-missie-rocket__sprite svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+@keyframes space-missie-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
+}
+
+.space-missie-rocket--boost .space-missie-rocket__sprite {
+  animation: space-missie-boost 550ms ease-out;
+}
+
+@keyframes space-missie-boost {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+.space-missie-rocket--geraakt .space-missie-rocket__sprite {
+  animation: space-missie-hit 500ms ease-out;
+}
+
+@keyframes space-missie-hit {
+  0% { transform: translateX(0) rotate(0); }
+  20% { transform: translateX(-8px) rotate(-4deg); }
+  40% { transform: translateX(6px) rotate(4deg); }
+  60% { transform: translateX(-4px) rotate(-2deg); }
+  100% { transform: translateX(0) rotate(0); }
+}
+
+.space-missie-rocket--klaar .space-missie-rocket__sprite {
+  animation: none;
+}
+
+/* Vlam onder de raket: groeit tijdens boost */
+.space-missie-vlam {
+  position: absolute;
+  left: 50%;
+  bottom: -8%;
+  width: 30%;
+  height: 26%;
+  transform: translateX(-50%);
+  transform-origin: top center;
+  background: linear-gradient(180deg, #ffe27a 0%, #ff9d3d 55%, #ff5a3d 100%);
+  clip-path: polygon(20% 0%, 80% 0%, 50% 100%);
+  transition: transform 200ms ease-out, height 200ms ease-out;
+}
+
+.space-missie-rocket--boost .space-missie-vlam {
+  transform: translateX(-50%) scaleY(1.6);
+}
+
+/* --- Botsing: asteroïde + korte explosie ------------------------------------ */
+
+.space-missie-asteroide {
+  position: absolute;
+  top: 26%;
+  width: 20px;
+  height: 20px;
+  border-radius: 40% 60% 55% 45%;
+  background: radial-gradient(circle at 35% 30%, #9a8a7a, #5b5044 70%);
+  box-shadow: inset -3px -3px 0 rgba(0,0,0,0.25);
+  z-index: 5;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.space-missie-asteroide--vliegt {
+  animation: space-missie-asteroide-vliegt 500ms ease-in forwards;
+}
+
+@keyframes space-missie-asteroide-vliegt {
+  0% { opacity: 1; transform: translate(60px, -30px) rotate(0deg); }
+  80% { opacity: 1; }
+  100% { opacity: 0; transform: translate(0, 0) rotate(120deg); }
+}
+
+.space-missie-explosie {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #fff 0%, #ffb84d 45%, #ff5a3d 75%, transparent 85%);
+  box-shadow: 0 0 14px 5px rgba(255, 130, 60, 0.7);
+  pointer-events: none;
+  animation: space-missie-explosie-pop 480ms ease-out forwards;
+}
+
+@keyframes space-missie-explosie-pop {
+  0% { opacity: 1; transform: translate(-50%, -50%) scale(0.3); }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(2.4); }
+}
+
+/* --- Sparkle (mijlpalen, boost, finish) -------------------------------------- */
+
+.space-missie-sparkle {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #fff 0%, #cfe6ff 55%, transparent 75%);
+  box-shadow: 0 0 10px 4px rgba(180, 210, 255, 0.75);
+  pointer-events: none;
+  animation: space-missie-sparkle-pop 650ms ease-out forwards;
+}
+
+@keyframes space-missie-sparkle-pop {
+  0% { opacity: 1; transform: translate(-50%, -50%) scale(0.3); }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(2.2); }
+}
+
+/* --- XP-indicator bij goed antwoord ------------------------------------------ */
+
+.space-missie-xp {
+  position: absolute;
+  top: 40%;
+  transform: translate(-50%, 0);
+  font-size: 13px;
+  font-weight: 900;
+  color: #ffe27a;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.6);
+  pointer-events: none;
+  opacity: 0;
+  z-index: 7;
+}
+
+.space-missie-xp--toon {
+  animation: space-missie-xp-omhoog 850ms ease-out forwards;
+}
+
+@keyframes space-missie-xp-omhoog {
+  0% { opacity: 0; transform: translate(-50%, 0); }
+  20% { opacity: 1; transform: translate(-50%, -6px); }
+  100% { opacity: 0; transform: translate(-50%, -30px); }
+}
+
+/* --- Voortgangspaneel -------------------------------------------------------- */
+
+.space-missie-progress {
+  padding: 10px 14px 12px;
+  background: rgba(10, 14, 40, 0.85);
+}
+
+.space-missie-progress__label {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  color: #a9b6e0;
+  margin-bottom: 4px;
+}
+
+.space-missie-progress__pct {
+  font-size: 16px;
+  color: #8fd0ff;
+}
+
+.space-missie-progress__bar {
+  position: relative;
+  height: 14px;
+  border-radius: 4px;
+  background: #1b2354;
+  border: 2px solid #313c7a;
+  overflow: hidden;
+}
+
+.space-missie-progress__fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #4a6fd4, #7a5cff 55%, #ff9d3d);
+  transition: width 700ms ease-out;
+}
+
+.space-missie-progress__count {
+  margin-top: 4px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #a9b6e0;
+  text-align: right;
+}
+
+/* --- Finish-banner ----------------------------------------------------------- */
+
+.space-missie-finish {
+  position: absolute;
+  left: 50%;
+  top: 14%;
+  transform: translate(-50%, -12px) scale(0.85);
+  padding: 6px 18px;
+  border-radius: 999px;
+  background: #4a6fd4;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 6;
+}
+
+.space-missie-finish--toon {
+  animation: space-missie-finish-toon 2.6s ease-out forwards;
+}
+
+@keyframes space-missie-finish-toon {
+  0% { opacity: 0; transform: translate(-50%, -12px) scale(0.7); }
+  12% { opacity: 1; transform: translate(-50%, 0) scale(1); }
+  82% { opacity: 1; transform: translate(-50%, 0) scale(1); }
+  100% { opacity: 0; transform: translate(-50%, -8px) scale(0.9); }
+}
+
+/* --- Eindscherm -------------------------------------------------------------- */
+
+.space-missie-eind {
+  text-align: center;
+  padding: 18px 14px;
+  margin: 14px 0;
+  border-radius: 14px;
+  background: linear-gradient(160deg, #12173c, #1e2a5e);
+  border: 2px solid #313c7a;
+}
+
+.space-missie-eind__sprite {
+  display: inline-block;
+  width: 64px;
+  height: 64px;
+}
+
+.space-missie-eind__titel {
+  font-size: 24px;
+  font-weight: 900;
+  color: #8fd0ff;
+  margin: 6px 0;
+}
+
+.space-missie-eind__tekst {
+  margin: 0 0 10px;
+  font-size: 16px;
+  color: #a9b6e0;
+}
+
+.space-missie-eind__balk {
+  height: 10px;
+  border-radius: 4px;
+  background: #1b2354;
+  max-width: 200px;
+  margin: 0 auto 6px;
+  overflow: hidden;
+  border: 2px solid #313c7a;
+}
+
+.space-missie-eind__balk-vulling {
+  height: 100%;
+  border-radius: 2px;
+  background: linear-gradient(90deg, #4a6fd4, #7a5cff 55%, #ff9d3d);
+}
+
+.space-missie-eind__pct {
+  color: #8fd0ff;
+  font-weight: 700;
+}
+
+/* --- Responsief ---------------------------------------------------------------- */
+
+@media (max-width: 480px) {
+  .space-missie-world {
+    height: clamp(96px, 30vw, 140px);
+  }
+  .space-missie-rocket {
+    width: 38px;
+  }
+  .space-missie-milestone {
+    width: 22px;
+    height: 22px;
+    font-size: 14px;
+  }
+  .space-missie-planeet {
+    width: 24px;
+    height: 24px;
+  }
+  .space-missie-progress__label {
+    font-size: 11px;
+  }
+}
+
+/* --- Reduced motion -------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .space-missie-rocket,
+  .space-missie-progress__fill {
+    transition-duration: 0.01ms !important;
+  }
+  .space-missie-sterren--ver,
+  .space-missie-sterren--groot,
+  .space-missie-rocket__sprite,
+  .space-missie-rocket--boost .space-missie-rocket__sprite,
+  .space-missie-rocket--geraakt .space-missie-rocket__sprite,
+  .space-missie-milestone--pulse,
+  .space-missie-finish--toon,
+  .space-missie-asteroide--vliegt,
+  .space-missie-xp--toon {
+    animation: none !important;
+  }
+  .space-missie-sparkle,
+  .space-missie-explosie {
+    display: none !important;
+  }
+}
