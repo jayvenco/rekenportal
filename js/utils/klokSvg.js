@@ -14,6 +14,8 @@ const STRAAL = 120;
 const VIEWBOX = 320;
 // Cijfers staan buiten de wijzerplaat, zodat de wijzers goed leesbaar blijven.
 const CIJFER_STRAAL = STRAAL + 16;
+// Doorzichtigheid van de wijzers (0.5 = 50% transparant).
+const WIJZER_OPACITY = "0.5";
 
 function svgEl(tag, attributen = {}) {
   const el = document.createElementNS(SVG_NS, tag);
@@ -63,7 +65,7 @@ function tekenUurWijzer(svg, hoek) {
   const p = puntOpKlok(hoek, STRAAL * 0.5);
   svg.appendChild(svgEl("line", {
     x1: CX, y1: CY, x2: p.x, y2: p.y,
-    stroke: "#e8735a", "stroke-width": 13, "stroke-linecap": "round", opacity: "0.7",
+    stroke: "#e8735a", "stroke-width": 13, "stroke-linecap": "round", opacity: WIJZER_OPACITY,
   }));
 }
 
@@ -71,7 +73,7 @@ function tekenMinuutWijzer(svg, hoek) {
   const p = puntOpKlok(hoek, STRAAL * 0.74);
   svg.appendChild(svgEl("line", {
     x1: CX, y1: CY, x2: p.x, y2: p.y,
-    stroke: "#4f8fe8", "stroke-width": 8, "stroke-linecap": "round", opacity: "0.7",
+    stroke: "#4f8fe8", "stroke-width": 8, "stroke-linecap": "round", opacity: WIJZER_OPACITY,
   }));
 }
 
