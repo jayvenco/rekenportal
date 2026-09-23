@@ -59,6 +59,9 @@ export function startOefensessie(container, instellingen, opKlaar) {
   // --- Voortgangscirkels (groen/oranje/rood) ---
   const voortgangCirkels = maakVoortgangCirkels(container, instellingen.aantalOpgaven);
 
+  // --- Voortgangsanimatie ---
+  const raket = maakRaketAnimatie(container, instellingen.aantalOpgaven);
+
   // --- Reward tracker ---
   const rewardTracker = maakRewardTracker(EXERCISE_ID, instellingen.aantalOpgaven);
 
@@ -217,6 +220,8 @@ export function startOefensessie(container, instellingen, opKlaar) {
     if (percentageGoedVoorTitel === 100) toonPerfecteScoreAnimatie();
     titel.textContent = percentageGoedVoorTitel >= 70 ? "Goed gedaan!" : "Bijna! Nog even oefenen.";
     kaart.appendChild(titel);
+
+    toonEindAnimatie(kaart, percentageGoedVoorTitel);
 
     const resultaatTekst = document.createElement("p");
     resultaatTekst.style.fontSize = "24px";

@@ -1831,9 +1831,6 @@ button {
   100% { transform: scale(1); }
 }
 
-/* Powerup Nyan Cat — via nyan-cat.css */
-/* Nyan Cat geraakt — via nyan-cat.css */
-
 /* Heldin geraakt */
 .monster-hero__hero--hit {
   animation: hero-hit 0.55s ease-out;

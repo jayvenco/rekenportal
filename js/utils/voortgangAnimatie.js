@@ -1,224 +1,280 @@
 // utils/voortgangAnimatie.js
 // -----------------------------------------------------------------------------
-// Nyan Cat — kat vliegt door de ruimte met een regenboog vlak achter zich.
-// Voortgang = aantal vragen goed. Goed = powerup. Fout = schudden.
+// Pixel-art mijntunnel-voortgangsanimatie ("math tunnel", zie css/math-tunnel.css).
+// Een mijnwerker graaft een horizontale tunnel naar rechts; hoe meer opgaven
+// goed beantwoord, hoe verder hij komt. Onderweg passeert hij vier mijlpalen
+// (edelsteen, goud, zeldzaam mineraal, schatkist) die oplichten zodra ze
+// bereikt zijn.
+//
+// Puur HTML/CSS/vanilla JS, geen externe libraries. De publieke API
+// (maakRaketAnimatie / toonEindAnimatie) is bewust ongewijzigd gebleven zodat
+// alle oefenschermen die deze module gebruiken niet aangepast hoeven worden.
 // -----------------------------------------------------------------------------
 
-const CHECKPOINTS = [
-  { grens: 25, tekst: "GOED BEZIG" },
-  { grens: 50, tekst: "STOER" },
-  { grens: 75, tekst: "TOPPER" },
-  { grens: 100, tekst: "REKENKAMPIOEN" },
+const MIJLPALEN = [25, 50, 75, 100];
+const MIJLPAAL_ICONEN = ["💎", "🪙", "💠", "🎁"];
+const STOF_KLEUREN = ["#b98a5a", "#9aa3ad", "#5b6672"];
+
+// Vaste, decoratieve ertsjes in de steenlaag (puur textuur, geen betekenis).
+const ERTS_POSITIES = [
+  [8, "kool"], [18, "ijzer"], [37, "kool"], [45, "ijzer"],
+  [63, "kool"], [70, "ijzer"], [88, "kool"], [93, "ijzer"],
 ];
 
-const PARTIKEL_KLEUREN = ["#2f6ed4", "#38b26a", "#f5b942", "#f07a3d", "#9b5de5"];
-
-function begrens(g, mi, ma) { return Math.max(mi, Math.min(ma, g)); }
-function el(t, c, txt = "") {
-  const e = document.createElement(t);
-  if (c) e.className = c;
-  if (txt) e.textContent = txt;
+function el(tag, className, tekst) {
+  const e = document.createElement(tag);
+  if (className) e.className = className;
+  if (tekst !== undefined) e.textContent = tekst;
   return e;
 }
 
-// -----------------------------------------------------------------------
-// Nyan Cat (herbruikt CSS uit nyan-cat.css)
-// -----------------------------------------------------------------------
-function nyanCat() {
-  const w = el("div", "nyan-cat");
-  w.setAttribute("aria-hidden", "true");
-  w.innerHTML = `
-    <div class="nyan-lichaam">
-      <div class="nyan-staart"><div class="nyan-sprite"></div></div>
-      <div class="nyan-pootjes"><div class="nyan-sprite"></div></div>
-      <div class="nyan-poptart"></div>
-      <div class="nyan-kop"></div>
-    </div>
+/** Inline SVG van de mijnwerker: helm, gezicht, romp, benen en een arm+pikhouweel-groep. */
+function bouwPoppetjeSvg() {
+  return `
+    <svg viewBox="0 0 46 50" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <rect x="4" y="22" width="6" height="9" fill="#e8b382" />
+      <rect x="9" y="20" width="23" height="15" fill="#3a72c4" />
+      <rect x="9" y="33" width="23" height="3" fill="#2b2f36" />
+      <rect x="11" y="36" width="8" height="11" fill="#35404d" />
+      <rect x="21" y="36" width="8" height="11" fill="#35404d" />
+      <rect x="10" y="45" width="10" height="4" fill="#1c2126" />
+      <rect x="20" y="45" width="10" height="4" fill="#1c2126" />
+      <rect x="11" y="10" width="18" height="10" fill="#e8b382" />
+      <rect x="15" y="14" width="3" height="3" fill="#2b2f36" />
+      <rect x="22" y="14" width="3" height="3" fill="#2b2f36" />
+      <rect x="9" y="9" width="22" height="4" fill="#f4c430" />
+      <rect x="12" y="4" width="16" height="6" fill="#f7d154" />
+      <g class="math-tunnel-arm">
+        <rect x="27" y="19" width="7" height="9" fill="#3a72c4" />
+        <rect x="32" y="23" width="6" height="6" fill="#e8b382" />
+        <rect x="37" y="9" width="3" height="18" rx="1" fill="#8a5a34" />
+        <polygon points="33,8 46,8 44,3 36,3" fill="#cbd3da" />
+      </g>
+    </svg>
   `;
-  return w;
 }
 
-// Sterrenveld (12 sterren; posities + animatie via CSS .nyan-stars)
-function maakSterren() {
-  const sterren = document.createElement("ul");
-  sterren.className = "nyan-stars";
-  for (let s = 0; s < 12; s++) {
-    const li = document.createElement("li");
-    li.appendChild(document.createElement("i"));
-    sterren.appendChild(li);
+/** Bouwt de volledige tunnelwereld (grond, mijlpalen, poppetje, voortgangspaneel). */
+function bouwWereld(doelAantal) {
+  const container = el("div", "math-tunnel-container");
+  container.setAttribute("role", "img");
+  container.setAttribute(
+    "aria-label",
+    "Een mijnwerker graaft een tunnel; hoe verder hij komt, hoe meer opgaven goed zijn beantwoord."
+  );
+
+  const wereld = el("div", "math-tunnel-world");
+
+  const grond = el("div", "math-tunnel-ground");
+  const grasLaag = el("div", "math-tunnel-layer math-tunnel-layer--gras");
+  const aardeLaag = el("div", "math-tunnel-layer math-tunnel-layer--aarde");
+  const steenLaag = el("div", "math-tunnel-layer math-tunnel-layer--steen");
+  const donkerLaag = el("div", "math-tunnel-layer math-tunnel-layer--donker");
+  grond.append(grasLaag, aardeLaag, steenLaag, donkerLaag);
+
+  for (const [links, type] of ERTS_POSITIES) {
+    const erts = el("div", `math-tunnel-erts math-tunnel-erts--${type}`);
+    erts.style.left = `${links}%`;
+    steenLaag.appendChild(erts);
   }
-  return sterren;
-}
 
-// -----------------------------------------------------------------------
-// Scene: ruimte met geanimeerde sterren; kat vliegt er met regenboog doorheen.
-// -----------------------------------------------------------------------
-function bouwScene() {
-  const blok = el("div", "nyan-space");
-  blok.setAttribute("role", "img");
-  blok.setAttribute("aria-label", "Nyan Cat vliegt door de ruimte met een regenboog.");
+  const mijlpaalElementen = MIJLPALEN.map((grens, i) => {
+    const mijlpaal = el("div", "math-tunnel-milestone", MIJLPAAL_ICONEN[i]);
+    mijlpaal.style.left = `${grens}%`;
+    mijlpaal.dataset.grens = String(grens);
+    steenLaag.appendChild(mijlpaal);
+    return mijlpaal;
+  });
 
-  const scene = el("div", "nyan-space__scene");
-  scene.style.cssText = "position:relative;height:200px;border-radius:12px;overflow:hidden;background:linear-gradient(180deg,#0a0a2e 0%,#1a1a4e 25%,#2a3a6e 50%,#1a1a4e 75%,#0a0a2e 100%);";
+  const gegraven = el("div", "math-tunnel-gegraven");
 
-  // Sterrenveld (achtergrond)
-  scene.appendChild(maakSterren());
+  const poppetje = el("div", "math-tunnel-character");
+  const sprite = el("div", "math-tunnel-character__sprite");
+  sprite.innerHTML = bouwPoppetjeSvg();
+  const dust = el("div", "math-tunnel-dust");
+  poppetje.append(sprite, dust);
 
-  // Kat + regenboog (achter de kat, zelfde breedte — CSS .nyan-regenboog)
-  const cat = nyanCat();
-  cat.style.cssText = "position:absolute;left:5%;bottom:38%;z-index:5;width:150px;height:110px;transition:left 0.6s cubic-bezier(0.34,1.56,0.64,1);";
-  const regenboog = el("div", "nyan-regenboog");
-  regenboog.innerHTML = '<div class="nyan-sprite"></div>';
-  cat.prepend(regenboog);
+  const finishBanner = el("div", "math-tunnel-finish", "⛏️ REKENMISSIE VOLTOOID!");
 
-  // Badge
-  const badge = el("div", "nyan-space__badge");
-  badge.style.cssText = "position:absolute;left:50%;top:6%;z-index:6;padding:5px 16px;border-radius:999px;background:#2a4fc9;color:#fff;font-size:13px;font-weight:900;transform:translateX(-50%) scale(0.82);opacity:0;pointer-events:none;";
+  wereld.append(grond, gegraven, poppetje, finishBanner);
 
-  scene.append(cat, badge);
+  const progress = el("div", "math-tunnel-progress");
+  const labelRij = el("div", "math-tunnel-progress__label");
+  labelRij.append(el("span", null, "REKENMISSIE"), el("span", "math-tunnel-progress__pct", "0%"));
+  const bar = el("div", "math-tunnel-progress__bar");
+  const fill = el("div", "math-tunnel-progress__fill");
+  bar.appendChild(fill);
+  const count = el("div", "math-tunnel-progress__count", `0 / ${doelAantal}`);
+  progress.append(labelRij, bar, count);
 
-  // Meter
-  const meter = el("div", "nyan-space__meter");
-  meter.style.cssText = "padding:8px 0;";
-  meter.innerHTML = `
-    <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px;">
-      <span style="font-size:12px;font-weight:800;color:#5b6472;">VOORTGANG</span>
-      <span class="nyan-space__pct" style="font-size:18px;font-weight:800;color:#2a4fc9;">0%</span>
-    </div>
-    <div style="position:relative;height:10px;border-radius:5px;background:#e2e8f0;overflow:hidden;">
-      <div class="nyan-space__fill" style="height:100%;width:0%;border-radius:5px;background:linear-gradient(90deg,#38b26a,#ffd83d,#ff785a);transition:width 0.4s ease;"></div>
-    </div>
-    <div style="display:flex;justify-content:space-between;margin-top:3px;">
-      <span class="nyan-space__rank" style="font-size:12px;font-weight:700;color:#5b6472;">START</span>
-      <span class="nyan-space__count" style="font-size:12px;font-weight:700;color:#5b6472;">0 / 1</span>
-    </div>
-  `;
-  blok.appendChild(scene);
-  blok.appendChild(meter);
-
-  // Inject keyframes
-  if (!document.getElementById("nyan-space-kf")) {
-    const st = document.createElement("style");
-    st.id = "nyan-space-kf";
-    st.textContent = `
-      @keyframes nyan-flash { 0%{opacity:.95;transform:translate(-50%,-50%) scale(.2)} 100%{opacity:0;transform:translate(-50%,-50%) scale(2.8)} }
-      @keyframes nyan-burst { 0%{opacity:1;transform:translate(0,0) scale(.4)} 60%{opacity:1} 100%{opacity:0;transform:translate(var(--tx),var(--ty)) scale(1)} }
-    `;
-    document.head.appendChild(st);
-  }
+  container.append(wereld, progress);
 
   return {
-    blok, cat, scene, badge,
-    percent: meter.querySelector(".nyan-space__pct"),
-    rank: meter.querySelector(".nyan-space__rank"),
-    count: meter.querySelector(".nyan-space__count"),
-    fill: meter.querySelector(".nyan-space__fill"),
+    container, wereld, poppetje, dust, gegraven, fill,
+    labelPct: labelRij.querySelector(".math-tunnel-progress__pct"),
+    count, mijlpaalElementen, finishBanner,
   };
 }
 
-// -----------------------------------------------------------------------
-// Helpers
-// -----------------------------------------------------------------------
-function animHerstart(e, c) { e.classList.remove(c); void e.offsetWidth; e.classList.add(c); }
-
-/** Vuurwerk-effect: een flits + radiale deeltjes die vanuit een anker (de kat) wegschieten. */
-function toonVuurwerk(laag, xPct = 50, yPct = 30, aantal = 26) {
-  const b = document.createElement("div");
-  b.style.cssText = `position:absolute;left:${xPct}%;top:${yPct}%;z-index:6;pointer-events:none;`;
-
-  // Flits
-  const flits = document.createElement("span");
-  flits.style.cssText = "position:absolute;left:0;top:0;width:16px;height:16px;border-radius:50%;background:radial-gradient(circle,#fff 0%,#ffe27a 55%,transparent 72%);box-shadow:0 0 26px 10px rgba(255,226,122,0.75);animation:nyan-flash 0.5s ease-out forwards;";
-  b.appendChild(flits);
-
-  // Radiale deeltjes (vuurwerk-uitbarsting)
-  for (let i = 0; i < aantal; i += 1) {
-    const hoek = (i / aantal) * Math.PI * 2 + (Math.random() - 0.5) * 0.25;
-    const afstand = 46 + Math.random() * 46;
-    const p = document.createElement("span");
-    const kleur = PARTIKEL_KLEUREN[i % PARTIKEL_KLEUREN.length];
-    p.style.cssText = `position:absolute;left:0;top:0;width:7px;height:7px;border-radius:50%;background:${kleur};box-shadow:0 0 6px ${kleur};--tx:${(Math.cos(hoek) * afstand).toFixed(1)}px;--ty:${(Math.sin(hoek) * afstand).toFixed(1)}px;animation:nyan-burst 0.75s cubic-bezier(.2,.7,.3,1) forwards;animation-delay:${(Math.random() * 0.08).toFixed(2)}s;`;
-    b.appendChild(p);
+/** Korte stofdeeltjes-uitbarsting bij de pikhouweel (verwijdert zichzelf, geen opgehoopte DOM). */
+function toonStof(dustHost) {
+  for (let i = 0; i < 6; i += 1) {
+    const deeltje = document.createElement("span");
+    deeltje.className = "math-tunnel-dust__deeltje";
+    const hoek = (Math.random() - 0.5) * Math.PI;
+    const afstand = 10 + Math.random() * 14;
+    deeltje.style.setProperty("--tx", `${(Math.cos(hoek) * afstand).toFixed(1)}px`);
+    deeltje.style.setProperty("--ty", `${(-Math.abs(Math.sin(hoek) * afstand) - 4).toFixed(1)}px`);
+    deeltje.style.setProperty("--kleur", STOF_KLEUREN[i % STOF_KLEUREN.length]);
+    dustHost.appendChild(deeltje);
+    setTimeout(() => deeltje.remove(), 600);
   }
-  laag.appendChild(b);
-  setTimeout(() => b.remove(), 850);
 }
 
-function toonBadge(badge, tekst) {
-  badge.style.opacity = "1"; badge.textContent = tekst;
-  badge.classList.remove("nyan-space__badge--show"); void badge.offsetWidth;
-  badge.classList.add("nyan-space__badge--show");
-  setTimeout(() => { badge.classList.remove("nyan-space__badge--show"); badge.style.opacity = "0"; }, 1300);
+/** Korte sparkle-flonkering op een vaste positie (mijlpaal bereikt / finish). */
+function toonSparkle(wereldEl, xPct, aantal = 8) {
+  for (let i = 0; i < aantal; i += 1) {
+    const s = document.createElement("span");
+    s.className = "math-tunnel-sparkle";
+    s.style.left = `${xPct}%`;
+    s.style.top = "55%";
+    s.style.animationDelay = `${(Math.random() * 0.15).toFixed(2)}s`;
+    wereldEl.appendChild(s);
+    setTimeout(() => s.remove(), 800);
+  }
+}
+
+function animHerstart(element, klasse, duurMs) {
+  element.classList.remove(klasse);
+  void element.offsetWidth; // forceer reflow zodat de animatie opnieuw start
+  element.classList.add(klasse);
+  setTimeout(() => element.classList.remove(klasse), duurMs);
+}
+
+/** Animatieduur op basis van de afgelegde afstand: kleine stap = kort, grote stap = langer. */
+function bepaalDuur(vanPct, naarPct) {
+  const afstand = Math.abs(naarPct - vanPct);
+  return Math.max(280, Math.min(900, afstand * 9));
 }
 
 // -----------------------------------------------------------------------
-// Publieke API
+// Publieke API (namen bewust ongewijzigd t.o.v. de vorige Nyan Cat-versie).
 // -----------------------------------------------------------------------
-export function toonEindAnimatie(container, pct) {
-  const p = begrens(Math.round(pct || 0), 0, 100);
-  const suc = p >= 70;
-  const v = el("div");
-  v.style.cssText = "text-align:center;padding:18px 14px;margin:14px 0;border-radius:14px;background:linear-gradient(135deg,#f6f9fc,#ebf3ff);border:2px solid #dce7f5;";
-  const hero = nyanCat(); hero.style.cssText = "display:inline-block;width:90px;height:70px;";
-  v.appendChild(hero);
-  ["h3","p","meter","strong"].forEach(type => {
-    const e = el(type === "meter" ? "div" : type);
-    if (type === "h3") { e.style.cssText = "font-size:24px;font-weight:900;color:#2a4fc9;margin:6px 0;"; e.textContent = p >= 100 ? "REKENKAMPIOEN!" : suc ? "TOPPER!" : "OP WEG!"; }
-    else if (type === "p") { e.style.cssText = "margin:0 0 10px;font-size:16px;color:#5b6472;"; e.textContent = "Goed gedaan!"; }
-    else if (type === "meter") { e.style.cssText = "height:8px;border-radius:4px;background:#e2e8f0;max-width:180px;margin:0 auto 4px;overflow:hidden;"; e.innerHTML = `<div style="height:100%;border-radius:4px;background:linear-gradient(90deg,#38b26a,#ffd83d,#ff785a);width:${p}%;"></div>`; }
-    else { e.style.cssText = "color:#2f6ed4;"; e.textContent = `${p}% goed`; }
-    v.appendChild(e);
-  });
-  container.appendChild(v);
-  return v;
-}
 
+/** Bouwt de tunnelanimatie en geeft besturingsfuncties terug. */
 export function maakRaketAnimatie(container, doelAantal) {
   const totaal = Math.max(1, doelAantal);
   let aantalGoed = 0;
-  let catLeftPct = 5;
-  // Anker voor het vuurwerk, vaste hoogte (kat zweeft op vaste hoogte).
-  const catCenterTopPct = 25;
-  const s = bouwScene();
-  container.appendChild(s.blok);
+  let huidigPct = 0;
+  let bereikteMijlpalen = new Set();
 
-  function update() {
-    const v = Math.min(1, aantalGoed / totaal);
-    const pct = Math.round(v * 100);
-    s.fill.style.width = `${v * 100}%`;
-    s.percent.textContent = `${pct}%`;
-    s.count.textContent = `${aantalGoed} / ${totaal}`;
-    const cp = CHECKPOINTS.reduce((a, c) => pct >= c.grens ? c : a, CHECKPOINTS[0]);
-    s.rank.textContent = cp.tekst;
+  const wereld = bouwWereld(totaal);
+  container.appendChild(wereld.container);
 
-    // Kat vliegt van 5% naar 75% van links, op vaste hoogte.
-    const catLeft = 5 + v * 70;
-    catLeftPct = catLeft;
-    s.cat.style.left = `${catLeft}%`;
-
-    if (aantalGoed >= totaal) {
-      setTimeout(() => toonBadge(s.badge, "REKENKAMPIOEN!"), 300);
-    }
+  function bijwerkenTeller() {
+    wereld.count.textContent = `${aantalGoed} / ${totaal}`;
   }
+
+  function setProgress(pct) {
+    const nieuw = Math.max(0, Math.min(100, pct));
+    const duur = bepaalDuur(huidigPct, nieuw);
+    // Karakter en tunnel blijven binnen 4%-94% zodat het poppetje nooit
+    // half buiten beeld valt; de voortgangsbalk toont wel het echte percentage.
+    const naarLeft = 4 + (nieuw / 100) * 92;
+
+    wereld.poppetje.style.transitionDuration = `${duur}ms`;
+    wereld.gegraven.style.transitionDuration = `${duur}ms`;
+    wereld.fill.style.transitionDuration = `${duur}ms`;
+
+    wereld.poppetje.style.left = `${naarLeft}%`;
+    wereld.gegraven.style.width = `${naarLeft}%`;
+    wereld.fill.style.width = `${nieuw}%`;
+    wereld.labelPct.textContent = `${Math.round(nieuw)}%`;
+
+    for (const mijlpaalEl of wereld.mijlpaalElementen) {
+      const grens = Number(mijlpaalEl.dataset.grens);
+      if (nieuw >= grens && !bereikteMijlpalen.has(grens)) {
+        bereikteMijlpalen.add(grens);
+        mijlpaalEl.classList.add("math-tunnel-milestone--bereikt");
+        animHerstart(mijlpaalEl, "math-tunnel-milestone--pulse", 750);
+        toonSparkle(wereld.wereld, grens);
+      }
+    }
+
+    huidigPct = nieuw;
+    return duur;
+  }
+
+  bijwerkenTeller();
 
   return {
     goedAntwoord() {
-      aantalGoed += 1;
-      update();
-      animHerstart(s.cat, "nyan-space--powerup");
-      setTimeout(() => s.cat.classList.remove("nyan-space--powerup"), 700);
-      toonVuurwerk(s.scene, catLeftPct, catCenterTopPct);
+      aantalGoed = Math.min(totaal, aantalGoed + 1);
+      bijwerkenTeller();
+
+      animHerstart(wereld.poppetje, "math-tunnel-character--graaft", 550);
+      toonStof(wereld.dust);
+
+      const duur = setProgress((aantalGoed / totaal) * 100);
+      animHerstart(wereld.poppetje, "math-tunnel-character--loopt", duur);
+
+      if (aantalGoed >= totaal) {
+        wereld.poppetje.classList.add("math-tunnel-character--klaar");
+        setTimeout(() => {
+          animHerstart(wereld.finishBanner, "math-tunnel-finish--toon", 2600);
+          toonSparkle(wereld.wereld, 96, 12);
+        }, 350);
+      }
     },
     foutAntwoord() {
-      animHerstart(s.cat, "nyan-space--hit");
-      setTimeout(() => s.cat.classList.remove("nyan-space--hit"), 500);
+      animHerstart(wereld.poppetje, "math-tunnel-character--geraakt", 420);
     },
     reset() {
       aantalGoed = 0;
-      s.cat.style.left = "5%";
-      s.cat.style.filter = "";
-      update();
+      huidigPct = 0;
+      bereikteMijlpalen = new Set();
+      bijwerkenTeller();
+
+      wereld.poppetje.classList.remove("math-tunnel-character--klaar", "math-tunnel-character--loopt", "math-tunnel-character--graaft");
+      for (const m of wereld.mijlpaalElementen) {
+        m.classList.remove("math-tunnel-milestone--bereikt", "math-tunnel-milestone--pulse");
+      }
+      wereld.poppetje.style.transitionDuration = "0ms";
+      wereld.gegraven.style.transitionDuration = "0ms";
+      wereld.fill.style.transitionDuration = "0ms";
+      wereld.poppetje.style.left = "4%";
+      wereld.gegraven.style.width = "4%";
+      wereld.fill.style.width = "0%";
+      wereld.labelPct.textContent = "0%";
     },
-    element: s.blok,
+    element: wereld.container,
   };
+}
+
+/** Toont een compact eindscherm met dezelfde mijnwerker en het behaalde percentage. */
+export function toonEindAnimatie(container, pct) {
+  const p = Math.max(0, Math.min(100, Math.round(pct || 0)));
+  const geslaagd = p >= 70;
+
+  const kaart = el("div", "math-tunnel-eind");
+
+  const sprite = el("div", "math-tunnel-eind__sprite");
+  sprite.innerHTML = bouwPoppetjeSvg();
+  kaart.appendChild(sprite);
+
+  const titel = el("h3", "math-tunnel-eind__titel", p >= 100 ? "MIJNMEESTER!" : geslaagd ? "TOPPER!" : "OP WEG!");
+  kaart.appendChild(titel);
+
+  kaart.appendChild(el("p", "math-tunnel-eind__tekst", "Goed gedaan!"));
+
+  const balk = el("div", "math-tunnel-eind__balk");
+  const vulling = el("div", "math-tunnel-eind__balk-vulling");
+  vulling.style.width = `${p}%`;
+  balk.appendChild(vulling);
+  kaart.appendChild(balk);
+
+  kaart.appendChild(el("strong", "math-tunnel-eind__pct", `${p}% goed`));
+
+  container.appendChild(kaart);
+  return kaart;
 }

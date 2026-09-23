@@ -1,0 +1,440 @@
+/* css/math-tunnel.css
+------------------------------------------------------------------------------
+Pixel-art mijntunnel-voortgangsanimatie ("math tunnel"). Vervangt de vorige
+Nyan Cat-animatie. Alle klassen gebruiken de prefix "math-tunnel-" zodat er
+geen conflicten ontstaan met de rest van de stijlen. Puur CSS/inline-SVG,
+geen externe assets, geen frameworks.
+------------------------------------------------------------------------------ */
+
+.math-tunnel-container {
+  position: relative;
+  margin: 14px 0;
+  border-radius: 16px;
+  overflow: hidden;
+  background: linear-gradient(180deg, #bfe6ff 0%, #eaf7ff 60%, #eaf7ff 100%);
+  box-shadow: var(--schaduw-diep, 0 8px 24px rgba(20, 30, 50, 0.12));
+}
+
+.math-tunnel-world {
+  position: relative;
+  height: clamp(120px, 22vw, 190px);
+  overflow: hidden;
+}
+
+/* --- Grondlagen ---------------------------------------------------------- */
+
+.math-tunnel-ground {
+  position: absolute;
+  inset: 0;
+}
+
+.math-tunnel-layer {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  image-rendering: pixelated;
+}
+
+.math-tunnel-layer--gras {
+  top: 0;
+  height: 16%;
+  background:
+    repeating-linear-gradient(90deg, rgba(255,255,255,0.10) 0 6px, transparent 6px 18px),
+    linear-gradient(180deg, #6fd15a 0%, #4bb945 70%, #3fa53c 100%);
+  border-bottom: 3px solid #3a8f39;
+}
+
+.math-tunnel-layer--aarde {
+  top: 16%;
+  height: 16%;
+  background:
+    radial-gradient(circle at 15% 30%, rgba(90,58,30,0.5) 0 3px, transparent 4px),
+    radial-gradient(circle at 55% 60%, rgba(90,58,30,0.5) 0 3px, transparent 4px),
+    radial-gradient(circle at 80% 25%, rgba(90,58,30,0.5) 0 3px, transparent 4px),
+    radial-gradient(circle at 35% 80%, rgba(90,58,30,0.5) 0 3px, transparent 4px),
+    linear-gradient(180deg, #9a6b3e 0%, #86592f 100%);
+}
+
+.math-tunnel-layer--steen {
+  top: 32%;
+  height: 46%;
+  background:
+    radial-gradient(circle at 10% 20%, rgba(255,255,255,0.12) 0 2px, transparent 3px),
+    radial-gradient(circle at 30% 70%, rgba(0,0,0,0.15) 0 3px, transparent 4px),
+    radial-gradient(circle at 62% 35%, rgba(255,255,255,0.10) 0 2px, transparent 3px),
+    radial-gradient(circle at 85% 65%, rgba(0,0,0,0.15) 0 3px, transparent 4px),
+    radial-gradient(circle at 48% 85%, rgba(0,0,0,0.12) 0 2px, transparent 3px),
+    linear-gradient(180deg, #9aa3ad 0%, #838d97 100%);
+}
+
+.math-tunnel-layer--donker {
+  top: 78%;
+  height: 22%;
+  background:
+    radial-gradient(circle at 20% 40%, rgba(0,0,0,0.25) 0 3px, transparent 4px),
+    radial-gradient(circle at 70% 60%, rgba(0,0,0,0.25) 0 3px, transparent 4px),
+    linear-gradient(180deg, #5b6672 0%, #454e58 100%);
+}
+
+/* --- Mijnstenen/mineralen (decoratief, vast in de steenlaag) ------------- */
+
+.math-tunnel-erts {
+  position: absolute;
+  top: 50%;
+  width: 14px;
+  height: 14px;
+  transform: translate(-50%, -50%);
+  border-radius: 3px;
+  opacity: 0.85;
+  pointer-events: none;
+}
+.math-tunnel-erts--kool { background: #2b2f36; box-shadow: 3px 3px 0 rgba(0,0,0,0.2); }
+.math-tunnel-erts--ijzer { background: #c98a5a; box-shadow: 3px 3px 0 rgba(0,0,0,0.15); }
+
+/* --- Mijlpalen ------------------------------------------------------------ */
+
+.math-tunnel-milestone {
+  position: absolute;
+  top: 50%;
+  width: 30px;
+  height: 30px;
+  transform: translate(-50%, -50%) scale(0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.35);
+  filter: grayscale(1) brightness(0.75);
+  opacity: 0.55;
+  transition: filter 0.4s ease, opacity 0.4s ease, transform 0.4s ease;
+  z-index: 3;
+}
+
+.math-tunnel-milestone--bereikt {
+  filter: none;
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1.08);
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.6), 0 0 16px 4px rgba(255, 216, 60, 0.75);
+}
+
+.math-tunnel-milestone--bereikt.math-tunnel-milestone--pulse {
+  animation: math-tunnel-milestone-pulse 0.7s ease-out;
+}
+
+@keyframes math-tunnel-milestone-pulse {
+  0% { transform: translate(-50%, -50%) scale(0.7); }
+  55% { transform: translate(-50%, -50%) scale(1.35); }
+  100% { transform: translate(-50%, -50%) scale(1.08); }
+}
+
+/* --- Uitgegraven tunnel ---------------------------------------------------- */
+
+.math-tunnel-gegraven {
+  position: absolute;
+  left: 0;
+  top: 32%;
+  height: 46%;
+  width: 0%;
+  z-index: 2;
+  background:
+    repeating-linear-gradient(90deg, rgba(255, 190, 90, 0.55) 0 4px, transparent 4px 90px),
+    linear-gradient(180deg, #241a12 0%, #140d09 100%);
+  box-shadow: inset 0 -6px 10px rgba(0, 0, 0, 0.4), inset 0 6px 10px rgba(0, 0, 0, 0.4);
+  transition: width 500ms ease-out;
+}
+
+.math-tunnel-gegraven::after {
+  /* kartelige breukrand aan de rechterkant van de tunnel */
+  content: "";
+  position: absolute;
+  right: -6px;
+  top: 0;
+  width: 12px;
+  height: 100%;
+  background: linear-gradient(90deg, rgba(20,13,9,0.9), transparent);
+  clip-path: polygon(0 10%, 100% 0, 60% 25%, 100% 45%, 40% 55%, 100% 75%, 60% 100%, 0 90%);
+}
+
+/* --- Het poppetje ---------------------------------------------------------- */
+
+.math-tunnel-character {
+  position: absolute;
+  top: 32%;
+  height: 46%;
+  width: 46px;
+  left: 0%;
+  z-index: 4;
+  transform: translate(-50%, 0);
+  transition: left 500ms cubic-bezier(0.34, 1.2, 0.64, 1);
+}
+
+.math-tunnel-character__sprite {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.math-tunnel-character__sprite svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.math-tunnel-character--loopt .math-tunnel-character__sprite {
+  animation: math-tunnel-bounce 0.5s ease-in-out infinite;
+}
+
+@keyframes math-tunnel-bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+.math-tunnel-arm {
+  transform-box: fill-box;
+  transform-origin: 50% 10%;
+}
+
+.math-tunnel-character--graaft .math-tunnel-arm {
+  animation: math-tunnel-mining 0.5s ease-in-out 2;
+}
+
+@keyframes math-tunnel-mining {
+  0% { transform: rotate(0deg); }
+  40% { transform: rotate(-55deg); }
+  70% { transform: rotate(28deg); }
+  100% { transform: rotate(0deg); }
+}
+
+.math-tunnel-character--geraakt .math-tunnel-character__sprite {
+  animation: math-tunnel-hit 0.4s ease-out;
+}
+
+@keyframes math-tunnel-hit {
+  0%, 100% { transform: translateX(0); filter: none; }
+  25% { transform: translateX(-4px); filter: brightness(0.7) saturate(0.4); }
+  50% { transform: translateX(4px); }
+  75% { transform: translateX(-2px); }
+}
+
+.math-tunnel-character--klaar .math-tunnel-arm {
+  animation: none;
+  transform: rotate(-70deg);
+}
+
+/* --- Stofdeeltjes ----------------------------------------------------------- */
+
+.math-tunnel-dust {
+  position: absolute;
+  left: 78%;
+  top: 30%;
+  width: 1px;
+  height: 1px;
+  pointer-events: none;
+}
+
+.math-tunnel-dust__deeltje {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 5px;
+  height: 5px;
+  border-radius: 1px;
+  background: var(--kleur, #b98a5a);
+  animation: math-tunnel-dust-pop 550ms ease-out forwards;
+}
+
+@keyframes math-tunnel-dust-pop {
+  0% { opacity: 1; transform: translate(0, 0) scale(1); }
+  100% { opacity: 0; transform: translate(var(--tx, 10px), var(--ty, -14px)) scale(0.4); }
+}
+
+/* --- Voortgangspaneel -------------------------------------------------------- */
+
+.math-tunnel-progress {
+  padding: 10px 14px 12px;
+  background: rgba(255, 255, 255, 0.75);
+}
+
+.math-tunnel-progress__label {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  color: #5b6472;
+  margin-bottom: 4px;
+}
+
+.math-tunnel-progress__pct {
+  font-size: 16px;
+  color: #3a72c4;
+}
+
+.math-tunnel-progress__bar {
+  position: relative;
+  height: 14px;
+  border-radius: 4px;
+  background: #dfe6ee;
+  border: 2px solid #c3cedb;
+  overflow: hidden;
+  image-rendering: pixelated;
+}
+
+.math-tunnel-progress__fill {
+  height: 100%;
+  width: 0%;
+  background:
+    repeating-linear-gradient(90deg, rgba(255,255,255,0.25) 0 4px, transparent 4px 8px),
+    linear-gradient(180deg, #ffd83d, #ff9d3d 55%, #ff785a);
+  transition: width 500ms ease-out;
+}
+
+.math-tunnel-progress__count {
+  margin-top: 4px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #5b6472;
+  text-align: right;
+}
+
+/* --- Finish-banner ----------------------------------------------------------- */
+
+.math-tunnel-finish {
+  position: absolute;
+  left: 50%;
+  top: 14%;
+  transform: translate(-50%, -12px) scale(0.85);
+  padding: 6px 18px;
+  border-radius: 999px;
+  background: #2a4fc9;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 6;
+}
+
+.math-tunnel-finish--toon {
+  animation: math-tunnel-finish-toon 2.6s ease-out forwards;
+}
+
+@keyframes math-tunnel-finish-toon {
+  0% { opacity: 0; transform: translate(-50%, -12px) scale(0.7); }
+  12% { opacity: 1; transform: translate(-50%, 0) scale(1); }
+  82% { opacity: 1; transform: translate(-50%, 0) scale(1); }
+  100% { opacity: 0; transform: translate(-50%, -8px) scale(0.9); }
+}
+
+/* --- Eindscherm -------------------------------------------------------------- */
+
+.math-tunnel-eind {
+  text-align: center;
+  padding: 18px 14px;
+  margin: 14px 0;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #f6f9fc, #ebf3ff);
+  border: 2px solid #dce7f5;
+}
+
+.math-tunnel-eind__sprite {
+  display: inline-block;
+  width: 70px;
+  height: 70px;
+}
+
+.math-tunnel-eind__titel {
+  font-size: 24px;
+  font-weight: 900;
+  color: #2a4fc9;
+  margin: 6px 0;
+}
+
+.math-tunnel-eind__tekst {
+  margin: 0 0 10px;
+  font-size: 16px;
+  color: #5b6472;
+}
+
+.math-tunnel-eind__balk {
+  height: 10px;
+  border-radius: 4px;
+  background: #e2e8f0;
+  max-width: 200px;
+  margin: 0 auto 6px;
+  overflow: hidden;
+  border: 2px solid #c3cedb;
+}
+
+.math-tunnel-eind__balk-vulling {
+  height: 100%;
+  border-radius: 2px;
+  background: linear-gradient(90deg, #ffd83d, #ff9d3d 55%, #ff785a);
+}
+
+.math-tunnel-eind__pct {
+  color: #2f6ed4;
+  font-weight: 700;
+}
+
+/* --- Sparkle (mijlpalen + finish) --------------------------------------------- */
+
+.math-tunnel-sparkle {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #fff 0%, #ffe27a 55%, transparent 75%);
+  box-shadow: 0 0 10px 4px rgba(255, 226, 122, 0.8);
+  pointer-events: none;
+  animation: math-tunnel-sparkle-pop 650ms ease-out forwards;
+}
+
+@keyframes math-tunnel-sparkle-pop {
+  0% { opacity: 1; transform: translate(-50%, -50%) scale(0.3); }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(2.2); }
+}
+
+/* --- Responsief ---------------------------------------------------------------- */
+
+@media (max-width: 480px) {
+  .math-tunnel-world {
+    height: clamp(96px, 30vw, 140px);
+  }
+  .math-tunnel-character {
+    width: 36px;
+  }
+  .math-tunnel-milestone {
+    width: 24px;
+    height: 24px;
+    font-size: 15px;
+  }
+  .math-tunnel-progress__label {
+    font-size: 11px;
+  }
+}
+
+/* --- Reduced motion -------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .math-tunnel-character,
+  .math-tunnel-gegraven,
+  .math-tunnel-progress__fill {
+    transition-duration: 0.01ms !important;
+  }
+  .math-tunnel-character--loopt .math-tunnel-character__sprite,
+  .math-tunnel-character--graaft .math-tunnel-arm,
+  .math-tunnel-character--geraakt .math-tunnel-character__sprite,
+  .math-tunnel-milestone--pulse,
+  .math-tunnel-finish--toon {
+    animation: none !important;
+  }
+  .math-tunnel-dust__deeltje,
+  .math-tunnel-sparkle {
+    display: none !important;
+  }
+}
