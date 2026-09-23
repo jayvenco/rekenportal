@@ -1,14 +1,14 @@
 // utils/raketAnimatie.js
 // -----------------------------------------------------------------------------
-// Nyan Cat in space — kat vliegt door de ruimte van links naar rechts.
-// Voortgang = aantal vragen afgemaakt. Goed = powerup. Fout = schudden.
+// Nyan Cat — kat rent van links naar rechts met een regenboogspoor.
+// Voortgang = aantal vragen goed. Goed = powerup. Fout = schudden.
 // -----------------------------------------------------------------------------
 
 const CHECKPOINTS = [
-  { grens: 25, tekst: "NYAN LAUNCH" },
-  { grens: 50, tekst: "SPACE CAT" },
-  { grens: 75, tekst: "STAR NYAN" },
-  { grens: 100, tekst: "MATH MASTER" },
+  { grens: 25, tekst: "GOED BEZIG" },
+  { grens: 50, tekst: "STOER" },
+  { grens: 75, tekst: "TOPPER" },
+  { grens: 100, tekst: "REKENKAMPIOEN" },
 ];
 
 const PARTIKEL_KLEUREN = ["#2f6ed4", "#38b26a", "#f5b942", "#f07a3d", "#9b5de5"];
@@ -47,19 +47,19 @@ function nyanCat() {
 }
 
 // -----------------------------------------------------------------------
-// Scene: sterrenhemel met gradient (wolken → ruimte)
+// Scene: heldere lucht met grasgrond; kat rent er overheen met regenboog.
 // -----------------------------------------------------------------------
 function bouwScene() {
   const blok = el("div", "nyan-space");
   blok.setAttribute("role", "img");
-  blok.setAttribute("aria-label", "Nyan Cat vliegt door de ruimte.");
+  blok.setAttribute("aria-label", "Nyan Cat rent over de grond met een regenboogspoor.");
 
   const scene = el("div", "nyan-space__scene");
-  scene.style.cssText = "position:relative;height:200px;border-radius:12px;overflow:hidden;background:linear-gradient(180deg,#0a0a2e 0%,#1a1a4e 25%,#2a3a6e 50%,#1a1a4e 75%,#0a0a2e 100%);";
+  scene.style.cssText = "position:relative;height:200px;border-radius:12px;overflow:hidden;background:linear-gradient(180deg,#8fd3ff 0%,#c6ecff 45%,#eaf7ff 68%,#cde9c0 68%,#a4d588 100%);";
 
-  // Cat (links start) + regenboogspoor
+  // Kat (loopt op de grond van links naar rechts) + regenboogspoor
   const cat = nyanCat();
-  cat.style.cssText = "position:absolute;left:5%;bottom:38%;z-index:5;width:150px;height:110px;transition:left 0.6s cubic-bezier(0.34,1.56,0.64,1), bottom 0.3s;";
+  cat.style.cssText = "position:absolute;left:5%;bottom:12%;z-index:5;width:150px;height:110px;transition:left 0.6s cubic-bezier(0.34,1.56,0.64,1);";
   const regenboog = el("div", "nyan-regenboog");
   regenboog.innerHTML = '<div class="nyan-sprite"></div>';
   cat.prepend(regenboog);
@@ -75,14 +75,14 @@ function bouwScene() {
   meter.style.cssText = "padding:8px 0;";
   meter.innerHTML = `
     <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px;">
-      <span style="font-size:12px;font-weight:800;color:#5b6472;">FLIGHT PROGRESS</span>
+      <span style="font-size:12px;font-weight:800;color:#5b6472;">VOORTGANG</span>
       <span class="nyan-space__pct" style="font-size:18px;font-weight:800;color:#2a4fc9;">0%</span>
     </div>
     <div style="position:relative;height:10px;border-radius:5px;background:#e2e8f0;overflow:hidden;">
       <div class="nyan-space__fill" style="height:100%;width:0%;border-radius:5px;background:linear-gradient(90deg,#38b26a,#ffd83d,#ff785a);transition:width 0.4s ease;"></div>
     </div>
     <div style="display:flex;justify-content:space-between;margin-top:3px;">
-      <span class="nyan-space__rank" style="font-size:12px;font-weight:700;color:#5b6472;">NYAN LAUNCH</span>
+      <span class="nyan-space__rank" style="font-size:12px;font-weight:700;color:#5b6472;">START</span>
       <span class="nyan-space__count" style="font-size:12px;font-weight:700;color:#5b6472;">0 / 1</span>
     </div>
   `;
@@ -156,8 +156,8 @@ export function toonEindAnimatie(container, pct) {
   v.appendChild(hero);
   ["h3","p","meter","strong"].forEach(type => {
     const e = el(type === "meter" ? "div" : type);
-    if (type === "h3") { e.style.cssText = "font-size:24px;font-weight:900;color:#2a4fc9;margin:6px 0;"; e.textContent = p >= 100 ? "MATH MASTER!" : suc ? "CAT POWER!" : "NYAN LAUNCH!"; }
-    else if (type === "p") { e.style.cssText = "margin:0 0 10px;font-size:16px;color:#5b6472;"; e.textContent = "Missie voltooid!"; }
+    if (type === "h3") { e.style.cssText = "font-size:24px;font-weight:900;color:#2a4fc9;margin:6px 0;"; e.textContent = p >= 100 ? "REKENKAMPIOEN!" : suc ? "TOPPER!" : "OP WEG!"; }
+    else if (type === "p") { e.style.cssText = "margin:0 0 10px;font-size:16px;color:#5b6472;"; e.textContent = "Goed gedaan!"; }
     else if (type === "meter") { e.style.cssText = "height:8px;border-radius:4px;background:#e2e8f0;max-width:180px;margin:0 auto 4px;overflow:hidden;"; e.innerHTML = `<div style="height:100%;border-radius:4px;background:linear-gradient(90deg,#38b26a,#ffd83d,#ff785a);width:${p}%;"></div>`; }
     else { e.style.cssText = "color:#2f6ed4;"; e.textContent = `${p}% goed`; }
     v.appendChild(e);
@@ -170,7 +170,8 @@ export function maakRaketAnimatie(container, doelAantal) {
   const totaal = Math.max(1, doelAantal);
   let aantalGoed = 0;
   let catLeftPct = 5;
-  let catCenterTopPct = 30;
+  // Anker voor het vuurwerk (vaste hoogte; kat rent op de grond).
+  const catCenterTopPct = 42;
   const s = bouwScene();
   container.appendChild(s.blok);
 
@@ -183,17 +184,13 @@ export function maakRaketAnimatie(container, doelAantal) {
     const cp = CHECKPOINTS.reduce((a, c) => pct >= c.grens ? c : a, CHECKPOINTS[0]);
     s.rank.textContent = cp.tekst;
 
-    // Kat vliegt van 5% naar 75% van links, met wat hoogtewinst
+    // Kat rent van 5% naar 75% van links, op vaste hoogte (grond).
     const catLeft = 5 + v * 70;
     catLeftPct = catLeft;
     s.cat.style.left = `${catLeft}%`;
-    const catBottom = 38 + v * 6;
-    s.cat.style.bottom = `${catBottom}%`;
-    // Vuurwerk-anker: bovenkant kat t.o.v. de 200px-scene (kat is 110px hoog).
-    catCenterTopPct = 100 - catBottom - 40;
 
     if (aantalGoed >= totaal) {
-      setTimeout(() => toonBadge(s.badge, "MATH MASTER!"), 300);
+      setTimeout(() => toonBadge(s.badge, "REKENKAMPIOEN!"), 300);
     }
   }
 
@@ -211,11 +208,10 @@ export function maakRaketAnimatie(container, doelAantal) {
     },
     reset() {
       aantalGoed = 0;
-      s.cat.style.left = "5%"; s.cat.style.bottom = "38%";
+      s.cat.style.left = "5%";
       s.cat.style.filter = "";
       update();
     },
     element: s.blok,
   };
 }
-  
