@@ -63,7 +63,7 @@ function tekenUurWijzer(svg, hoek) {
   const p = puntOpKlok(hoek, STRAAL * 0.5);
   svg.appendChild(svgEl("line", {
     x1: CX, y1: CY, x2: p.x, y2: p.y,
-    stroke: "#e8735a", "stroke-width": 13, "stroke-linecap": "round",
+    stroke: "#e8735a", "stroke-width": 13, "stroke-linecap": "round", opacity: "0.7",
   }));
 }
 
@@ -71,7 +71,7 @@ function tekenMinuutWijzer(svg, hoek) {
   const p = puntOpKlok(hoek, STRAAL * 0.74);
   svg.appendChild(svgEl("line", {
     x1: CX, y1: CY, x2: p.x, y2: p.y,
-    stroke: "#4f8fe8", "stroke-width": 8, "stroke-linecap": "round",
+    stroke: "#4f8fe8", "stroke-width": 8, "stroke-linecap": "round", opacity: "0.7",
   }));
 }
 
