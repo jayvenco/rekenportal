@@ -1,6 +1,6 @@
 // utils/raketAnimatie.js
 // -----------------------------------------------------------------------------
-// Nyan Cat — kat rent van links naar rechts met een regenboogspoor.
+// Nyan Cat — kat vliegt door de ruimte met een regenboog vlak achter zich.
 // Voortgang = aantal vragen goed. Goed = powerup. Fout = schudden.
 // -----------------------------------------------------------------------------
 
@@ -27,13 +27,6 @@ function el(t, c, txt = "") {
 function nyanCat() {
   const w = el("div", "nyan-cat");
   w.setAttribute("aria-hidden", "true");
-  const sterren = document.createElement("ul");
-  sterren.className = "nyan-stars";
-  for (let s = 0; s < 12; s++) {
-    const li = document.createElement("li");
-    li.appendChild(document.createElement("i"));
-    sterren.appendChild(li);
-  }
   w.innerHTML = `
     <div class="nyan-lichaam">
       <div class="nyan-staart"><div class="nyan-sprite"></div></div>
@@ -42,24 +35,38 @@ function nyanCat() {
       <div class="nyan-kop"></div>
     </div>
   `;
-  w.querySelector(".nyan-lichaam").prepend(sterren);
   return w;
 }
 
+// Sterrenveld (12 sterren; posities + animatie via CSS .nyan-stars)
+function maakSterren() {
+  const sterren = document.createElement("ul");
+  sterren.className = "nyan-stars";
+  for (let s = 0; s < 12; s++) {
+    const li = document.createElement("li");
+    li.appendChild(document.createElement("i"));
+    sterren.appendChild(li);
+  }
+  return sterren;
+}
+
 // -----------------------------------------------------------------------
-// Scene: heldere lucht met grasgrond; kat rent er overheen met regenboog.
+// Scene: ruimte met geanimeerde sterren; kat vliegt er met regenboog doorheen.
 // -----------------------------------------------------------------------
 function bouwScene() {
   const blok = el("div", "nyan-space");
   blok.setAttribute("role", "img");
-  blok.setAttribute("aria-label", "Nyan Cat rent over de grond met een regenboogspoor.");
+  blok.setAttribute("aria-label", "Nyan Cat vliegt door de ruimte met een regenboog.");
 
   const scene = el("div", "nyan-space__scene");
-  scene.style.cssText = "position:relative;height:200px;border-radius:12px;overflow:hidden;background:linear-gradient(180deg,#8fd3ff 0%,#c6ecff 45%,#eaf7ff 68%,#cde9c0 68%,#a4d588 100%);";
+  scene.style.cssText = "position:relative;height:200px;border-radius:12px;overflow:hidden;background:linear-gradient(180deg,#0a0a2e 0%,#1a1a4e 25%,#2a3a6e 50%,#1a1a4e 75%,#0a0a2e 100%);";
 
-  // Kat (loopt op de grond van links naar rechts) + regenboogspoor
+  // Sterrenveld (achtergrond)
+  scene.appendChild(maakSterren());
+
+  // Kat + regenboog (achter de kat, zelfde breedte — CSS .nyan-regenboog)
   const cat = nyanCat();
-  cat.style.cssText = "position:absolute;left:5%;bottom:12%;z-index:5;width:150px;height:110px;transition:left 0.6s cubic-bezier(0.34,1.56,0.64,1);";
+  cat.style.cssText = "position:absolute;left:5%;bottom:38%;z-index:5;width:150px;height:110px;transition:left 0.6s cubic-bezier(0.34,1.56,0.64,1);";
   const regenboog = el("div", "nyan-regenboog");
   regenboog.innerHTML = '<div class="nyan-sprite"></div>';
   cat.prepend(regenboog);
@@ -170,8 +177,8 @@ export function maakRaketAnimatie(container, doelAantal) {
   const totaal = Math.max(1, doelAantal);
   let aantalGoed = 0;
   let catLeftPct = 5;
-  // Anker voor het vuurwerk (vaste hoogte; kat rent op de grond).
-  const catCenterTopPct = 42;
+  // Anker voor het vuurwerk, vaste hoogte (kat zweeft op vaste hoogte).
+  const catCenterTopPct = 25;
   const s = bouwScene();
   container.appendChild(s.blok);
 
@@ -184,7 +191,7 @@ export function maakRaketAnimatie(container, doelAantal) {
     const cp = CHECKPOINTS.reduce((a, c) => pct >= c.grens ? c : a, CHECKPOINTS[0]);
     s.rank.textContent = cp.tekst;
 
-    // Kat rent van 5% naar 75% van links, op vaste hoogte (grond).
+    // Kat vliegt van 5% naar 75% van links, op vaste hoogte.
     const catLeft = 5 + v * 70;
     catLeftPct = catLeft;
     s.cat.style.left = `${catLeft}%`;

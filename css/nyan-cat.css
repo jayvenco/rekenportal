@@ -13,9 +13,9 @@
 
 /* --- Regenboog --- */
 .nyan-regenboog {
-  position: absolute; top: calc(var(--nyanS) * 11);
-  left: calc(var(--nyanS) * -30); width: calc(var(--nyanS) * 30);
-  height: calc(var(--nyanS) * 5); overflow: hidden; z-index: 1;
+  position: absolute; top: calc(var(--nyanS) * 8);
+  left: 0; width: 100%;
+  height: calc(var(--nyanS) * 6); overflow: hidden; z-index: 0;
 }
 .nyan-regenboog .nyan-sprite {
   width: 200%; height: 100%;
@@ -36,17 +36,17 @@
   left: calc(var(--nyanS) * 6); width: calc(var(--nyanS) * 22);
   height: calc(var(--nyanS) * 18);
   z-index: 2;
-  animation: nyan-catCycle 0.5s ease-in-out infinite;
+  animation: nyan-catCycle 0.6s ease-in-out infinite;
 }
 @keyframes nyan-catCycle {
   0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(calc(var(--nyanS) * -2.4)); }
+  50% { transform: translateY(calc(var(--nyanS) * -1.2)); }
 }
 
 /* --- Sterren --- */
 .nyan-stars {
-  position: absolute; list-style: none; margin: 0; padding: 0;
-  width: 120%; height: 120%; top: -10%; left: -10%;
+  position: absolute; inset: 0; list-style: none; margin: 0; padding: 0;
+  overflow: hidden;
   pointer-events: none; z-index: 0;
 }
 .nyan-stars li {
