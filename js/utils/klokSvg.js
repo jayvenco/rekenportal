@@ -8,10 +8,12 @@
 // -----------------------------------------------------------------------------
 
 const SVG_NS = "http://www.w3.org/2000/svg";
-const CX = 120;
-const CY = 120;
-const STRAAL = 108;
-const VIEWBOX = 240;
+const CX = 160;
+const CY = 160;
+const STRAAL = 120;
+const VIEWBOX = 320;
+// Cijfers staan buiten de wijzerplaat, zodat de wijzers goed leesbaar blijven.
+const CIJFER_STRAAL = STRAAL + 16;
 
 function svgEl(tag, attributen = {}) {
   const el = document.createElementNS(SVG_NS, tag);
@@ -46,11 +48,11 @@ function tekenWijzerplaat(svg) {
       x1: binnen.x, y1: binnen.y, x2: buiten.x, y2: buiten.y,
       stroke: "#5b6472", "stroke-width": 5, "stroke-linecap": "round",
     }));
-    const cijfer = puntOpKlok(hoek, STRAAL - 46);
+    const cijfer = puntOpKlok(hoek, CIJFER_STRAAL);
     const tekst = svgEl("text", {
       x: cijfer.x, y: cijfer.y,
       "text-anchor": "middle", "dominant-baseline": "central",
-      "font-size": "24", "font-weight": "800", fill: "#1f2937",
+      "font-size": "26", "font-weight": "800", fill: "#1f2937",
     });
     tekst.textContent = String(h);
     svg.appendChild(tekst);
@@ -81,7 +83,7 @@ function tekenMiddelpunt(svg) {
 
 /** Volledige klok met beide wijzers, voor het 'aflezen'-opgavetype. */
 export function bouwKlok({ uur, minuten }) {
-  const svg = svgEl("svg", { viewBox: "0 0 240 240", role: "img", "aria-label": "Een analoge klok met wijzers" });
+  const svg = svgEl("svg", { viewBox: `0 0 ${VIEWBOX} ${VIEWBOX}`, role: "img", "aria-label": "Een analoge klok met wijzers" });
   tekenWijzerplaat(svg);
   tekenUurWijzer(svg, (uur % 12) * 30 + minuten * 0.5);
   tekenMinuutWijzer(svg, minuten * 6);
@@ -95,7 +97,7 @@ export function bouwKlok({ uur, minuten }) {
  * @param {{uurHoek?: number|null, minuutHoek?: number|null}} opties
  */
 export function bouwTekenKlok({ uurHoek = null, minuutHoek = null }) {
-  const svg = svgEl("svg", { viewBox: "0 0 240 240", role: "img", "aria-label": "Teken de wijzers op de klok" });
+  const svg = svgEl("svg", { viewBox: `0 0 ${VIEWBOX} ${VIEWBOX}`, role: "img", "aria-label": "Teken de wijzers op de klok" });
   tekenWijzerplaat(svg);
 
   // Halfuur-stippen (richtpunten tussen de uren)
