@@ -175,133 +175,35 @@ geen externe assets, geen frameworks.
   height: 100%;
 }
 
-/* --- Poppetje: losse lichaamsdelen (eigen ontwerp, geen bestaand personage) --- */
-
-.math-tunnel-lichaam {
-  position: relative;
+.math-tunnel-character__sprite svg {
   width: 100%;
   height: 100%;
+  overflow: visible;
 }
 
-.math-tunnel-helm {
-  position: absolute;
-  top: -12%;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 52%;
-  height: 16%;
-  background: #f4c430;
-  border-radius: 3px 3px 0 0;
+.math-tunnel-character--loopt .math-tunnel-character__sprite {
+  animation: math-tunnel-bounce 0.5s ease-in-out infinite;
 }
 
-.math-tunnel-hoofd {
-  position: absolute;
-  top: 2%;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 42%;
-  height: 24%;
-  background: #e8b382;
-  border-bottom: 3px solid #2b2f36;
+@keyframes math-tunnel-bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
 }
 
-.math-tunnel-romp {
-  position: absolute;
-  top: 26%;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 52%;
-  height: 28%;
-  background: #3a72c4;
+.math-tunnel-arm {
+  transform-box: fill-box;
+  transform-origin: 50% 10%;
 }
 
-.math-tunnel-arm,
-.math-tunnel-been {
-  position: absolute;
-  width: 16%;
-  height: 30%;
-  transform-origin: top center;
-}
-
-.math-tunnel-arm--links {
-  background: #e8b382;
-  top: 28%;
-  left: 6%;
-}
-
-.math-tunnel-arm--rechts {
-  background: #3a72c4;
-  top: 28%;
-  right: 6%;
-}
-
-.math-tunnel-been--links {
-  background: #35404d;
-  top: 54%;
-  left: 24%;
-}
-
-.math-tunnel-been--rechts {
-  background: #1c2126;
-  top: 54%;
-  right: 24%;
-}
-
-.math-tunnel-pikhouweel {
-  position: absolute;
-  bottom: -55%;
-  left: 15%;
-  width: 70%;
-  height: 65%;
-  transform-origin: top left;
-  transform: rotate(-35deg);
-}
-
-.math-tunnel-pikhouweel__steel {
-  position: absolute;
-  left: 42%;
-  top: 0;
-  width: 16%;
-  height: 100%;
-  background: #8a5a34;
-  border-radius: 2px;
-}
-
-.math-tunnel-pikhouweel__kop {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 24%;
-  background: #cbd3da;
-  border-radius: 2px;
-}
-
-/* Loopcyclus: armen en benen zwaaien tegengesteld aan elkaar. */
-.math-tunnel-character--loopt .math-tunnel-arm--links,
-.math-tunnel-character--loopt .math-tunnel-been--rechts {
-  animation: math-tunnel-zwaai 0.5s ease-in-out infinite alternate;
-}
-
-.math-tunnel-character--loopt .math-tunnel-arm--rechts,
-.math-tunnel-character--loopt .math-tunnel-been--links {
-  animation: math-tunnel-zwaai 0.5s ease-in-out infinite alternate-reverse;
-}
-
-@keyframes math-tunnel-zwaai {
-  0% { transform: rotate(-20deg); }
-  100% { transform: rotate(20deg); }
-}
-
-/* Graafcyclus: alleen de arm met het pikhouweel, overschrijft de loopzwaai. */
-.math-tunnel-character--graaft .math-tunnel-arm--rechts {
+.math-tunnel-character--graaft .math-tunnel-arm {
   animation: math-tunnel-mining 0.5s ease-in-out 2;
 }
 
 @keyframes math-tunnel-mining {
-  0% { transform: rotate(10deg); }
-  45% { transform: rotate(-60deg); }
-  100% { transform: rotate(15deg); }
+  0% { transform: rotate(0deg); }
+  40% { transform: rotate(-55deg); }
+  70% { transform: rotate(28deg); }
+  100% { transform: rotate(0deg); }
 }
 
 .math-tunnel-character--geraakt .math-tunnel-character__sprite {
@@ -315,7 +217,7 @@ geen externe assets, geen frameworks.
   75% { transform: translateX(-2px); }
 }
 
-.math-tunnel-character--klaar .math-tunnel-arm--rechts {
+.math-tunnel-character--klaar .math-tunnel-arm {
   animation: none;
   transform: rotate(-70deg);
 }
@@ -524,11 +426,8 @@ geen externe assets, geen frameworks.
   .math-tunnel-progress__fill {
     transition-duration: 0.01ms !important;
   }
-  .math-tunnel-character--loopt .math-tunnel-arm--links,
-  .math-tunnel-character--loopt .math-tunnel-arm--rechts,
-  .math-tunnel-character--loopt .math-tunnel-been--links,
-  .math-tunnel-character--loopt .math-tunnel-been--rechts,
-  .math-tunnel-character--graaft .math-tunnel-arm--rechts,
+  .math-tunnel-character--loopt .math-tunnel-character__sprite,
+  .math-tunnel-character--graaft .math-tunnel-arm,
   .math-tunnel-character--geraakt .math-tunnel-character__sprite,
   .math-tunnel-milestone--pulse,
   .math-tunnel-finish--toon {

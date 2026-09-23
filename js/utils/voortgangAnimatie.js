@@ -28,27 +28,29 @@ function el(tag, className, tekst) {
   return e;
 }
 
-/**
- * Eigen, blokkig mijnwerker-personage opgebouwd uit losse lichaamsdelen
- * (div's per hoofd/romp/arm/been), zodat CSS-keyframes een echte loop- en
- * graafcyclus kunnen animeren in plaats van één statisch plaatje.
- */
-function bouwPoppetjeLichaam() {
+/** Inline SVG van de mijnwerker: helm, gezicht, romp, benen en een arm+pikhouweel-groep. */
+function bouwPoppetjeSvg() {
   return `
-    <div class="math-tunnel-lichaam">
-      <div class="math-tunnel-helm"></div>
-      <div class="math-tunnel-hoofd"></div>
-      <div class="math-tunnel-romp"></div>
-      <div class="math-tunnel-arm math-tunnel-arm--links"></div>
-      <div class="math-tunnel-arm math-tunnel-arm--rechts">
-        <div class="math-tunnel-pikhouweel">
-          <div class="math-tunnel-pikhouweel__steel"></div>
-          <div class="math-tunnel-pikhouweel__kop"></div>
-        </div>
-      </div>
-      <div class="math-tunnel-been math-tunnel-been--links"></div>
-      <div class="math-tunnel-been math-tunnel-been--rechts"></div>
-    </div>
+    <svg viewBox="0 0 46 50" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <rect x="4" y="22" width="6" height="9" fill="#e8b382" />
+      <rect x="9" y="20" width="23" height="15" fill="#3a72c4" />
+      <rect x="9" y="33" width="23" height="3" fill="#2b2f36" />
+      <rect x="11" y="36" width="8" height="11" fill="#35404d" />
+      <rect x="21" y="36" width="8" height="11" fill="#35404d" />
+      <rect x="10" y="45" width="10" height="4" fill="#1c2126" />
+      <rect x="20" y="45" width="10" height="4" fill="#1c2126" />
+      <rect x="11" y="10" width="18" height="10" fill="#e8b382" />
+      <rect x="15" y="14" width="3" height="3" fill="#2b2f36" />
+      <rect x="22" y="14" width="3" height="3" fill="#2b2f36" />
+      <rect x="9" y="9" width="22" height="4" fill="#f4c430" />
+      <rect x="12" y="4" width="16" height="6" fill="#f7d154" />
+      <g class="math-tunnel-arm">
+        <rect x="27" y="19" width="7" height="9" fill="#3a72c4" />
+        <rect x="32" y="23" width="6" height="6" fill="#e8b382" />
+        <rect x="37" y="9" width="3" height="18" rx="1" fill="#8a5a34" />
+        <polygon points="33,8 46,8 44,3 36,3" fill="#cbd3da" />
+      </g>
+    </svg>
   `;
 }
 
@@ -88,7 +90,7 @@ function bouwWereld(doelAantal) {
 
   const poppetje = el("div", "math-tunnel-character");
   const sprite = el("div", "math-tunnel-character__sprite");
-  sprite.innerHTML = bouwPoppetjeLichaam();
+  sprite.innerHTML = bouwPoppetjeSvg();
   const dust = el("div", "math-tunnel-dust");
   poppetje.append(sprite, dust);
 
@@ -257,7 +259,7 @@ export function toonEindAnimatie(container, pct) {
   const kaart = el("div", "math-tunnel-eind");
 
   const sprite = el("div", "math-tunnel-eind__sprite");
-  sprite.innerHTML = bouwPoppetjeLichaam();
+  sprite.innerHTML = bouwPoppetjeSvg();
   kaart.appendChild(sprite);
 
   const titel = el("h3", "math-tunnel-eind__titel", p >= 100 ? "MIJNMEESTER!" : geslaagd ? "TOPPER!" : "OP WEG!");
