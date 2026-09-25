@@ -27,6 +27,7 @@ import { procentenOefening } from "./exercises/procenten/index.js";
 import { groteGetallenOefening } from "./exercises/grote-getallen/index.js";
 import { getallenOefening } from "./exercises/getallen/index.js";
 import { klokkijkenOefening } from "./exercises/klokkijken/index.js";
+import { getallenvolgordeOefening } from "./exercises/getallenvolgorde/index.js";
 
 /**
  * Elke oefening in deze lijst heeft de vorm:
@@ -55,6 +56,11 @@ export const EXERCISES = [
     ...plusMinOefening,
     groep: 4,
     instelbareOpties: "Bereik, plus/min/beide, aantal opgaven",
+  },
+  {
+    ...getallenvolgordeOefening,
+    groep: 4,
+    instelbareOpties: "Bereik, aantal bolletjes, aantal opgaven",
   },
   {
     ...verhaaltjesOefening,

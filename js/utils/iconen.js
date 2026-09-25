@@ -57,6 +57,22 @@ export function icoonPlusMin() {
   `;
 }
 
+/** Icoon voor de volgorde-oefening: drie oplopende bolletjes met een trapje ertussen. */
+export function icoonVolgorde() {
+  return `
+    <svg viewBox="0 0 64 64" width="40" height="40" aria-hidden="true">
+      <path d="M20 37 L28 30" stroke="#c9d3e0" stroke-width="2" stroke-linecap="round" />
+      <path d="M40 25 L48 18" stroke="#c9d3e0" stroke-width="2" stroke-linecap="round" />
+      <circle cx="12" cy="42" r="9" fill="#fde68a" stroke="#d97706" stroke-width="2" />
+      <text x="12" y="46" text-anchor="middle" font-size="10" font-weight="800" fill="#92400e">4</text>
+      <circle cx="32" cy="30" r="9" fill="#bfdbfe" stroke="#2563eb" stroke-width="2" />
+      <text x="32" y="34" text-anchor="middle" font-size="10" font-weight="800" fill="#1e3a8a">7</text>
+      <circle cx="52" cy="18" r="9" fill="#bbf7d0" stroke="#16a34a" stroke-width="2" />
+      <text x="52" y="22" text-anchor="middle" font-size="10" font-weight="800" fill="#14532d">9</text>
+    </svg>
+  `;
+}
+
 /** Icoon voor de verhoudingen-oefening: een eenvoudige balansweegschaal. */
 export function icoonWeegschaal() {
   return `

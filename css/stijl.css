@@ -421,6 +421,91 @@ button {
   font-weight: 800;
 }
 
+/* --- Volgorde-oefening: bolletjes + antwoordrij ---------------------------- */
+
+.volgorde-antwoord-rij {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  min-height: 48px;
+  margin: 0 auto var(--ruimte-md);
+  max-width: 480px;
+}
+
+.volgorde-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 40px;
+  height: 40px;
+  padding: 0 10px;
+  border-radius: 999px;
+  background: #dcfce7;
+  border: 2px solid #38b26a;
+  color: #166534;
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.volgorde-bolletjes-vlak {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 14px;
+  margin: var(--ruimte-md) auto;
+  max-width: 520px;
+}
+
+.volgorde-bolletje {
+  width: 64px;
+  height: 64px;
+  min-width: 64px;
+  min-height: 64px;
+  border-radius: 50%;
+  border: 3px solid var(--kleur-primair);
+  background: #eef4ff;
+  color: var(--kleur-primair-donker);
+  font-size: 22px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform 0.15s ease, background 0.15s ease, opacity 0.2s ease;
+}
+
+.volgorde-bolletje:hover:not(:disabled) {
+  transform: translateY(-2px) scale(1.05);
+}
+
+.volgorde-bolletje:disabled {
+  opacity: 0;
+  transform: scale(0.5);
+  pointer-events: none;
+}
+
+.volgorde-bolletje--opgelost {
+  background: #dcfce7;
+  border-color: #38b26a;
+}
+
+.volgorde-bolletje--fout {
+  animation: volgorde-schud 0.4s ease;
+  background: #fde2dc;
+  border-color: #e8735a;
+}
+
+@keyframes volgorde-schud {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-6px); }
+  50% { transform: translateX(6px); }
+  75% { transform: translateX(-4px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .volgorde-bolletje--fout {
+    animation: none;
+  }
+}
+
 .getallenlijn-houder {
   width: 100%;
   margin: var(--ruimte-lg) 0;
