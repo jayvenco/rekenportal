@@ -506,6 +506,201 @@ button {
   }
 }
 
+/* --- "Meer of minder?": vergelijkingskaarten -------------------------------- */
+
+.vergelijk-kaarten {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--ruimte-md);
+  margin: var(--ruimte-md) auto;
+  max-width: 520px;
+}
+
+.vergelijk-kaart {
+  flex: 1 1 200px;
+  max-width: 220px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 16px 12px;
+  border-radius: 16px;
+  border: 3px solid #dbe3ee;
+  background: #fff;
+  cursor: pointer;
+  transition: transform 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+}
+
+.vergelijk-kaart:hover:not(:disabled) {
+  transform: translateY(-3px);
+  border-color: var(--kleur-primair);
+}
+
+.vergelijk-kaart__naam {
+  font-weight: 800;
+  font-size: 16px;
+  color: #17324d;
+  text-align: center;
+}
+
+.vergelijk-kaart__illustratie {
+  width: 100%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  min-height: 90px;
+}
+
+.vergelijk-kaart__illustratie svg {
+  display: block;
+}
+
+.vergelijk-kaart__waarde {
+  font-weight: 700;
+  font-size: 15px;
+  color: #5b6472;
+}
+
+.vergelijk-kaart--goed {
+  border-color: #38b26a;
+  background: #eafaf1;
+}
+
+.vergelijk-kaart--fout {
+  border-color: #e8735a;
+  background: #fdecea;
+  animation: volgorde-schud 0.4s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vergelijk-kaart--fout {
+    animation: none;
+  }
+}
+
+/* --- Kikkersprong: volgorde-oefening als lelieblad-spel ---------------------- */
+
+.kikkersprong-vlak {
+  position: relative;
+  width: 100%;
+  height: 170px;
+  margin: var(--ruimte-md) 0;
+  border-radius: 18px;
+  overflow: hidden;
+}
+
+.kikkersprong-water {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, #bfe6f5 0%, #8fd0e8 100%);
+}
+
+.kikkersprong-boogjes {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.kikkersprong-boog {
+  fill: none;
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-dasharray: 6 5;
+  opacity: 0.9;
+}
+
+.kikkersprong-boog--goed { stroke: #2d7a2d; }
+.kikkersprong-boog--fout { stroke: #d64545; }
+
+.kikkersprong-lelieblad {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  border: none;
+  background: radial-gradient(circle at 35% 30%, #7fd67f, #4c9a4c 75%);
+  color: #fff;
+  font-weight: 800;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.15);
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+.kikkersprong-lelieblad:hover:not(:disabled) {
+  transform: translate(-50%, -50%) scale(1.08);
+}
+
+.kikkersprong-lelieblad--start {
+  width: 40px;
+  height: 40px;
+  background: radial-gradient(circle at 35% 30%, #9fdc9f, #6fae6f 75%);
+  cursor: default;
+  pointer-events: none;
+}
+
+.kikkersprong-lelieblad--opgelost {
+  background: radial-gradient(circle at 35% 30%, #a9e6a9, #6fc06f 75%);
+  box-shadow: 0 0 0 3px rgba(56,178,106,0.4);
+}
+
+.kikkersprong-lelieblad--fout {
+  animation: kikkersprong-schud 0.4s ease;
+  box-shadow: 0 0 0 3px rgba(232,90,90,0.5);
+}
+
+@keyframes kikkersprong-schud {
+  0%, 100% { transform: translate(-50%, -50%); }
+  25% { transform: translate(calc(-50% - 5px), -50%); }
+  50% { transform: translate(calc(-50% + 5px), -50%); }
+  75% { transform: translate(calc(-50% - 3px), -50%); }
+}
+
+.kikkersprong-kikker {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 44px;
+  height: 38px;
+  pointer-events: none;
+  z-index: 5;
+  filter: drop-shadow(0 3px 3px rgba(0,0,0,0.2));
+}
+
+.kikkersprong-kikker svg {
+  width: 100%;
+  height: 100%;
+}
+
+.kikkersprong-kikker--springt {
+  animation: kikkersprong-kikker-stretch 0.48s ease;
+}
+
+@keyframes kikkersprong-kikker-stretch {
+  0% { scale: 1 1; }
+  30% { scale: 0.85 1.15; }
+  60% { scale: 1.1 0.9; }
+  100% { scale: 1 1; }
+}
+
+@media (max-width: 480px) {
+  .kikkersprong-vlak { height: 140px; }
+  .kikkersprong-lelieblad { width: 42px; height: 42px; font-size: 14px; }
+  .kikkersprong-kikker { width: 36px; height: 30px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kikkersprong-kikker--springt { animation: none; }
+  .kikkersprong-lelieblad--fout { animation: none; }
+}
+
 .getallenlijn-houder {
   width: 100%;
   margin: var(--ruimte-lg) 0;

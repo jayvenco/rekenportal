@@ -1,10 +1,10 @@
-// exercises/getallenvolgorde/oefenscherm.js
+// exercises/meerminder/oefenscherm.js
 // -----------------------------------------------------------------------------
-// Het daadwerkelijke oefenscherm van de volgorde-oefening: een kikker springt
-// van lelieblad naar lelieblad. Het kind tikt de bladen aan van klein naar
-// groot; elke sprong laat een boogje achter (groen bij de juiste volgorde,
-// rood bij een foute sprong, waarna de kikker terugspringt). Een fout tikje
-// kost geen voortgang — het lelieblad blijft gewoon aantikbaar.
+// Het daadwerkelijke oefenscherm van "Meer of minder?": toont per opgave een
+// kort verhaaltje en twee geïllustreerde keuzekaarten. Het kind tikt de kaart
+// aan die het antwoord op de vraag is (meer/minder, groter/kleiner,
+// hoger/lager). Eén poging per opgave: bij een fout tikje wordt meteen het
+// juiste antwoord getoond.
 // -----------------------------------------------------------------------------
 
 import { recordAnswer, getActiefProfielId, listProfielen } from "../../storage.js";
@@ -16,14 +16,14 @@ import { maakRaketAnimatie, toonEindAnimatie } from "../../utils/voortgangAnimat
 import { maakVoortgangCirkels } from "../../utils/voortgangCirkels.js";
 import { maakRewardTracker, toonBadgeUnlocks, toonRewardResultaat, verversCoinCounter } from "../../utils/rewards.js";
 import { toonPerfecteScoreAnimatie } from "../../utils/eindeAnimatie.js";
-import { bouwKikkersprong } from "./kikkersprong.js";
+import { bouwAantalIllustratie, bouwStaafIllustratie } from "./illustraties.js";
 
-const EXERCISE_ID = "getallenvolgorde";
+const EXERCISE_ID = "meerminder";
 
 /**
  * Start de oefensessie.
  * @param {HTMLElement} container
- * @param {Object} instellingen - { min, max, aantalBolletjes, aantalOpgaven }
+ * @param {Object} instellingen - { categorieen, aantalOpgaven }
  * @param {Function} opKlaar - callback(resultaten) als alle opgaven gedaan zijn.
  */
 export function startOefensessie(container, instellingen, opKlaar) {
@@ -32,8 +32,6 @@ export function startOefensessie(container, instellingen, opKlaar) {
   let aantalGoedTotaal = 0;
   let startTijdOpgave = performance.now();
   let huidigeOpgave = null;
-  let volgendeIndex = 0;
-  let hadFoutBijDezeOpgave = false;
   let bezigMetFeedback = false;
 
   container.innerHTML = "";
@@ -57,24 +55,26 @@ export function startOefensessie(container, instellingen, opKlaar) {
   koppenRij.appendChild(voortgangTekst);
   container.appendChild(koppenRij);
 
-  // --- Voortgangscirkels: één per opgave, kleurt in na elk antwoord ---
+  // --- Voortgangscirkels ---
   const voortgangCirkels = maakVoortgangCirkels(container, instellingen.aantalOpgaven);
 
   // --- Voortgangsanimatie ---
   const raket = maakRaketAnimatie(container, instellingen.aantalOpgaven);
   const rewardTracker = maakRewardTracker(EXERCISE_ID, instellingen.aantalOpgaven);
 
-  // --- Opdracht ---
+  // --- Het verhaaltje / de vraag ---
   const vraagVlak = document.createElement("div");
   vraagVlak.className = "opgave-vraag";
+  vraagVlak.style.fontSize = "17px";
   vraagVlak.setAttribute("aria-live", "polite");
-  vraagVlak.textContent = "Tik de lelieblaadjes aan van klein naar groot — laat de kikker springen!";
   container.appendChild(vraagVlak);
 
-  // --- Het kikkersprong-speelveld (wordt per opgave opnieuw opgebouwd) ---
-  const kikkersprongHouder = document.createElement("div");
-  container.appendChild(kikkersprongHouder);
-  let kikkersprong = null;
+  // --- De twee keuzekaarten ---
+  const kaartenVlak = document.createElement("div");
+  kaartenVlak.className = "vergelijk-kaarten";
+  kaartenVlak.setAttribute("role", "group");
+  kaartenVlak.setAttribute("aria-label", "Kies het juiste antwoord");
+  container.appendChild(kaartenVlak);
 
   // --- Feedback ---
   const feedbackVlak = document.createElement("div");
@@ -86,14 +86,19 @@ export function startOefensessie(container, instellingen, opKlaar) {
     voortgangTekst.textContent = `Opgave ${Math.min(opgaveIndex + 1, instellingen.aantalOpgaven)} van ${instellingen.aantalOpgaven} — ${aantalGoedTotaal} goed`;
   }
 
+  function bouwIllustratie(optie, opgave) {
+    if (opgave.categorie === "aantal") {
+      return bouwAantalIllustratie(optie.waarde, optie.kleur);
+    }
+    return bouwStaafIllustratie(optie.waarde, opgave.schaalMax, optie.kleur);
+  }
+
   function toonOpgave() {
     if (opgaveIndex >= instellingen.aantalOpgaven) {
       toonEindscherm();
       return;
     }
     bezigMetFeedback = false;
-    volgendeIndex = 0;
-    hadFoutBijDezeOpgave = false;
     feedbackVlak.className = "feedback-vlak";
     feedbackVlak.textContent = "";
 
@@ -104,68 +109,85 @@ export function startOefensessie(container, instellingen, opKlaar) {
     );
     startTijdOpgave = performance.now();
     bijwerkenVoortgang();
+    vraagVlak.textContent = huidigeOpgave.vraagTekst;
 
-    kikkersprongHouder.innerHTML = "";
-    kikkersprong = bouwKikkersprong(huidigeOpgave.getallen, (getal) => verwerkTik(getal));
-    kikkersprongHouder.appendChild(kikkersprong.element);
+    kaartenVlak.innerHTML = "";
+    huidigeOpgave.opties.forEach((optie, index) => {
+      const kaartKnop = document.createElement("button");
+      kaartKnop.type = "button";
+      kaartKnop.className = "vergelijk-kaart";
+      kaartKnop.setAttribute("aria-label", `${optie.naam}: ${optie.waarde} ${optie.eenheid}`);
+
+      const naamEl = document.createElement("div");
+      naamEl.className = "vergelijk-kaart__naam";
+      naamEl.textContent = optie.naam;
+
+      const illustratieEl = document.createElement("div");
+      illustratieEl.className = "vergelijk-kaart__illustratie";
+      illustratieEl.innerHTML = bouwIllustratie(optie, huidigeOpgave);
+
+      const waardeEl = document.createElement("div");
+      waardeEl.className = "vergelijk-kaart__waarde";
+      waardeEl.textContent = `${optie.waarde} ${optie.eenheid}`;
+
+      kaartKnop.append(naamEl, illustratieEl, waardeEl);
+      kaartKnop.addEventListener("click", () => verwerkKeuze(index));
+      kaartenVlak.appendChild(kaartKnop);
+    });
   }
 
-  async function verwerkTik(getal) {
+  async function verwerkKeuze(gekozenIndex) {
     if (bezigMetFeedback) return;
     bezigMetFeedback = true;
 
     try {
-      const verwacht = huidigeOpgave.oplossing[volgendeIndex];
-      const isGoed = getal === verwacht;
+      const gekozenOptie = huidigeOpgave.opties[gekozenIndex];
+      const isGoed = !!gekozenOptie.correct;
+      const tijdBesteed = Math.round(performance.now() - startTijdOpgave);
+      const kaarten = kaartenVlak.querySelectorAll(".vergelijk-kaart");
 
-      await kikkersprong.springNaarGetal(getal, isGoed);
+      await recordAnswer({
+        exerciseId: EXERCISE_ID,
+        correct: isGoed,
+        timeMs: tijdBesteed,
+        meta: huidigeOpgave.meta,
+      });
 
       if (isGoed) {
+        aantalGoedTotaal += 1;
+        kaarten[gekozenIndex].classList.add("vergelijk-kaart--goed");
+        feedbackVlak.className = "feedback-vlak feedback-vlak--goed";
+        feedbackVlak.textContent = `✓ ${geefCompliment(profielNaam)}`;
+        voortgangCirkels.zetStatus(opgaveIndex, "goed");
         speelGoedGeluid();
-        volgendeIndex += 1;
-
-        if (volgendeIndex >= huidigeOpgave.oplossing.length) {
-          aantalGoedTotaal += 1;
-          const tijdBesteed = Math.round(performance.now() - startTijdOpgave);
-          await recordAnswer({
-            exerciseId: EXERCISE_ID,
-            correct: true,
-            timeMs: tijdBesteed,
-            meta: { ...huidigeOpgave.meta, hadFout: hadFoutBijDezeOpgave },
-          });
-
-          if (!hadFoutBijDezeOpgave) {
-            feedbackVlak.className = "feedback-vlak feedback-vlak--goed";
-            feedbackVlak.textContent = `✓ ${geefCompliment(profielNaam)}`;
-            voortgangCirkels.zetStatus(opgaveIndex, "goed");
-            rewardTracker.registreerGoed(1, feedbackVlak);
-          } else {
-            feedbackVlak.className = "feedback-vlak feedback-vlak--tweede-poging-goed";
-            feedbackVlak.textContent = `✓ ${geefCompliment(profielNaam)} (goed op volgorde!)`;
-            voortgangCirkels.zetStatus(opgaveIndex, "tweedePogingGoed");
-            rewardTracker.registreerGoed(2, feedbackVlak);
-          }
-          raket.goedAntwoord();
-          bijwerkenVoortgang();
-          setTimeout(() => {
-            opgaveIndex += 1;
-            toonOpgave();
-          }, 1600);
-          return; // blijf vergrendeld tot de volgende opgave getoond wordt
-        }
-
-        bezigMetFeedback = false;
+        raket.goedAntwoord();
+        rewardTracker.registreerGoed(1, feedbackVlak);
       } else {
-        hadFoutBijDezeOpgave = true;
-        speelFoutGeluid();
-        raket.foutAntwoord();
+        const goedeIndex = huidigeOpgave.opties.findIndex((o) => o.correct);
+        kaarten[gekozenIndex].classList.add("vergelijk-kaart--fout");
+        if (goedeIndex !== -1) kaarten[goedeIndex].classList.add("vergelijk-kaart--goed");
         feedbackVlak.className = "feedback-vlak feedback-vlak--fout";
         feedbackVlak.textContent = geefFoutmelding();
-        bezigMetFeedback = false;
+        voortgangCirkels.zetStatus(opgaveIndex, "fout");
+        speelFoutGeluid();
+        raket.foutAntwoord();
+        rewardTracker.registreerFout();
       }
+
+      bijwerkenVoortgang();
+      setTimeout(() => {
+        opgaveIndex += 1;
+        toonOpgave();
+      }, 1600);
     } catch (fout) {
-      console.error("Onverwachte fout bij verwerken tik:", fout);
+      console.error("Onverwachte fout bij verwerken keuze:", fout);
       bezigMetFeedback = false;
+      feedbackVlak.className = "feedback-vlak feedback-vlak--fout";
+      feedbackVlak.textContent = "Er ging iets mis, probeer de volgende opgave.";
+      setTimeout(() => {
+        opgaveIndex += 1;
+        toonOpgave();
+      }, 2000);
     }
   }
 

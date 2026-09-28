@@ -73,6 +73,17 @@ export function icoonVolgorde() {
   `;
 }
 
+/** Icoon voor "Meer of minder?": twee staafjes van verschillende hoogte met een vergelijkingsteken. */
+export function icoonMeerMinder() {
+  return `
+    <svg viewBox="0 0 64 64" width="40" height="40" aria-hidden="true">
+      <rect x="8" y="34" width="14" height="22" rx="3" fill="#3a72c4" />
+      <rect x="42" y="16" width="14" height="40" rx="3" fill="#e8735a" />
+      <path d="M27 30 L37 24 M27 24 L37 30" stroke="#5b6472" stroke-width="3" stroke-linecap="round" />
+    </svg>
+  `;
+}
+
 /** Icoon voor de verhoudingen-oefening: een eenvoudige balansweegschaal. */
 export function icoonWeegschaal() {
   return `

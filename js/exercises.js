@@ -28,6 +28,7 @@ import { groteGetallenOefening } from "./exercises/grote-getallen/index.js";
 import { getallenOefening } from "./exercises/getallen/index.js";
 import { klokkijkenOefening } from "./exercises/klokkijken/index.js";
 import { getallenvolgordeOefening } from "./exercises/getallenvolgorde/index.js";
+import { meerMinderOefening } from "./exercises/meerminder/index.js";
 
 /**
  * Elke oefening in deze lijst heeft de vorm:
@@ -61,6 +62,11 @@ export const EXERCISES = [
     ...getallenvolgordeOefening,
     groep: 4,
     instelbareOpties: "Bereik, aantal bolletjes, aantal opgaven",
+  },
+  {
+    ...meerMinderOefening,
+    groep: 4,
+    instelbareOpties: "Categorieën (meer/minder, groter/kleiner, hoger/lager), aantal opgaven",
   },
   {
     ...verhaaltjesOefening,
