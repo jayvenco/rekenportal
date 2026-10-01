@@ -1,11 +1,14 @@
 """
 routes/hint.py
 -----------------------------------------------------------------------------
-Biedt rekenhulp/hints aan voor opgaven. Wanneer de env-var OPENAI_API_KEY is
-gezet, wordt een OpenAI-compatibele chat-API gebruikt (ChatGPT of een andere
-provider via OPENAI_BASE_URL / OPENAI_MODEL). Zonder key (of bij een fout)
-wordt teruggevallen op een lokale strategie-hint per categorie — zo werkt de
-knop altijd, ook offline. De API-key staat NOOIT hardcoded in de repo.
+Biedt rekenhulp/hints aan voor opgaven. Wanneer er een ChatGPT (OpenAI-
+compatibele) API-key is ingesteld — via Instellingen in de app, of anders
+via de env-var OPENAI_API_KEY als fallback — wordt die gebruikt om een
+betere, opgave-specifieke hint te genereren (OPENAI_BASE_URL/OPENAI_MODEL
+blijven instelbaar via env-vars). Zonder key (of bij een fout) wordt
+teruggevallen op een lokale strategie-hint per categorie — zo werkt de knop
+altijd, ook offline. De API-key staat NOOIT hardcoded in de repo en wordt
+nooit teruggegeven aan de frontend.
 """
 
 import json
@@ -14,8 +17,12 @@ import urllib.error
 import urllib.request
 from typing import Optional
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 from pydantic import BaseModel
+from sqlalchemy.orm import Session
+
+from app.database import get_db
+from app.models.appconfig import AppConfig
 
 router = APIRouter(prefix="/api/hint", tags=["hint"])
 
@@ -38,6 +45,7 @@ OFFLINE_HINTS = {
     "omrekenen": "Kijk welke vorm er wordt gevraagd. Gebruik het ezelsbruggetje: breuk = deel van 100, procent = per 100, en komma = honderdsten.",
     "oppervlakte": "Oppervlakte is lengte × breedte. Vermenigvuldig de twee getallen en zet er de juiste eenheid (m²) achter.",
     "meten": "Let op de eenheid (m, cm, km, kg, g, liter, minuten). Zet eerst alles om naar dezelfde eenheid en reken daarna.",
+    "klok": "Zet het tijdstip om in uren en minuten. Als je minuten bij elkaar optelt en je komt boven de 60 uit, tel er dan een heel uur bij op en houd de rest aan minuten over.",
 }
 
 DEFAULT_OFFLINE = (
@@ -54,8 +62,15 @@ SYSTEEM_PROMPT = (
 )
 
 
-def _vraag_llm(opgave: str, categorie: str) -> Optional[str]:
-    key = os.environ.get("OPENAI_API_KEY", "").strip()
+def _haal_opgeslagen_sleutel(db: Session) -> Optional[str]:
+    rij = db.query(AppConfig).filter(AppConfig.sleutel == "openai_api_key").first()
+    if rij and rij.waarde and rij.waarde.strip():
+        return rij.waarde.strip()
+    return None
+
+
+def _vraag_llm(opgave: str, categorie: str, db: Session) -> Optional[str]:
+    key = _haal_opgeslagen_sleutel(db) or os.environ.get("OPENAI_API_KEY", "").strip()
     if not key:
         return None
     base = os.environ.get("OPENAI_BASE_URL", "https://api.openai.com/v1").rstrip("/")
@@ -81,11 +96,11 @@ def _vraag_llm(opgave: str, categorie: str) -> Optional[str]:
 
 
 @router.post("")
-def geef_hint(payload: HintIn):
+def geef_hint(payload: HintIn, db: Session = Depends(get_db)):
     categorie = (payload.categorie or "").strip().lower()
     hint = None
     try:
-        hint = _vraag_llm(payload.opgave, categorie)
+        hint = _vraag_llm(payload.opgave, categorie, db)
     except Exception:
         hint = None
     if not hint:

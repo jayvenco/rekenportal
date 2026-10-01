@@ -155,6 +155,29 @@ export async function vraagHint(opgave, categorie, poging) {
   }
 }
 
+/** Haalt de status van de opgeslagen ChatGPT API-key op ({ ingesteld, laatsteTekens }). */
+export async function haalOpenAiSleutelStatus() {
+  try {
+    return (await fetchJson("/app-instellingen/openai-key")) || { ingesteld: false, laatsteTekens: null };
+  } catch (fout) {
+    console.error("Kon status van de ChatGPT API-key niet ophalen:", fout);
+    return { ingesteld: false, laatsteTekens: null };
+  }
+}
+
+/** Slaat een nieuwe ChatGPT API-key op. Gooit de fout door zodat de UI kan reageren. */
+export async function slaOpenAiSleutelOp(apiKey) {
+  await fetchJson("/app-instellingen/openai-key", {
+    method: "PUT",
+    body: JSON.stringify({ apiKey }),
+  });
+}
+
+/** Verwijdert de opgeslagen ChatGPT API-key (hints vallen dan terug op offline modus). */
+export async function wisOpenAiSleutel() {
+  await fetchJson("/app-instellingen/openai-key", { method: "DELETE" });
+}
+
 /** Maakt een nieuw profiel aan. Gooit de fout door zodat de UI kan reageren. */
 export async function maakProfiel(naam, avatar, wachtwoord) {
   try {

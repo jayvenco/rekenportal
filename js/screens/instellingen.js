@@ -7,7 +7,10 @@
 // en Statistieken, die niet meer los in het hoofdmenu staan.
 // -----------------------------------------------------------------------------
 
-import { getAlgemeneInstellingen, saveAlgemeneInstellingen, listProfielen, wijzigProfielWachtwoord } from "../storage.js";
+import {
+  getAlgemeneInstellingen, saveAlgemeneInstellingen, listProfielen, wijzigProfielWachtwoord,
+  haalOpenAiSleutelStatus, slaOpenAiSleutelOp, wisOpenAiSleutel,
+} from "../storage.js";
 import {
   startMuziek, stopMuziek, setVolume, getVolume,
   toggleMute, isMuted, laadMuziek,
@@ -239,6 +242,104 @@ function bouwWachtwoordKaart(profielen) {
   return kaart;
 }
 
+/** Kaart om de ChatGPT (OpenAI-compatibele) API-key voor de hint-knop in te stellen. */
+function bouwOpenAiSleutelKaart(status) {
+  const kaart = document.createElement("div");
+  kaart.className = "kaart";
+
+  const titel = document.createElement("h2");
+  titel.textContent = "🤖 ChatGPT-koppeling voor hints";
+  kaart.appendChild(titel);
+
+  const uitleg = document.createElement("p");
+  uitleg.textContent = "Vul hier je eigen OpenAI API-key in, zodat de 💡 Hint-knop bij oefeningen een slimmere, opgave-specifieke uitleg geeft in plaats van een vaste tekst. Zonder key werkt de hint gewoon offline.";
+  kaart.appendChild(uitleg);
+
+  const statusRegel = document.createElement("p");
+  statusRegel.style.cssText = "font-weight:700;margin:4px 0 12px;";
+  if (status.ingesteld) {
+    statusRegel.textContent = `✅ Er is een API-key ingesteld (eindigt op …${status.laatsteTekens}).`;
+    statusRegel.style.color = "#2f8f5b";
+  } else {
+    statusRegel.textContent = "⚪ Er is nog geen API-key ingesteld — hints gebruiken nu de offline uitleg.";
+    statusRegel.style.color = "#5b6472";
+  }
+  kaart.appendChild(statusRegel);
+
+  const vorm = document.createElement("form");
+  vorm.style.cssText = "display:flex;gap:8px;flex-wrap:wrap;align-items:center;";
+  vorm.noValidate = true;
+
+  const invoer = document.createElement("input");
+  invoer.type = "password";
+  invoer.placeholder = "sk-...";
+  invoer.autocomplete = "off";
+  invoer.spellcheck = false;
+  invoer.className = "profiel-start__naam-invoer";
+  invoer.style.cssText = "min-height:44px;font-size:16px;width:auto;flex:1 1 220px;";
+
+  const opslaanKnop = document.createElement("button");
+  opslaanKnop.type = "submit";
+  opslaanKnop.className = "knop knop--primair knop--klein";
+  opslaanKnop.textContent = "Opslaan";
+
+  const verwijderKnop = document.createElement("button");
+  verwijderKnop.type = "button";
+  verwijderKnop.className = "knop knop--zacht knop--klein";
+  verwijderKnop.textContent = "Verwijderen";
+  verwijderKnop.disabled = !status.ingesteld;
+
+  const meldingEl = document.createElement("span");
+  meldingEl.style.cssText = "font-size:13px;font-weight:700;width:100%;";
+
+  vorm.append(invoer, opslaanKnop, verwijderKnop, meldingEl);
+  kaart.appendChild(vorm);
+
+  vorm.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    meldingEl.textContent = "";
+    if (!invoer.value.trim()) {
+      meldingEl.textContent = "Vul eerst een API-key in.";
+      meldingEl.style.color = "#c0392b";
+      return;
+    }
+    opslaanKnop.disabled = true;
+    try {
+      await slaOpenAiSleutelOp(invoer.value.trim());
+      meldingEl.textContent = "Opgeslagen! De hint-knop gebruikt nu ChatGPT.";
+      meldingEl.style.color = "#2f8f5b";
+      invoer.value = "";
+      verwijderKnop.disabled = false;
+      statusRegel.textContent = "✅ Er is een API-key ingesteld.";
+      statusRegel.style.color = "#2f8f5b";
+    } catch (fout) {
+      console.error("Kon ChatGPT API-key niet opslaan:", fout);
+      meldingEl.textContent = "Opslaan mislukt. Controleer of de server draait.";
+      meldingEl.style.color = "#c0392b";
+    } finally {
+      opslaanKnop.disabled = false;
+    }
+  });
+
+  verwijderKnop.addEventListener("click", async () => {
+    verwijderKnop.disabled = true;
+    try {
+      await wisOpenAiSleutel();
+      meldingEl.textContent = "API-key verwijderd. Hints gebruiken nu weer de offline uitleg.";
+      meldingEl.style.color = "#5b6472";
+      statusRegel.textContent = "⚪ Er is nog geen API-key ingesteld — hints gebruiken nu de offline uitleg.";
+      statusRegel.style.color = "#5b6472";
+    } catch (fout) {
+      console.error("Kon ChatGPT API-key niet verwijderen:", fout);
+      meldingEl.textContent = "Verwijderen mislukt.";
+      meldingEl.style.color = "#c0392b";
+      verwijderKnop.disabled = false;
+    }
+  });
+
+  return kaart;
+}
+
 export async function toonInstellingenScherm(container) {
   if (!isInstellingenOntgrendeld()) {
     toonWachtwoordGate(container);
@@ -257,6 +358,9 @@ export async function toonInstellingenScherm(container) {
 
   const profielen = await listProfielen();
   container.appendChild(bouwWachtwoordKaart(profielen));
+
+  const openAiStatus = await haalOpenAiSleutelStatus();
+  container.appendChild(bouwOpenAiSleutelKaart(openAiStatus));
 
   // --- Geluidjes ---
   const geluidKaart = document.createElement("div");

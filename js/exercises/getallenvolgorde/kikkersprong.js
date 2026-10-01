@@ -25,15 +25,15 @@ function el(tag, className) {
 function bouwKikkerSvg() {
   return `
     <svg viewBox="0 0 40 34" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-      <ellipse cx="20" cy="22" rx="14" ry="10" fill="#5cb85c" />
-      <circle cx="10" cy="10" r="6" fill="#5cb85c" />
-      <circle cx="30" cy="10" r="6" fill="#5cb85c" />
+      <ellipse cx="20" cy="22" rx="14" ry="10" fill="#8a7a63" />
+      <circle cx="10" cy="10" r="6" fill="#8a7a63" />
+      <circle cx="30" cy="10" r="6" fill="#8a7a63" />
       <circle cx="10" cy="9" r="2.6" fill="#fff" />
       <circle cx="30" cy="9" r="2.6" fill="#fff" />
       <circle cx="10" cy="9" r="1.2" fill="#1c2126" />
       <circle cx="30" cy="9" r="1.2" fill="#1c2126" />
-      <path d="M12 25 Q20 30 28 25" stroke="#2d7a2d" stroke-width="2" fill="none" stroke-linecap="round" />
-      <ellipse cx="20" cy="24" rx="8" ry="4" fill="#8fd98f" opacity="0.6" />
+      <path d="M12 25 Q20 30 28 25" stroke="#5c5143" stroke-width="2" fill="none" stroke-linecap="round" />
+      <ellipse cx="20" cy="24" rx="8" ry="4" fill="#c2b89e" opacity="0.6" />
     </svg>
   `;
 }

@@ -44,6 +44,8 @@ function genOptellen() {
     `Tijdens de sportdag heeft de klas al ${a} punten verzameld. Bij de estafette komen daar nog ${b} punten bij. Hoeveel punten heeft de klas in totaal?`,
     `Mila spaart voor een nieuwe fiets. In haar spaarpot zit al ${a} euro. Voor haar verjaardag krijgt ze er ${b} euro bij. Hoeveel euro heeft Mila nu gespaard?`,
     `Een bibliotheek heeft ${a} boeken op de jeugdafdeling staan. Vandaag worden er ${b} nieuwe boeken teruggebracht. Hoeveel boeken staan er nu op de jeugdafdeling?`,
+    `Het is kermis in het dorp en de loterijkraam is heel populair. Vanmorgen zijn er al ${a} lootjes verkocht. In de middag komen er nog eens ${b} kopers bij die ook een lootje willen. Hoeveel lootjes zijn er die dag in totaal verkocht?`,
+    `Op de boerderij van opa worden appels geplukt voor de markt. Gisteren is er al een krat met ${a} appels geplukt. Vandaag plukken de kinderen er nog ${b} extra. Hoeveel appels liggen er nu klaar om verkocht te worden?`,
   ]);
   return maak("optellen", t, a + b);
 }
@@ -55,6 +57,8 @@ function genAftrekken() {
     `Een bus heeft in totaal ${a} zitplaatsen. Onderweg stappen er ${b} reizigers uit. Hoeveel reizigers blijven er in de bus achter?`,
     `Noah heeft ${a} euro gespaard. Hij koopt een spelcomputer van ${b} euro. Hoeveel geld houdt Noah over?`,
     `In een magazijn liggen ${a} pakketten klaar. Er worden er ${b} opgehaald door de vrachtwagen. Hoeveel pakketten blijven er in het magazijn liggen?`,
+    `Op het schoolplein staan ${a} leerlingen klaar voor de grote speurtocht. Halverwege de ochtend geeft de juf aan dat ${b} leerlingen al naar de finish zijn gegaan. Hoeveel leerlingen zijn er onderweg nog aan het speuren?`,
+    `Een pretpark heeft die dag ${a} bezoekers over de vloer gehad. Tegen sluitingstijd zijn er al ${b} bezoekers naar huis vertrokken. Hoeveel bezoekers lopen er nog rond in het park?`,
   ]);
   return maak("aftrekken", t, a - b);
 }
@@ -67,6 +71,8 @@ function genKeer() {
     `Een doos bevat ${b} chocolaatjes. In de winkel staan ${a} van zulke dozen op de plank. Hoeveel chocolaatjes zijn er samen?`,
     `Elke leerling van de klas krijgt ${b} potloden. De klas telt ${a} leerlingen. Hoeveel potloden zijn er in totaal nodig?`,
     `Een vrachtwagen vervoert ${a} pallets. Op elke pallet staan ${b} kratten. Hoeveel kratten vervoert de vrachtwagen in totaal?`,
+    `Voor het schoolfeest worden er tafels neergezet in de gymzaal. Aan elke tafel kunnen ${b} kinderen zitten, en er staan ${a} tafels klaar. Voor hoeveel kinderen is er in totaal plek?`,
+    `De dierenverzorger vult elke ochtend de voederbakken van de konijnen. Per bak gaat er ${b} gram voer, en er staan ${a} bakken in het konijnenhok. Hoeveel gram voer strooit de verzorger in totaal uit?`,
   ]);
   return maak("vermenigvuldigen", t, a * b);
 }
@@ -79,6 +85,8 @@ function genDelen() {
     `${a} koekjes worden eerlijk verdeeld over ${d} kinderen. Hoeveel koekjes krijgt elk kind?`,
     `Een vereniging verkoopt ${a} lootjes. Ze worden in zakjes van ${d} gestopt. Hoeveel volle zakjes kan de vereniging maken?`,
     `${a} appels worden verpakt in dozen van ${d}. Hoeveel volle dozen zijn er nodig?`,
+    `Op kamp moeten de begeleiders ${a} broodjes eerlijk verdelen over ${d} tafels, zodat elke tafel evenveel krijgt. Hoeveel broodjes komen er op elke tafel te liggen?`,
+    `Voor de schoolmusical zijn er ${a} stoelen neergezet, verdeeld in ${d} rijen die allemaal even lang zijn. Hoeveel stoelen staan er in elke rij?`,
   ]);
   return maak("delen", t, q);
 }
@@ -90,11 +98,54 @@ function genTweeStaps() {
   const t = kies([
     `Sem heeft ${budget} euro gespaard. Hij koopt ${stuks} boeken van ${prijs} euro per stuk. Hoeveel geld houdt Sem over?`,
     `Lotte heeft ${budget} stickers. Ze plakt er ${stuks} op elke kaart en maakt ${prijs} kaarten. Hoeveel stickers houdt ze over?`,
+    `Voor haar verjaardagsfeestje heeft Fenna ${budget} euro van haar ouders gekregen om cadeautjes uit te zoeken voor haar vriendinnetjes. Ze koopt ${stuks} setjes kleurpotloden van ${prijs} euro per setje. Hoeveel euro houdt Fenna over?`,
   ]);
-  if (t.startsWith("Lotte")) {
-    return maak("optellen", t, budget - stuks * prijs);
-  }
   return maak("optellen", t, budget - stuks * prijs);
+}
+
+// --- Klok kijken (tijd optellen/aftrekken, aansluitend op redactiesommen) ----
+
+function tijdString(minutenSindsMidnacht) {
+  const u = Math.floor(minutenSindsMidnacht / 60) % 24;
+  const m = minutenSindsMidnacht % 60;
+  return `${String(u).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
+}
+
+function genKlokEindtijd() {
+  const startUur = rng(8, 19);
+  const startMin = kies([0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55]);
+  const duur = rng(10, 120);
+  const start = startUur * 60 + startMin;
+  const eind = start + duur;
+  const eindUur = Math.floor(eind / 60) % 24;
+  const eindMin = eind % 60;
+  const instructie = " Typ je antwoord als cijfers zonder dubbele punt (bijvoorbeeld 930 voor 09:30 uur).";
+  const t = kies([
+    `De voetbaltraining van Teun begint om ${tijdString(start)} uur en duurt ${duur} minuten. Hoe laat is de training afgelopen?${instructie}`,
+    `Een film in de bioscoop begint om ${tijdString(start)} uur. De film duurt ${duur} minuten. Hoe laat is de film afgelopen?${instructie}`,
+    `De trein vertrekt om ${tijdString(start)} uur vanaf het station. De reis duurt ${duur} minuten. Hoe laat komt de trein aan?${instructie}`,
+    `Juf start de proefwerkweek-toets om ${tijdString(start)} uur. De kinderen krijgen ${duur} minuten de tijd. Hoe laat moet iedereen klaar zijn?${instructie}`,
+  ]);
+  return {
+    type: "redactie",
+    vraagTekst: t,
+    antwoordGoed: { type: "getal", normaal: eindUur * 100 + eindMin, display: tijdString(eind) },
+    meta: { categorie: "klok" },
+  };
+}
+
+function genKlokDuur() {
+  const startUur = rng(8, 18);
+  const startMin = kies([0, 15, 30, 45]);
+  const duurMin = rng(1, 3) * 15 + kies([0, 15]);
+  const start = startUur * 60 + startMin;
+  const eind = start + duurMin;
+  const t = kies([
+    `Zwemles begint om ${tijdString(start)} uur en eindigt om ${tijdString(eind)} uur. Hoeveel minuten duurt de zwemles?`,
+    `De pauze op school begint om ${tijdString(start)} uur en duurt tot ${tijdString(eind)} uur. Hoeveel minuten pauze hebben de kinderen?`,
+    `Een concert begint om ${tijdString(start)} uur en is afgelopen om ${tijdString(eind)} uur. Hoeveel minuten duurt het concert?`,
+  ]);
+  return maak("klok", t, duurMin);
 }
 
 // --- Uitdagend (groep 8) -------------------------------------------------------
@@ -220,10 +271,11 @@ function genOmtrek() {
 
 // --- Pools per groep ----------------------------------------------------------
 
-const BASIS = [genOptellen, genAftrekken, genKeer, genDelen, genTweeStaps];
+const BASIS = [genOptellen, genAftrekken, genKeer, genDelen, genTweeStaps, genKlokEindtijd, genKlokDuur];
 
 const UITDAGEND = [
   genOptellen, genAftrekken, genKeer, genDelen, genTweeStaps,
+  genKlokEindtijd, genKlokDuur,
   genBreukDeel, genProcentVan, genKorting, genBreukProcentKomma,
   genKommaRekenen, genEenheidOmrekenen, genOppervlakte, genOmtrek,
 ];
