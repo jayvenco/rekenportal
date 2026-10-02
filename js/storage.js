@@ -179,41 +179,14 @@ export async function wisOpenAiSleutel() {
 }
 
 /** Maakt een nieuw profiel aan. Gooit de fout door zodat de UI kan reageren. */
-export async function maakProfiel(naam, avatar, wachtwoord) {
+export async function maakProfiel(naam, avatar) {
   try {
     return await fetchJson("/profielen", {
       method: "POST",
-      body: JSON.stringify({ naam, avatar, wachtwoord }),
+      body: JSON.stringify({ naam, avatar }),
     });
   } catch (fout) {
     console.error("Kon profiel niet aanmaken:", fout);
-    throw fout;
-  }
-}
-
-/** Controleert het wachtwoord van een profiel. Geeft true/false terug. */
-export async function verifieerProfielWachtwoord(profielId, wachtwoord) {
-  try {
-    const resultaat = await fetchJson(
-      `/profielen/${encodeURIComponent(profielId)}/verify-wachtwoord`,
-      { method: "POST", body: JSON.stringify({ wachtwoord }) }
-    );
-    return !!(resultaat && resultaat.ok);
-  } catch (fout) {
-    console.error("Kon wachtwoord niet controleren:", fout);
-    throw fout;
-  }
-}
-
-/** Wijzigt het wachtwoord van een profiel (bv. vanuit Instellingen). */
-export async function wijzigProfielWachtwoord(profielId, nieuwWachtwoord) {
-  try {
-    await fetchJson(`/profielen/${encodeURIComponent(profielId)}/wachtwoord`, {
-      method: "PUT",
-      body: JSON.stringify({ wachtwoord: nieuwWachtwoord }),
-    });
-  } catch (fout) {
-    console.error("Kon wachtwoord niet wijzigen:", fout);
     throw fout;
   }
 }

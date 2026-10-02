@@ -168,3 +168,16 @@ python3 -m http.server 8000
   beide gemengd.
 - **Verhaaltjessommen** — korte Nederlandse verhaaltjes met plus- en
   minsommen tot 10, met wisselende namen en voorwerpen.
+- **Rekendetectives** (groep 4) — 40 vaste verhaalsommen (plus, min, keer binnen
+  20). Het kind kiest eerst zelf welke bewerking past en rekent daarna uit.
+  Opgaven staan in `js/exercises/rekendetectives/opgaven.js`.
+- **Grafieken lezen** (groep 8) — 50 opgaven in 5 niveaus over staaf-, lijn-,
+  cirkel- en gecombineerde diagrammen, pictogrammen en tabellen. Antwoordtypen:
+  getal (komma/punt/eenheid), meerkeuze, waar/niet waar, meerdere antwoorden en
+  korte tekst. Grafieken worden als SVG uit de data getekend; voortgang
+  (per categorie/niveau, fout opnieuw oefenen) staat in localStorage.
+  - Opgaven: `js/exercises/grafieken/data/opgaven.json`, gegenereerd door
+    `data/bouw-opgaven.mjs` (antwoorden worden uit de dataset berekend):
+    `node js/exercises/grafieken/data/bouw-opgaven.mjs`
+  - Tests (dataconsistentie en antwoordvalidatie):
+    `node js/exercises/grafieken/test/test.mjs`

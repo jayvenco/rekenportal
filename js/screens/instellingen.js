@@ -1,14 +1,14 @@
 // screens/instellingen.js
 // -----------------------------------------------------------------------------
-// Instellingenscherm van de portal: geluid, achtergrondmuziek, links naar
-// Beheer/Leerplan/Statistieken en het wijzigen van profielwachtwoorden.
+// Instellingenscherm van de portal: geluid, achtergrondmuziek en links naar
+// Beheer/Leerplan/Statistieken.
 // Het hele scherm zit achter een gedeeld wachtwoord ("Kattegat", zie
 // utils/instellingenSlot.js) — dat is ook de enige weg naar Beheer, Leerplan
 // en Statistieken, die niet meer los in het hoofdmenu staan.
 // -----------------------------------------------------------------------------
 
 import {
-  getAlgemeneInstellingen, saveAlgemeneInstellingen, listProfielen, wijzigProfielWachtwoord,
+  getAlgemeneInstellingen, saveAlgemeneInstellingen,
   haalOpenAiSleutelStatus, slaOpenAiSleutelOp, wisOpenAiSleutel,
 } from "../storage.js";
 import {
@@ -149,99 +149,6 @@ function bouwNavigatieKaart() {
   return kaart;
 }
 
-/** Kaart om per profiel het wachtwoord te wijzigen. */
-function bouwWachtwoordKaart(profielen) {
-  const kaart = document.createElement("div");
-  kaart.className = "kaart";
-
-  const titel = document.createElement("h2");
-  titel.textContent = "🔑 Profielwachtwoorden";
-  kaart.appendChild(titel);
-
-  const uitleg = document.createElement("p");
-  uitleg.textContent = "Wijzig hier het wachtwoord waarmee een profiel gekozen wordt.";
-  kaart.appendChild(uitleg);
-
-  if (profielen.length === 0) {
-    const leeg = document.createElement("p");
-    leeg.className = "leeg-melding";
-    leeg.textContent = "Er zijn nog geen profielen aangemaakt.";
-    kaart.appendChild(leeg);
-    return kaart;
-  }
-
-  for (const profiel of profielen) {
-    const rij = document.createElement("div");
-    rij.style.cssText = "padding:12px 0;border-top:1px solid #e2e8f0;";
-
-    const naamRegel = document.createElement("strong");
-    naamRegel.textContent = profiel.naam;
-    rij.appendChild(naamRegel);
-
-    const vorm = document.createElement("form");
-    vorm.style.cssText = "display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:8px;";
-    vorm.noValidate = true;
-
-    const nieuwInvoer = document.createElement("input");
-    nieuwInvoer.type = "password";
-    nieuwInvoer.placeholder = "Nieuw wachtwoord";
-    nieuwInvoer.autocomplete = "new-password";
-    nieuwInvoer.className = "profiel-start__naam-invoer";
-    nieuwInvoer.style.cssText = "min-height:44px;font-size:16px;width:auto;flex:1 1 160px;";
-
-    const bevestigInvoer = document.createElement("input");
-    bevestigInvoer.type = "password";
-    bevestigInvoer.placeholder = "Herhaal wachtwoord";
-    bevestigInvoer.autocomplete = "new-password";
-    bevestigInvoer.className = "profiel-start__naam-invoer";
-    bevestigInvoer.style.cssText = "min-height:44px;font-size:16px;width:auto;flex:1 1 160px;";
-
-    const opslaanKnop = document.createElement("button");
-    opslaanKnop.type = "submit";
-    opslaanKnop.className = "knop knop--primair knop--klein";
-    opslaanKnop.textContent = "Opslaan";
-
-    const meldingEl = document.createElement("span");
-    meldingEl.style.cssText = "font-size:13px;font-weight:700;";
-
-    vorm.append(nieuwInvoer, bevestigInvoer, opslaanKnop, meldingEl);
-    rij.appendChild(vorm);
-    kaart.appendChild(rij);
-
-    vorm.addEventListener("submit", async (event) => {
-      event.preventDefault();
-      meldingEl.textContent = "";
-      meldingEl.style.color = "";
-      if (!nieuwInvoer.value) {
-        meldingEl.textContent = "Vul een wachtwoord in.";
-        meldingEl.style.color = "#c0392b";
-        return;
-      }
-      if (nieuwInvoer.value !== bevestigInvoer.value) {
-        meldingEl.textContent = "Wachtwoorden komen niet overeen.";
-        meldingEl.style.color = "#c0392b";
-        return;
-      }
-      opslaanKnop.disabled = true;
-      try {
-        await wijzigProfielWachtwoord(profiel.id, nieuwInvoer.value);
-        meldingEl.textContent = "Opgeslagen!";
-        meldingEl.style.color = "#2f8f5b";
-        nieuwInvoer.value = "";
-        bevestigInvoer.value = "";
-      } catch (fout) {
-        console.error("Kon profielwachtwoord niet wijzigen:", fout);
-        meldingEl.textContent = "Opslaan mislukt.";
-        meldingEl.style.color = "#c0392b";
-      } finally {
-        opslaanKnop.disabled = false;
-      }
-    });
-  }
-
-  return kaart;
-}
-
 /** Kaart om de ChatGPT (OpenAI-compatibele) API-key voor de hint-knop in te stellen. */
 function bouwOpenAiSleutelKaart(status) {
   const kaart = document.createElement("div");
@@ -355,9 +262,6 @@ export async function toonInstellingenScherm(container) {
   container.innerHTML = "";
   container.appendChild(bouwKopBalk("Instellingen"));
   container.appendChild(bouwNavigatieKaart());
-
-  const profielen = await listProfielen();
-  container.appendChild(bouwWachtwoordKaart(profielen));
 
   const openAiStatus = await haalOpenAiSleutelStatus();
   container.appendChild(bouwOpenAiSleutelKaart(openAiStatus));

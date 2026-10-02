@@ -28,6 +28,8 @@ import { groteGetallenOefening } from "./exercises/grote-getallen/index.js";
 import { getallenOefening } from "./exercises/getallen/index.js";
 import { klokkijkenOefening } from "./exercises/klokkijken/index.js";
 import { getallenvolgordeOefening } from "./exercises/getallenvolgorde/index.js";
+import { rekendetectivesOefening } from "./exercises/rekendetectives/index.js";
+import { grafiekenOefening } from "./exercises/grafieken/index.js";
 import { meerMinderOefening } from "./exercises/meerminder/index.js";
 
 /**
@@ -74,6 +76,11 @@ export const EXERCISES = [
     instelbareOpties: "Aantal opgaven",
   },
   {
+    ...rekendetectivesOefening,
+    groep: 4,
+    instelbareOpties: "Aantal opgaven (5, 10, 20, 40)",
+  },
+  {
     ...klokkijkenOefening,
     groep: 4,
     instelbareOpties: "Lezen of tekenen, hele/halve uren of mix, aantal opgaven",
@@ -112,6 +119,11 @@ export const EXERCISES = [
     ...statistiekOefening,
     groep: 8,
     instelbareOpties: "Categorie (grafieken, gemiddelde/mediaan/modus, tabellen, turven), aantal opgaven",
+  },
+  {
+    ...grafiekenOefening,
+    groep: 8,
+    instelbareOpties: "Niveau (1-5), categorie, aantal opgaven (5, 10, 20, 50)",
   },
   {
     ...procentenOefening,
