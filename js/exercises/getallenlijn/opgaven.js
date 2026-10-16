@@ -9,6 +9,24 @@
 
 import { randomGeheelGetal, kiesWillekeurig } from "../../utils/willekeurig.js";
 
+const MAX_STAPPEN_ZICHTBAAR = 20;
+
+/**
+ * Bij een lange lijn met kleine stappen (bv. 0 t/m 100 met stap 1) is er te veel
+ * te zien. Dan tonen we een stukje van maximaal 20 stappen, beginnend bij een
+ * veelvoud van 10 stappen, zodat elk getal leesbaar blijft.
+ */
+function kiesVenster({ min, max, stap }) {
+  const aantalStappen = Math.floor((max - min) / stap);
+  if (aantalStappen <= MAX_STAPPEN_ZICHTBAAR) return { min, max, stap };
+  const blok = 10 * stap;
+  const eersteStart = Math.ceil(min / blok) * blok;
+  const laatsteStart = Math.floor((max - MAX_STAPPEN_ZICHTBAAR * stap) / blok) * blok;
+  const aantalKeuzes = Math.max(0, Math.floor((laatsteStart - eersteStart) / blok));
+  const vensterMin = eersteStart + randomGeheelGetal(0, aantalKeuzes) * blok;
+  return { min: vensterMin, max: vensterMin + MAX_STAPPEN_ZICHTBAAR * stap, stap };
+}
+
 /** Rondt een getal af naar het dichtstbijzijnde meervoud van stap, binnen [min, max]. */
 function rondAfNaarStap(getal, min, max, stap) {
   const afgerond = Math.round((getal - min) / stap) * stap + min;
@@ -24,24 +42,6 @@ function willekeurigPuntOpLijn(min, max, stap, vermijdRanden = true) {
     stapIndex = randomGeheelGetal(1, aantalStappen - 1);
   }
   return min + stapIndex * stap;
-}
-
-/**
- * Type 1: "Welk getal is dit?" — een pijl wijst naar een punt, kind typt het getal.
- */
-export function genereerWelkGetal({ min, max, stap }) {
-  const getal = willekeurigPuntOpLijn(min, max, stap);
-  return {
-    type: "welkGetal",
-    vraagTekst: "Welk getal wijst de pijl aan?",
-    antwoordGoed: getal,
-    meta: { opgaveType: "welkGetal", stap, bereikMin: min, bereikMax: max },
-    weergave: {
-      min, max, stap,
-      markeringen: [{ getal, pijl: true, kleur: "#e8735a" }],
-    },
-    invoerType: "cijfers",
-  };
 }
 
 /**
@@ -151,7 +151,6 @@ export function genereerSprongen({ min, max, stap }) {
 }
 
 const GENERATOREN = {
-  welkGetal: genereerWelkGetal,
   plaatsGetal: genereerPlaatsGetal,
   vulAan: genereerVulAan,
   telDoor: genereerTelDoor,
@@ -159,7 +158,6 @@ const GENERATOREN = {
 };
 
 export const OPGAVE_TYPES = [
-  { id: "welkGetal", label: "Welk getal is dit?" },
   { id: "plaatsGetal", label: "Plaats het getal" },
   { id: "vulAan", label: "Vul aan" },
   { id: "telDoor", label: "Tel door" },
@@ -175,8 +173,8 @@ export function genereerOpgave(instellingen) {
   const stap = kiesWillekeurig(stappen);
   const type =
     opgaveType && opgaveType !== "alle" ? opgaveType : kiesWillekeurig(OPGAVE_TYPES.map((t) => t.id));
-  const generator = GENERATOREN[type];
-  return generator({ min, max, stap });
+  const generator = GENERATOREN[type] || GENERATOREN[kiesWillekeurig(OPGAVE_TYPES.map((t) => t.id))];
+  return generator(kiesVenster({ min, max, stap }));
 }
 
 /** Maakt een unieke sleutel van een opgave, om herhaling binnen een sessie te voorkomen. */

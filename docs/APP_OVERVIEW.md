@@ -46,7 +46,7 @@ Vier oefentypes, elk met eigen opgavegenerator, instelscherm en oefenscherm:
 |----------|-----|-------------|
 | **Plus en min** | `plusmin` | Optellen en aftrekken, instelbaar bereik (1–100) |
 | **Tafels** | `tafels` | Keersommen 1–10, per tafel te kiezen |
-| **Getallenlijn** | `getallenlijn` | Opgavetypes: welkGetal, plaatsGetal, vulAan, telDoor, sprongen |
+| **Getallenlijn** | `getallenlijn` | Opgavetypes: plaatsGetal, vulAan, telDoor, sprongen |
 | **Verhaaltjessommen** | `verhaaltjes` | Korte verhaaltjes met plus/minsommen tot 10 |
 
 Elke oefening heeft:
