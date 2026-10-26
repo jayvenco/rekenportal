@@ -6,7 +6,7 @@ API-routes voor oefensessies met punten:
   GET /sessies/maand/<profiel_id> — maandoverzicht van punten
 """
 
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from fastapi import APIRouter, Depends, Query
 from pydantic import BaseModel
@@ -14,6 +14,7 @@ from sqlalchemy import extract, func
 from sqlalchemy.orm import Session
 
 from app.database import get_db
+from app.models.profiel import Profiel
 from app.models.sessie import Sessie
 
 router = APIRouter(prefix="/api/sessies", tags=["sessies"])
@@ -46,6 +47,40 @@ def maak_sessie(sessie: SessieIn, db: Session = Depends(get_db)):
         "id": db_sessie.id,
         "punten": db_sessie.punten,
         "tijdstip": db_sessie.tijdstip.isoformat(),
+    }
+
+
+@router.get("/recent")
+def recente_sessies(dagen: int = Query(default=7, ge=1, le=31), db: Session = Depends(get_db)):
+    """Alle sessies van de laatste `dagen` dagen (alle profielen), nieuwste eerst.
+    Tijdstippen zijn UTC (met 'Z'); de frontend groepeert per lokale dag."""
+    grens = datetime.utcnow() - timedelta(days=dagen + 1)
+    rijen = (
+        db.query(Sessie, Profiel.naam)
+        .join(Profiel, Profiel.id == Sessie.profiel_id)
+        .filter(Sessie.tijdstip >= grens)
+        .order_by(Sessie.tijdstip.desc())
+        .all()
+    )
+    return {
+        "sessies": [
+            {
+                "id": s.id,
+                "profielId": s.profiel_id,
+                "profielNaam": naam,
+                "exerciseId": s.exercise_id,
+                "tijdstip": s.tijdstip.isoformat() + "Z",
+                "aantalGoed": s.aantal_goed,
+                "aantalTotaal": s.aantal_totaal,
+                "percentage": s.percentage,
+                "punten": s.punten,
+                "duurSec": s.duur_sec,
+                "eerstePogingGoed": s.eerste_poging_goed,
+                "tweedePogingGoed": s.tweede_poging_goed,
+                "fout": s.fout,
+            }
+            for s, naam in rijen
+        ]
     }
 
 

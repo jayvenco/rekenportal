@@ -49,6 +49,7 @@ def init_db() -> None:
 
 def _run_lightweight_migrations() -> None:
     """Voegt kleine schema-uitbreidingen toe voor bestaande SQLite-installaties."""
+    _migreer_sessies()
     inspector = inspect(engine)
     if "profielen" not in inspector.get_table_names():
         return
@@ -60,6 +61,17 @@ def _run_lightweight_migrations() -> None:
             verbinding.execute(
                 text("UPDATE profielen SET laatste_activiteit_op = COALESCE(aangemaakt_op, CURRENT_TIMESTAMP)")
             )
+
+
+def _migreer_sessies() -> None:
+    inspector = inspect(engine)
+    if "sessies" not in inspector.get_table_names():
+        return
+    kolommen = {k["name"] for k in inspector.get_columns("sessies")}
+    with engine.begin() as verbinding:
+        for naam in ("duur_sec", "eerste_poging_goed", "tweede_poging_goed", "fout"):
+            if naam not in kolommen:
+                verbinding.execute(text(f"ALTER TABLE sessies ADD COLUMN {naam} INTEGER"))
 
 
 def get_db():

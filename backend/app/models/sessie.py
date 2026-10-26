@@ -24,4 +24,8 @@ class Sessie(Base):
     aantal_totaal = Column(Integer, nullable=False)
     percentage = Column(Float, nullable=False)
     punten = Column(Integer, nullable=False, default=0)
+    duur_sec = Column(Integer, nullable=True)
+    eerste_poging_goed = Column(Integer, nullable=True)
+    tweede_poging_goed = Column(Integer, nullable=True)
+    fout = Column(Integer, nullable=True)
     tijdstip = Column(DateTime, default=datetime.utcnow, nullable=False)

@@ -24,6 +24,7 @@ class SessionRewardIn(BaseModel):
     firstAttemptCorrect: int
     secondAttemptCorrect: int = 0
     bestFirstAttemptStreak: int = 0
+    durationSeconds: int = 0
 
 
 @router.get("/badges")

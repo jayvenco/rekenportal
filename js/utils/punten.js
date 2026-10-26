@@ -207,3 +207,9 @@ function animeerTeller(tellerEl, balkEl, eindDoel, duurMs, isNegatief = false) {
 
   setTimeout(tik, 50);
 }
+/** Haalt alle sessies van de laatste `dagen` dagen op (alle profielen). */
+export async function haalRecenteSessies(dagen = 7) {
+  const res = await fetch(`${API_BASE}/sessies/recent?dagen=${dagen}`);
+  if (!res.ok) throw new Error(`Sessies ophalen mislukt (${res.status})`);
+  return (await res.json()).sessies;
+}

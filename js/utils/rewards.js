@@ -116,6 +116,7 @@ export function maakRewardTracker(exerciseId, totalQuestions) {
   let secondAttemptCorrect = 0;
   let currentFirstAttemptStreak = 0;
   let bestFirstAttemptStreak = 0;
+  const startTijd = Date.now();
 
   return {
     registreerGoed(pogingNummer, vanafEl) {
@@ -145,6 +146,7 @@ export function maakRewardTracker(exerciseId, totalQuestions) {
         firstAttemptCorrect,
         secondAttemptCorrect,
         bestFirstAttemptStreak,
+        durationSeconds: Math.round((Date.now() - startTijd) / 1000),
       });
     },
   };

@@ -16,7 +16,8 @@ import {
   getActiefProfielId,
   wisActiefProfiel,
 } from "../storage.js";
-import { haalMaandOverzicht, haalTotaalPunten } from "../utils/punten.js";
+import { haalMaandOverzicht, haalTotaalPunten, haalRecenteSessies } from "../utils/punten.js";
+import { EXERCISES } from "../exercises.js";
 
 function formatTijd(ms) {
   if (!ms) return "–";
@@ -62,6 +63,101 @@ function bouwExportRij(jsonHref, csvHref) {
 }
 
 /** Tekent het volledige beheerscherm. */
+const DAG_NAMEN = ["zondag", "maandag", "dinsdag", "woensdag", "donderdag", "vrijdag", "zaterdag"];
+
+function lokaleDagSleutel(d) {
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
+
+function formatDuur(sec) {
+  if (sec === null || sec === undefined) return "–";
+  const m = Math.floor(sec / 60);
+  return m > 0 ? `${m} min ${sec % 60} s` : `${sec} s`;
+}
+
+function oefeningNaam(id) {
+  return EXERCISES.find((o) => o.id === id)?.titel || id;
+}
+
+/** Kaart met alle sessies van de afgelopen 7 dagen, per dag gegroepeerd. */
+async function bouwWeekOverzicht() {
+  const kaart = document.createElement("div");
+  kaart.className = "kaart";
+  const titel = document.createElement("h2");
+  titel.textContent = "📅 Sessies afgelopen 7 dagen";
+  kaart.appendChild(titel);
+
+  let sessies;
+  try {
+    sessies = await haalRecenteSessies(7);
+  } catch (fout) {
+    console.error(fout);
+    const p = document.createElement("p");
+    p.textContent = "De sessies konden niet geladen worden.";
+    kaart.appendChild(p);
+    return kaart;
+  }
+
+  const perDag = new Map();
+  const vandaag = new Date();
+  for (let i = 0; i < 7; i += 1) {
+    const d = new Date(vandaag.getFullYear(), vandaag.getMonth(), vandaag.getDate() - i);
+    perDag.set(lokaleDagSleutel(d), { datum: d, sessies: [] });
+  }
+  for (const s of sessies) {
+    const dag = perDag.get(lokaleDagSleutel(new Date(s.tijdstip)));
+    if (dag) dag.sessies.push(s);
+  }
+
+  for (const { datum, sessies: lijst } of perDag.values()) {
+    const blok = document.createElement("div");
+    blok.style.cssText = "padding:10px 0;border-top:1px solid #e2e8f0;";
+    const goed = lijst.reduce((t, s) => t + s.aantalGoed, 0);
+    const totaal = lijst.reduce((t, s) => t + s.aantalTotaal, 0);
+    const duur = lijst.reduce((t, s) => t + (s.duurSec || 0), 0);
+    const kop = document.createElement("strong");
+    const isVandaag = lokaleDagSleutel(datum) === lokaleDagSleutel(vandaag);
+    kop.textContent = `${isVandaag ? "Vandaag" : DAG_NAMEN[datum.getDay()]} ${datum.getDate()}-${datum.getMonth() + 1}`;
+    const samen = document.createElement("span");
+    samen.style.cssText = "margin-left:10px;color:#52667a;";
+    samen.textContent = lijst.length
+      ? `${lijst.length} sessie${lijst.length === 1 ? "" : "s"} · ${goed}/${totaal} goed (${totaal ? Math.round((goed / totaal) * 100) : 0}%) · ${formatDuur(duur)}`
+      : "geen oefeningen";
+    blok.append(kop, samen);
+
+    if (lijst.length) {
+      const tabel = document.createElement("table");
+      tabel.style.cssText = "width:100%;border-collapse:collapse;margin-top:6px;font-size:14px;";
+      const kopRij = document.createElement("tr");
+      for (const k of ["Tijd", "Kind", "Oefening", "Score", "Duur", "Coins"]) {
+        const th = document.createElement("th");
+        th.textContent = k;
+        th.style.cssText = "text-align:left;padding:3px 8px 3px 0;color:#52667a;font-weight:700;";
+        kopRij.appendChild(th);
+      }
+      tabel.appendChild(kopRij);
+      for (const s of [...lijst].reverse()) {
+        const tr = document.createElement("tr");
+        const tijd = new Date(s.tijdstip).toLocaleTimeString("nl-NL", { hour: "2-digit", minute: "2-digit" });
+        const score = `${s.aantalGoed}/${s.aantalTotaal} (${Math.round(s.percentage)}%)`;
+        const detail = s.eerstePogingGoed === null || s.eerstePogingGoed === undefined
+          ? ""
+          : ` · ${s.eerstePogingGoed} in 1e poging`;
+        for (const waarde of [tijd, s.profielNaam, oefeningNaam(s.exerciseId), score + detail, formatDuur(s.duurSec), String(s.punten)]) {
+          const td = document.createElement("td");
+          td.textContent = waarde;
+          td.style.cssText = "padding:3px 8px 3px 0;";
+          tr.appendChild(td);
+        }
+        tabel.appendChild(tr);
+      }
+      blok.appendChild(tabel);
+    }
+    kaart.appendChild(blok);
+  }
+  return kaart;
+}
+
 export async function toonBeheerScherm(container) {
   container.innerHTML = "";
 
@@ -85,6 +181,8 @@ export async function toonBeheerScherm(container) {
   uitleg.textContent = "Hier beheer je alle profielen: bekijk statistieken, exporteer resultaten of verwijder een profiel.";
   uitleg.style.marginBottom = "24px";
   container.appendChild(uitleg);
+
+  container.appendChild(await bouwWeekOverzicht());
 
   const profielen = await listProfielen();
 

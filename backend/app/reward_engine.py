@@ -173,6 +173,10 @@ def verwerk_sessie_rewards(db: Session, profiel_id: int, exercise_id: str, paylo
         aantal_totaal=session_result["totalQuestions"],
         percentage=session_result["percentage"],
         punten=int(session_result["totalCoins"]),
+        duur_sec=max(0, int(payload.get("durationSeconds") or 0)),
+        eerste_poging_goed=session_result["firstAttemptCorrect"],
+        tweede_poging_goed=session_result["secondAttemptCorrect"],
+        fout=session_result["wrongAnswers"],
     )
     db.add(sessie)
     db.flush()
