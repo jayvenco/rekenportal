@@ -30,6 +30,8 @@ import { klokkijkenOefening } from "./exercises/klokkijken/index.js";
 import { getallenvolgordeOefening } from "./exercises/getallenvolgorde/index.js";
 import { rekendetectivesOefening } from "./exercises/rekendetectives/index.js";
 import { grafiekenOefening } from "./exercises/grafieken/index.js";
+import { splitsenOefening } from "./exercises/splitsen/index.js";
+import { geldOefening } from "./exercises/geld/index.js";
 import { meerMinderOefening } from "./exercises/meerminder/index.js";
 
 /**
@@ -64,6 +66,16 @@ export const EXERCISES = [
     ...getallenvolgordeOefening,
     groep: 4,
     instelbareOpties: "Bereik, aantal bolletjes, aantal opgaven",
+  },
+  {
+    ...splitsenOefening,
+    groep: 4,
+    instelbareOpties: "Tot welk getal (10 t/m 100), moeilijkheid, aantal opgaven",
+  },
+  {
+    ...geldOefening,
+    groep: 4,
+    instelbareOpties: "Tel het geld / betaal het bedrag, maximaal bedrag (20-200 euro), aantal opgaven",
   },
   {
     ...meerMinderOefening,

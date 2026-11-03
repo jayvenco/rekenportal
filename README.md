@@ -181,3 +181,12 @@ python3 -m http.server 8000
     `node js/exercises/grafieken/data/bouw-opgaven.mjs`
   - Tests (dataconsistentie en antwoordvalidatie):
     `node js/exercises/grafieken/test/test.mjs`
+- **Splitsen** (groep 4) — splitsboom: één getal bovenin, één deel gegeven, het
+  andere deel invullen. Het grootste getal is instelbaar van 10 t/m 100 in
+  stappen van 10. Bij een fout antwoord geeft de hint de strategie "rond af naar
+  tientallen". Instelscherm bevat een uitlegpagina met plaatjes
+  (`js/exercises/splitsen/uitleg.js`).
+- **Rekenen met geld** (groep 4) — biljetten van 5/10/20/50/100 en munten van
+  50 cent/1/2 euro. Twee soorten: *tel het geld* (typ het bedrag, komma
+  toegestaan) en *betaal het bedrag* (kies of sleep geld uit de beschikbare
+  voorraad naar het betaalvak; elk geldig bedrag telt). Bedragen intern in centen.
