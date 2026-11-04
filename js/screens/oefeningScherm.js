@@ -8,6 +8,7 @@
 import { vindOefening } from "../exercises.js";
 import { getInstellingen } from "../storage.js";
 import { getTelraam, vernietigTelraam } from "../utils/telraam.js";
+import { maakHulpKnop } from "../utils/hulp.js";
 
 const OPGAVE_ACHTERGRONDEN = {
   getallenlijn: "/img/opgave-achtergronden/natuur-bos.png?v=1",
@@ -58,6 +59,8 @@ export async function toonOefeningScherm(container, exerciseId) {
   terugLink.href = "#/";
   terugLink.textContent = "← Terug naar het menu";
   terugRij.appendChild(terugLink);
+  const hulpKnop = maakHulpKnop(cleanId);
+  if (hulpKnop) terugRij.appendChild(hulpKnop);
   container.appendChild(terugRij);
 
   const oefenContainer = document.createElement("div");

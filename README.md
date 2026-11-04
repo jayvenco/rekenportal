@@ -190,3 +190,7 @@ python3 -m http.server 8000
   50 cent/1/2 euro. Twee soorten: *tel het geld* (typ het bedrag, komma
   toegestaan) en *betaal het bedrag* (kies of sleep geld uit de beschikbare
   voorraad naar het betaalvak; elk geldig bedrag telt). Bedragen intern in centen.
+- **Hulp-knop** — in elk oefenscherm staat linksonder een "❓ Hulp"-knop met uitleg
+  in stappen, visuele voorbeelden en tips per oefening. Inhoud staat in
+  `js/utils/hulpInhoud.js` (een nieuwe oefening krijgt hulp door daar een
+  entry met het oefening-id toe te voegen); de knop zelf in `js/utils/hulp.js`.
