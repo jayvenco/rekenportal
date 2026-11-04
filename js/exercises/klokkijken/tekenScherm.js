@@ -203,7 +203,7 @@ export function startTekenSessie(container, instellingen, opKlaar) {
         feedbackVlak.textContent = `✓ ${geefCompliment(profielNaam)}`;
         voortgangCirkels.zetStatus(opgaveIndex, pogingNummer === 1 ? "goed" : "tweedePogingGoed");
         speelGoedGeluid();
-        raket.goedAntwoord();
+        raket.goedAntwoord(pogingNummer);
         rewardTracker.registreerGoed(pogingNummer, feedbackVlak);
         bijwerkenVoortgang();
         werkKlaarKnopBij();

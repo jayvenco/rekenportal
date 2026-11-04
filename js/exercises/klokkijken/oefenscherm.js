@@ -164,7 +164,7 @@ export function startOefensessie(container, instellingen, opKlaar) {
           voortgangCirkels.zetStatus(opgaveIndex, "tweedePogingGoed");
         }
         speelGoedGeluid();
-        raket.goedAntwoord();
+        raket.goedAntwoord(pogingNummer);
         rewardTracker.registreerGoed(pogingNummer, feedbackVlak);
         bijwerkenVoortgang();
         setTimeout(() => {

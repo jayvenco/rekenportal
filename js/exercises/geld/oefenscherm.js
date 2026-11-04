@@ -293,7 +293,7 @@ export function startOefensessie(container, instellingen, opKlaar) {
         feedbackVlak.textContent = `✓ ${geefCompliment(profielNaam)}${pogingNummer === 2 ? " (tweede poging!)" : ""}`;
         voortgangCirkels.zetStatus(opgaveIndex, pogingNummer === 1 ? "goed" : "tweedePogingGoed");
         speelGoedGeluid();
-        raket.goedAntwoord();
+        raket.goedAntwoord(pogingNummer);
         rewardTracker.registreerGoed(pogingNummer, feedbackVlak);
         bijwerkenVoortgang();
         setTimeout(() => { opgaveIndex += 1; toonOpgave(); }, 1900);

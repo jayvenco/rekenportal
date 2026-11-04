@@ -194,3 +194,10 @@ python3 -m http.server 8000
   in stappen, visuele voorbeelden en tips per oefening. Inhoud staat in
   `js/utils/hulpInhoud.js` (een nieuwe oefening krijgt hulp door daar een
   entry met het oefening-id toe te voegen); de knop zelf in `js/utils/hulp.js`.
+- **Math City (voortgangsanimatie)** — derde animatie naast de mijntunnel en de
+  ruimtemissie; de dispatcher (`js/utils/voortgangAnimatie.js`) wisselt om de
+  beurt tussen de drie. Isometrische cartoonstad in SVG: elke opgave = één
+  gebouw (volledig = goed in 1e poging, half ingestort = 2e poging goed, ingestort
+  = beide pogingen fout), met bouwmachines, vrachtwagens en bouwvakkers.
+  Ook los aan te sturen via `zetResultaten({ correctAnswers, firstAttemptErrors,
+  secondAttemptErrors })` in `js/utils/mathCityAnimatie.js`.

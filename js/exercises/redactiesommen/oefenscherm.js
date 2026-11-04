@@ -158,7 +158,7 @@ export function toonOefeningScherm(container, instellingen) {
     if (isGoed) {
       bezigMetFeedback = true;
       aantalGoedTotaal += 1;
-      raket.goedAntwoord();
+      raket.goedAntwoord(pogingNummer);
       recordAnswer({ exerciseId: EXERCISE_ID, correct: true, timeMs: tijd, meta: { ...huidigeOpgave.meta, pogingen: pogingNummer } }).catch(() => {});
       if (pogingNummer === 1) {
         feedbackVlak.className = "feedback-vlak feedback-vlak--goed";

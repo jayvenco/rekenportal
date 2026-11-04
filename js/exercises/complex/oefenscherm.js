@@ -133,7 +133,7 @@ export function startOefensessie(container, instellingen, opKlaar) {
       if (isGoed) {
             bezigMetFeedback = true;
             aantalGoedTotaal += 1;
-            raket.goedAntwoord();
+            raket.goedAntwoord(pogingNummer);
 
             recordAnswer({
           correct: true,

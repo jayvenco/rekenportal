@@ -255,7 +255,7 @@ export async function startOefensessie(container, instellingen, opKlaar) {
       feedback.textContent = `✓ ${GOED_TEKST[huidig.vraag.type]} ${geefCompliment(profielNaam)}`;
       cirkels.zetStatus(index, poging === 1 ? "goed" : "tweedePogingGoed");
       speelGoedGeluid();
-      raket.goedAntwoord();
+      raket.goedAntwoord(poging);
       tracker.registreerGoed(poging, feedback);
       bijwerken();
       await rondAf(true);

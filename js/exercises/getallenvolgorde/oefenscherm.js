@@ -145,7 +145,7 @@ export function startOefensessie(container, instellingen, opKlaar) {
             voortgangCirkels.zetStatus(opgaveIndex, "tweedePogingGoed");
             rewardTracker.registreerGoed(2, feedbackVlak);
           }
-          raket.goedAntwoord();
+          raket.goedAntwoord(hadFoutBijDezeOpgave ? 2 : 1);
           bijwerkenVoortgang();
           setTimeout(() => {
             opgaveIndex += 1;

@@ -337,7 +337,7 @@ export function toonOefeningScherm(container, instellingen) {
     if (isGoed) {
       bezigMetFeedback = true;
       aantalGoedTotaal += 1;
-      raket.goedAntwoord();
+      raket.goedAntwoord(pogingNummer);
 
       recordAnswer({
         exerciseId: EXERCISE_ID,
