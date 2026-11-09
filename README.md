@@ -4,6 +4,16 @@ Een frontend-only webapplicatie voor kinderen (groep 5) om te oefenen met rekene
 Geen backend, geen build-stap, geen frameworks: alleen HTML, CSS en vanilla
 JavaScript (ES modules). Werkt volledig offline door `index.html` te openen.
 
+## Screenshots
+
+| | |
+|---|---|
+| ![Profielkiezer](docs/screenshots/01-profielkiezer.png)<br>Profielkiezer (naam + avatar, geen wachtwoord) | ![Home](docs/screenshots/02-home.png)<br>Home met oefeningen per groep |
+| ![Splitsen instellen](docs/screenshots/03-splitsen-instellen.png)<br>Splitsen: bereik 10 t/m 100 kiezen | ![Splitsen uitleg](docs/screenshots/04-splitsen-uitleg.png)<br>Uitlegpagina met plaatjes |
+| ![Splitsen oefenen](docs/screenshots/06-splitsen-oefenen.png)<br>Splitsboom met Math City-voortgang | ![Hulp](docs/screenshots/08-hulp-venster.png)<br>Hulp-knop: uitleg, voorbeeld en tips |
+| ![Rekenen met geld](docs/screenshots/09-geld-oefenen.png)<br>Rekenen met geld | ![Grafieken](docs/screenshots/10-grafieken-oefenen.png)<br>Grafieken lezen (groep 8) |
+| ![Math City](docs/screenshots/11-math-city.png)<br>Math City na een oefening | ![Mobiel](docs/screenshots/13-mobiel-geld.png)<br>Mobiele weergave |
+
 ## Bestandsstructuur
 
 ```
