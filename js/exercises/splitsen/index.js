@@ -50,7 +50,7 @@ const icoonSplitsen = `
 export const splitsenOefening = {
   id: "splitsen",
   titel: "Splitsen",
-  omschrijving: "Splits getallen in twee delen met de splitsboom, tot 10, 20 of zelfs 100.",
+  omschrijving: "Splits getallen met de splitsboom en reken plus- en minsommen uit via het tiental, tot 10, 20 of zelfs 100.",
   icoonSvg: icoonSplitsen,
   kleurthema: "#2e9e6b",
   mount,

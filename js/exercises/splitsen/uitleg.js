@@ -1,8 +1,9 @@
 // exercises/splitsen/uitleg.js
 // -----------------------------------------------------------------------------
 // Uitlegpagina "Hoe werkt splitsen?" met plaatjes: wat splitsen is,
-// splitsingen van 10 en 20, en de strategie "rond eerst af naar tientallen"
-// voor getallen tot 100.
+// splitsingen van 10 en 20, de strategie "rond eerst af naar tientallen"
+// voor getallen tot 100 en plus- en minsommen oplossen door eerst een tiental
+// te maken.
 // -----------------------------------------------------------------------------
 
 import { bouwSplitsboom } from "./splitsboom.js";
@@ -36,15 +37,16 @@ function blokken(staven, los, gekleurd = 0) {
 }
 
 /** Sprong-plaatje: van `van` naar `tussen` naar `naar` met stapgroottes erboven. */
-function sprongen(van, tussen, naar) {
+function sprongen(van, tussen, naar, min = false) {
+  const teken = min ? "−" : "+";
   const x = (g) => 40 + ((g - van) / (naar - van)) * 380;
   return `<svg viewBox="0 0 460 120" role="img" aria-label="Van ${van} naar ${tussen} naar ${naar}" style="width:100%;max-width:460px">
     <line x1="30" y1="80" x2="430" y2="80" stroke="#444" stroke-width="3"/>
     ${[van, tussen, naar].map((g) => `<line x1="${x(g)}" y1="70" x2="${x(g)}" y2="90" stroke="#444" stroke-width="3"/><text x="${x(g)}" y="112" text-anchor="middle" font-size="20" font-weight="700">${g}</text>`).join("")}
     <path d="M${x(van)} 70 Q ${(x(van) + x(tussen)) / 2} 20 ${x(tussen)} 68" fill="none" stroke="${ROOD}" stroke-width="3"/>
-    <text x="${(x(van) + x(tussen)) / 2}" y="30" text-anchor="middle" font-size="20" font-weight="800" fill="${ROOD}">+${tussen - van}</text>
+    <text x="${(x(van) + x(tussen)) / 2}" y="30" text-anchor="middle" font-size="20" font-weight="800" fill="${ROOD}">${teken}${Math.abs(tussen - van)}</text>
     <path d="M${x(tussen)} 70 Q ${(x(tussen) + x(naar)) / 2} 20 ${x(naar)} 68" fill="none" stroke="${BLAUW}" stroke-width="3"/>
-    <text x="${(x(tussen) + x(naar)) / 2}" y="30" text-anchor="middle" font-size="20" font-weight="800" fill="${BLAUW}">+${naar - tussen}</text>
+    <text x="${(x(tussen) + x(naar)) / 2}" y="30" text-anchor="middle" font-size="20" font-weight="800" fill="${BLAUW}">${teken}${Math.abs(naar - tussen)}</text>
   </svg>`;
 }
 
@@ -133,7 +135,39 @@ export function toonUitleg(container, opTerug, opStart) {
       <div class="spl-tip">💡 Tientallen reken je net als gewone splitsingen: 6 tientallen − 4 tientallen = 2 tientallen. Dus 60 = 40 + 20.</div>
       <div class="spl-rij"><div class="spl-kaartje">${boomHtml(63, 40, 23)}</div><div class="spl-kaartje">${boomHtml(60, 40, 20)}</div></div>`)}
 
-    ${sectie("6. Controleer je antwoord", `
+    ${sectie("6. Sommen splitsen: eerst een tiental maken", `
+      <p>Splitsen helpt ook bij <strong>plus- en minsommen</strong> waarbij je over een tiental heen moet. Je splitst het tweede getal zó, dat je <strong>eerst een heel tiental</strong> krijgt. Met een heel tiental rekent het veel makkelijker.</p>
+
+      <h3>Plussom: 38 + 7</h3>
+      <ol>
+        <li>Hoeveel heb je nodig om van <strong>38</strong> bij het volgende tiental <strong>40</strong> te komen? <span class="spl-sprong">+2</span></li>
+        <li>Splits de <strong>7</strong>: je hebt er 2 gebruikt, dus er blijft <strong>5</strong> over (7 = 2 + 5).</li>
+        <li>Reken verder vanaf het tiental: 40 + 5 = <strong>45</strong>.</li>
+      </ol>
+      <div class="spl-rij">
+        <div class="spl-kaartje">${boomHtml(7, 2, 5)}<strong>7 = 2 + 5</strong></div>
+        <div style="flex:1;min-width:260px">${sprongen(38, 40, 45)}</div>
+      </div>
+      <div class="spl-tip">💡 38 + 7 = 38 + 2 + 5 = 40 + 5 = <strong>45</strong></div>
+
+      <h3>Minsom: 52 − 6</h3>
+      <ol>
+        <li>Hoeveel moet er van <strong>52</strong> af om bij het vorige tiental <strong>50</strong> te komen? <span class="spl-sprong">−2</span></li>
+        <li>Splits de <strong>6</strong>: 2 is al af, dus er moet nog <strong>4</strong> af (6 = 2 + 4).</li>
+        <li>Reken verder vanaf het tiental: 50 − 4 = <strong>46</strong>.</li>
+      </ol>
+      <div class="spl-rij">
+        <div class="spl-kaartje">${boomHtml(6, 2, 4)}<strong>6 = 2 + 4</strong></div>
+        <div style="flex:1;min-width:260px">${sprongen(52, 50, 46, true)}</div>
+      </div>
+      <div class="spl-tip">💡 52 − 6 = 52 − 2 − 4 = 50 − 4 = <strong>46</strong></div>
+
+      <h3>Met een groter tweede getal: 38 + 27</h3>
+      <p>Het werkt ook als het tweede getal groter is. Maak eerst weer het tiental: 38 + <strong>2</strong> = 40. Van de 27 blijft <strong>25</strong> over (27 = 2 + 25). Dan: 40 + 25 = <strong>65</strong>.</p>
+      <div class="spl-rij"><div class="spl-kaartje">${boomHtml(27, 2, 25)}<strong>27 = 2 + 25</strong></div></div>
+      <div class="spl-tip">💡 In de oefening kies je zelf bij het instelscherm voor <strong>Sommen via het tiental</strong>. Je krijgt dan drie stappen: 1) hoeveel voor het tiental, 2) hoeveel blijft er over, 3) de uitkomst.</div>`)}
+
+    ${sectie("7. Controleer je antwoord", `
       <p>Tel de twee delen bij elkaar op. Komt er het getal bovenin uit? Dan klopt je splitsing!</p>
       <div class="spl-tip">💡 Voorbeeld: 72 = 45 + ? &nbsp; 45 → 50 is +5, 50 → 72 is +22. Samen 27. Controle: 45 + 27 = 72 ✔</div>`)}
   `;

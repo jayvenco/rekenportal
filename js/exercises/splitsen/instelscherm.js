@@ -12,6 +12,7 @@ const STANDAARD_INSTELLINGEN = {
   maxGetal: 20,
   aantalOpgaven: 10,
   moeilijkheid: "uitdagend",
+  soort: "boom",
 };
 
 const AANTAL_OPTIES = [5, 10, 20];
@@ -38,12 +39,62 @@ export async function bouwInstelscherm(container, opStarten, opUitleg) {
   uitleg.textContent = "Splits het getal in twee delen. Eén deel is al gegeven: welk getal hoort in het lege vakje?";
   kaart.appendChild(uitleg);
 
+  // --- Soort opgaven ---
+  const soortGroep = document.createElement("div");
+  soortGroep.className = "instel-groep";
+  const soortLabel = document.createElement("span");
+  soortLabel.className = "instel-groep__label";
+  soortLabel.textContent = "Wat wil je oefenen?";
+  soortGroep.appendChild(soortLabel);
+  const soortRij = document.createElement("div");
+  soortRij.className = "keuze-rij";
+  soortRij.setAttribute("role", "radiogroup");
+  soortRij.setAttribute("aria-label", "Soort opgaven");
+  const SOORT_LABELS = [
+    { id: "boom", label: "\u{1F333} Splitsboom" },
+    { id: "brug", label: "\u2795\u2796 Sommen via het tiental" },
+    { id: "beide", label: "\u{1F500} Allebei" },
+  ];
+  const soortKnoppen = [];
+  for (const optie of SOORT_LABELS) {
+    const knop = document.createElement("button");
+    knop.type = "button";
+    knop.className = "keuze-knop";
+    knop.textContent = optie.label;
+    knop.setAttribute("role", "radio");
+    const actief0 = instellingen.soort === optie.id;
+    knop.setAttribute("aria-checked", String(actief0));
+    knop.setAttribute("aria-pressed", String(actief0));
+    knop.addEventListener("click", () => {
+      instellingen.soort = optie.id;
+      for (const item of soortKnoppen) {
+        const actief = item.id === optie.id;
+        item.knop.setAttribute("aria-checked", String(actief));
+        item.knop.setAttribute("aria-pressed", String(actief));
+      }
+      soortToelichting.textContent = toelichting(optie.id);
+    });
+    soortKnoppen.push({ knop, id: optie.id });
+    soortRij.appendChild(knop);
+  }
+  soortGroep.appendChild(soortRij);
+  const soortToelichting = document.createElement("p");
+  soortToelichting.style.cssText = "margin:6px 0 0;font-size:0.95rem;opacity:.85";
+  function toelichting(id) {
+    if (id === "brug") return "Reken plus- en minsommen uit door eerst een heel tiental te maken, bijvoorbeeld 38 + 7 = 38 + 2 + 5. Je rekent minstens tot 20.";
+    if (id === "beide") return "Een mix van splitsbomen en sommen via het tiental.";
+    return "Vul het ontbrekende deel van de splitsboom in.";
+  }
+  soortToelichting.textContent = toelichting(instellingen.soort);
+  soortGroep.appendChild(soortToelichting);
+  kaart.appendChild(soortGroep);
+
   // --- Tot hoever splitsen ---
   const maxGroep = document.createElement("div");
   maxGroep.className = "instel-groep";
   const maxLabel = document.createElement("span");
   maxLabel.className = "instel-groep__label";
-  maxLabel.textContent = "Tot welk getal splitsen we? (10 t/m 100)";
+  maxLabel.textContent = "Tot welk getal oefenen we? (10 t/m 100)";
   maxGroep.appendChild(maxLabel);
   const maxRij = document.createElement("div");
   maxRij.className = "keuze-rij";

@@ -317,9 +317,8 @@ const INHOUD = {
     titel: "Splitsen",
     intro: "Bij splitsen haal je een getal uit elkaar in twee delen. Samen zijn de delen weer het getal.",
     stappen: [
-      "Boven in de splitsboom staat het hele getal. Eén van de twee delen eronder is al gegeven.",
-      "Bedenk hoeveel er nog bij moet om het hele getal te maken.",
-      "Vul het lege vakje in.",
+      "<b>Splitsboom:</b> boven staat het hele getal. Eén van de twee delen eronder is al gegeven. Bedenk hoeveel er nog bij moet en vul het lege vakje in.",
+      "<b>Sommen via het tiental:</b> bij een plus- of minsom splits je het tweede getal, zodat je eerst een <b>heel tiental</b> maakt. Je beantwoordt drie stappen: 1) hoeveel voor het tiental, 2) hoeveel blijft er over, 3) de uitkomst.",
     ],
     voorbeelden: [
       {
@@ -332,9 +331,23 @@ const INHOUD = {
         tekst: "Van 38 naar het volgende tiental (40) is <b>+2</b>. Van 40 naar 47 is <b>+7</b>. Samen 2 + 7 = <b>9</b>.",
         visual: sprongLijn(38, [{ naar: 40, label: "+2" }, { naar: 47, label: "+7" }]),
       },
+      {
+        kop: "Plussom via het tiental: 38 + 7",
+        tekst: "Eerst 38 + <b>2</b> = 40 (tiental maken). Van de 7 blijft <b>5</b> over. Dan 40 + 5 = <b>45</b>.",
+        visual: sprongLijn(38, [{ naar: 40, label: "+2" }, { naar: 45, label: "+5" }]),
+        na: "Splits de 7 in 2 en 5: 38 + 7 = 38 + 2 + 5 = 40 + 5 = <b>45</b>.",
+      },
+      {
+        kop: "Minsom via het tiental: 52 − 6",
+        tekst: "Eerst 52 − <b>2</b> = 50 (tiental maken). Van de 6 moet er nog <b>4</b> af. Dan 50 − 4 = <b>46</b>.",
+        visual: sprongLijn(52, [{ naar: 50, label: "−2" }, { naar: 46, label: "−4" }]),
+        na: "Splits de 6 in 2 en 4: 52 − 6 = 52 − 2 − 4 = 50 − 4 = <b>46</b>.",
+      },
     ],
     tips: [
       "Weet je de splitsingen van 10 goed (6 + 4, 7 + 3)? Dan helpen die bij alle grotere getallen.",
+      "Bij een plussom kijk je hoeveel er nodig is tot het <b>volgende</b> tiental. Bij een minsom hoeveel er af moet tot het <b>vorige</b> tiental.",
+      "Bij een som via het tiental klopt het totaal altijd: de twee delen samen zijn het tweede getal (2 + 5 = 7).",
       "Controleer: tel de twee delen op. Komt het hele getal eruit?",
       "Meer uitleg met plaatjes staat in het instelscherm bij <b>📖 Uitleg</b>.",
     ],

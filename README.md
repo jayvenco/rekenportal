@@ -11,6 +11,8 @@ JavaScript (ES modules). Werkt volledig offline door `index.html` te openen.
 | ![Profielkiezer](docs/screenshots/01-profielkiezer.png)<br>Profielkiezer (naam + avatar, geen wachtwoord) | ![Home](docs/screenshots/02-home.png)<br>Home met oefeningen per groep |
 | ![Splitsen instellen](docs/screenshots/03-splitsen-instellen.png)<br>Splitsen: bereik 10 t/m 100 kiezen | ![Splitsen uitleg](docs/screenshots/04-splitsen-uitleg.png)<br>Uitlegpagina met plaatjes |
 | ![Splitsen oefenen](docs/screenshots/06-splitsen-oefenen.png)<br>Splitsboom met Math City-voortgang | ![Hulp](docs/screenshots/08-hulp-venster.png)<br>Hulp-knop: uitleg, voorbeeld en tips |
+| ![Sommen via het tiental](docs/screenshots/14-splitsen-via-tiental.png)<br>Sommen via het tiental: stap 3 van 3 | ![Oplossing](docs/screenshots/15-splitsen-via-tiental-oplossing.png)<br>Na twee foute pogingen: de oplossing in rood |
+| ![Uitleg via het tiental](docs/screenshots/16-uitleg-via-tiental.png)<br>Uitleg: plus- en minsommen via het tiental | |
 | ![Rekenen met geld](docs/screenshots/09-geld-oefenen.png)<br>Rekenen met geld | ![Grafieken](docs/screenshots/10-grafieken-oefenen.png)<br>Grafieken lezen (groep 8) |
 | ![Math City](docs/screenshots/11-math-city.png)<br>Math City na een oefening | ![Mobiel](docs/screenshots/13-mobiel-geld.png)<br>Mobiele weergave |
 
@@ -195,7 +197,14 @@ python3 -m http.server 8000
   andere deel invullen. Het grootste getal is instelbaar van 10 t/m 100 in
   stappen van 10. Bij een fout antwoord geeft de hint de strategie "rond af naar
   tientallen". Instelscherm bevat een uitlegpagina met plaatjes
-  (`js/exercises/splitsen/uitleg.js`).
+  (`js/exercises/splitsen/uitleg.js`). Het instelscherm heeft een keuze voor het
+  soort opgave: *Splitsboom*, *Sommen via het tiental* of *Allebei*. Bij
+  *Sommen via het tiental* los je een plus- of minsom (bijv. 38 + 7 of 52 − 6)
+  op door het tweede getal te splitsen, zodat je eerst een heel tiental maakt.
+  Elke opgave heeft drie stappen: 1) hoeveel voor het tiental, 2) hoeveel blijft
+  er over, 3) de uitkomst. De twee pogingen gelden voor de hele opgave. Een
+  opgave heeft altijd een lijst `stappen` (`opgaven.js`); de weergave staat in
+  `brug.js`. Statistiekveld `meta.bewerking`: `splitsen`, `brug-plus`, `brug-min`.
 - **Rekenen met geld** (groep 4) — biljetten van 5/10/20/50/100 en munten van
   50 cent/1/2 euro. Twee soorten: *tel het geld* (typ het bedrag, komma
   toegestaan) en *betaal het bedrag* (kies of sleep geld uit de beschikbare

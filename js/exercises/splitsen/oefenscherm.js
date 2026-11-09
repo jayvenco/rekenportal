@@ -9,6 +9,7 @@ import { recordAnswer, getActiefProfielId, listProfielen } from "../../storage.j
 import { bouwCijferInvoer, bouwMeerkeuzeInvoer, genereerFoutePlusMinAntwoorden } from "../../utils/invoerModus.js";
 import { genereerOpgave, opgaveNaarSleutel } from "./opgaven.js";
 import { bouwSplitsboom } from "./splitsboom.js";
+import { bouwBrugWeergave } from "./brug.js";
 import { genereerUniekeOpgave } from "../../utils/willekeurig.js";
 import { geefCompliment, geefFoutmelding } from "../../utils/complimenten.js";
 import { speelGoedGeluid, speelFoutGeluid } from "../../utils/geluid.js";
@@ -87,6 +88,23 @@ export function startOefensessie(container, instellingen, opKlaar) {
 
   let opruimHuidigeInvoer = null;
   let boom = null;
+  let brug = null;
+  let stapIndex = 0; // bij "via het tiental"-opgaven: welke stap is aan de beurt
+  let instructie = null;
+
+  const huidigeStap = () => huidigeOpgave.stappen[stapIndex];
+  const isLaatsteStap = () => stapIndex >= huidigeOpgave.stappen.length - 1;
+
+  /** Bouwt de invoer (meerkeuze of cijfers) voor de huidige stap. */
+  function bouwInvoerVoorStap() {
+    if (opruimHuidigeInvoer) opruimHuidigeInvoer();
+    const goed = huidigeStap().antwoord;
+    if (instellingen.moeilijkheid === "makkelijk") {
+      opruimHuidigeInvoer = bouwMeerkeuzeInvoer(invoerVlak, verwerkAntwoord, goed, genereerFoutePlusMinAntwoorden(goed));
+    } else {
+      opruimHuidigeInvoer = bouwCijferInvoer(invoerVlak, verwerkAntwoord, () => bezigMetFeedback, String(goed).length >= 3 ? 3 : 2);
+    }
+  }
 
   function toonOpgave() {
     if (opgaveIndex >= instellingen.aantalOpgaven) {
@@ -95,6 +113,9 @@ export function startOefensessie(container, instellingen, opKlaar) {
     }
     bezigMetFeedback = false;
     pogingNummer = 1;
+    stapIndex = 0;
+    boom = null;
+    brug = null;
     feedbackVlak.className = "feedback-vlak";
     feedbackVlak.textContent = "";
     if (opruimHuidigeInvoer) {
@@ -110,37 +131,43 @@ export function startOefensessie(container, instellingen, opKlaar) {
     startTijdOpgave = performance.now();
     bijwerkenVoortgang();
     vraagVlak.innerHTML = "";
-    const instructie = document.createElement("p");
+    instructie = document.createElement("p");
     instructie.style.fontWeight = "700";
-    instructie.textContent = `Splits ${huidigeOpgave.totaal}. Welk getal hoort in het lege vakje?`;
-    boom = bouwSplitsboom({
-      totaal: huidigeOpgave.totaal,
-      links: huidigeOpgave.gegevenLinks ? huidigeOpgave.gegeven : null,
-      rechts: huidigeOpgave.gegevenLinks ? null : huidigeOpgave.gegeven,
-      markeer: huidigeOpgave.gegevenLinks ? "rechts" : "links",
-    });
-    vraagVlak.append(instructie, boom.svg);
-
-    if (instellingen.moeilijkheid === "makkelijk") {
-      opruimHuidigeInvoer = bouwMeerkeuzeInvoer(
-        invoerVlak, verwerkAntwoord,
-        huidigeOpgave.antwoordGoed,
-        genereerFoutePlusMinAntwoorden(huidigeOpgave.antwoordGoed)
-      );
+    instructie.textContent = huidigeStap().vraag;
+    if (huidigeOpgave.type === "brug") {
+      brug = bouwBrugWeergave(huidigeOpgave);
+      vraagVlak.append(instructie, brug.element);
     } else {
-      opruimHuidigeInvoer = bouwCijferInvoer(invoerVlak, verwerkAntwoord, () => bezigMetFeedback, 2);
+      boom = bouwSplitsboom({
+        totaal: huidigeOpgave.totaal,
+        links: huidigeOpgave.gegevenLinks ? huidigeOpgave.gegeven : null,
+        rechts: huidigeOpgave.gegevenLinks ? null : huidigeOpgave.gegeven,
+        markeer: huidigeOpgave.gegevenLinks ? "rechts" : "links",
+      });
+      vraagVlak.append(instructie, boom.svg);
     }
+    bouwInvoerVoorStap();
   }
 
   async function verwerkAntwoord(antwoordVanKind) {
     if (bezigMetFeedback) return;
     try {
-    const isGoed = Number(antwoordVanKind) === Number(huidigeOpgave.antwoordGoed);
+    const isGoed = Number(antwoordVanKind) === Number(huidigeStap().antwoord);
     const tijdBesteed = Math.round(performance.now() - startTijdOpgave);
 
-    if (isGoed) {
+    if (isGoed && !isLaatsteStap()) {
+      // Tussenstap van een "via het tiental"-opgave: ga door naar de volgende stap.
+      stapIndex += 1;
+      brug.teken(stapIndex);
+      instructie.textContent = huidigeStap().vraag;
+      feedbackVlak.className = "feedback-vlak feedback-vlak--goed";
+      feedbackVlak.textContent = "✓ Goed! Op naar de volgende stap.";
+      speelGoedGeluid();
+      bouwInvoerVoorStap();
+    } else if (isGoed) {
       bezigMetFeedback = true;
-      boom.zetWaarde(huidigeOpgave.gegevenLinks ? "rechts" : "links", huidigeOpgave.antwoordGoed, true);
+      if (brug) brug.teken(huidigeOpgave.stappen.length);
+      else boom.zetWaarde(huidigeOpgave.gegevenLinks ? "rechts" : "links", huidigeOpgave.antwoordGoed, true);
       aantalGoedTotaal += 1;
       await recordAnswer({
         exerciseId: EXERCISE_ID,
@@ -170,22 +197,14 @@ export function startOefensessie(container, instellingen, opKlaar) {
       pogingNummer = 2;
       rewardTracker.registreerFout();
       feedbackVlak.className = "feedback-vlak feedback-vlak--fout";
-      feedbackVlak.textContent = `${geefFoutmelding()} Probeer het nog eens. Tip: ${huidigeOpgave.hint}`;
+      feedbackVlak.textContent = `${geefFoutmelding()} Probeer het nog eens. Tip: ${huidigeStap().hint}`;
       speelFoutGeluid();
-      if (opruimHuidigeInvoer) opruimHuidigeInvoer();
-      if (instellingen.moeilijkheid === "makkelijk") {
-        opruimHuidigeInvoer = bouwMeerkeuzeInvoer(
-          invoerVlak, verwerkAntwoord,
-          huidigeOpgave.antwoordGoed,
-          genereerFoutePlusMinAntwoorden(huidigeOpgave.antwoordGoed)
-        );
-      } else {
-        opruimHuidigeInvoer = bouwCijferInvoer(invoerVlak, verwerkAntwoord, () => bezigMetFeedback, 2);
-      }
+      bouwInvoerVoorStap();
     } else {
       // Tweede poging ook fout: toon het juiste antwoord, ga door naar de volgende opgave.
       bezigMetFeedback = true;
-      boom.zetWaarde(huidigeOpgave.gegevenLinks ? "rechts" : "links", huidigeOpgave.antwoordGoed, false);
+      if (brug) brug.teken(stapIndex, true);
+      else boom.zetWaarde(huidigeOpgave.gegevenLinks ? "rechts" : "links", huidigeOpgave.antwoordGoed, false);
       await recordAnswer({
         exerciseId: EXERCISE_ID,
         correct: false,
@@ -193,7 +212,9 @@ export function startOefensessie(container, instellingen, opKlaar) {
         meta: { bewerking: huidigeOpgave.meta.bewerking, pogingen: 2 },
       });
       feedbackVlak.className = "feedback-vlak feedback-vlak--fout";
-      feedbackVlak.textContent = `${geefFoutmelding()} Het juiste antwoord is ${huidigeOpgave.antwoordGoed}.`;
+      feedbackVlak.textContent = huidigeOpgave.type === "brug"
+        ? `${geefFoutmelding()} Zo moet het: ${huidigeOpgave.a} ${huidigeOpgave.bewerking === "plus" ? "+" : "−"} ${huidigeOpgave.b} = ${huidigeOpgave.uitkomst}.`
+        : `${geefFoutmelding()} Het juiste antwoord is ${huidigeOpgave.antwoordGoed}.`;
       speelFoutGeluid();
       raket.foutAntwoord();
       voortgangCirkels.zetStatus(opgaveIndex, "fout");
