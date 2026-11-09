@@ -159,6 +159,45 @@ python3 -m http.server 8000
 # open http://localhost:8000 in de browser
 ```
 
+## Installeren op Unraid
+
+De app draait als Docker-container (`ghcr.io/jayvenco/rekenportal`, poort 8420,
+data in `/app/backend/data`). Een GitHub Action bouwt de image bij elke push.
+Er zijn geen geheimen of omgevingsvariabelen nodig.
+
+**Installeren of bijwerken met het script** (als root op de Unraid-server):
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/jayvenco/rekenportal/staging/scripts/install-unraid.sh | bash
+```
+
+Het script maakt `/mnt/user/appdata/rekenportal/data` aan, bewaart bij een
+update eerst een backup van de database in `data/backups/`, pullt de image,
+start de container `rekenportal` met de Unraid-labels (icoon en WebUI-knop) en
+zet het template in `/boot/config/plugins/dockerMan/templates-user/`. Daarna
+verschijnt de container in de **Docker-tab** met icoon en WebUI-link en kun je
+**Edit**, **Check for Updates** en **Apply Update** gebruiken. Opnieuw draaien is
+veilig: de data blijft staan.
+
+Aanpassen kan met omgevingsvariabelen voor het script, bijvoorbeeld
+`PORT=8430 APPDATA=/mnt/user/appdata/rekenportal bash install-unraid.sh`.
+Andere opties: `IMAGE_TAG` (standaard `staging`), `BRANCH` en, voor een privé
+image, `GHCR_USER` en `GHCR_TOKEN` (token met `read:packages`).
+
+**Alleen het template (zonder script):** kopieer `unraid/rekenportal.xml` naar
+`/boot/config/plugins/dockerMan/templates-user/my-rekenportal.xml` en kies in de
+Docker-tab *Add Container* → template `rekenportal`. Past de poort of map niet,
+pas die dan aan in het formulier.
+
+**Updaten via de Docker-tab:** *Check for Updates* → *Apply Update*. De database
+blijft op het volume staan. Het oudere script `deploy-rekenportal.sh` blijft
+werken, maar het nieuwe script voegt het template en de labels toe.
+
+Let op: tot er een `main`-branch bestaat, gebruiken template en script de tag
+`staging` (CI zet `latest` alleen voor `main`). Maak je later een `main`, zet dan
+`<Repository>` en de URLs in `unraid/rekenportal.xml` en de standaardwaarden
+`IMAGE_TAG` en `BRANCH` in het script om.
+
 ## Toegankelijkheid
 
 - Alle knoppen zijn minimaal 44×44px (touch-vriendelijk).
