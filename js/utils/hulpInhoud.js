@@ -387,12 +387,35 @@ const INHOUD = {
       "Kijk eerst naar de <b>korte wijzer</b>: bij welk getal staat hij?",
       "Kijk dan naar de <b>lange wijzer</b>: wijst hij naar de 12, dan is het een <b>heel uur</b>. Wijst hij naar de 6, dan is het <b>half</b>.",
       "Lezen: kies de juiste tijd. Tekenen: zet de wijzers op de juiste plek.",
+      "<b>Uren eerder of later:</b> je ziet een tijd en typt zelf hoe laat het 1, 2 of 3 uur eerder of later is. Tel de uren op de klok terug (eerder) of door (later).",
     ],
     voorbeelden: [
       { kop: "Hele uur: 3 uur", tekst: "De lange wijzer staat op de 12 en de korte wijzer op de 3: het is <b>3 uur</b>.", visual: (() => { const k = bouwKlok({ uur: 3, minuten: 0 }); k.style.width = "180px"; return k; })() },
       { kop: "Half uur: half vier", tekst: "De lange wijzer staat op de 6. De korte wijzer staat tussen de 3 en de 4: het is <b>half vier</b> (3:30).", visual: (() => { const k = bouwKlok({ uur: 3, minuten: 30 }); k.style.width = "180px"; return k; })() },
+      {
+        kop: "Eerder: het is 2 uur, wat is 2 uur eerder?",
+        tekst: "Tel 2 uur terug vanaf 2: dat is 1 uur en dan 12 uur. Het antwoord is <b>12</b>. Na de 1 komt weer de 12!",
+        visual: rij(
+          (() => { const k = bouwKlok({ uur: 2, minuten: 0 }); k.style.width = "140px"; return k; })(),
+          uitHtml('<span style="font-size:1.8rem;font-weight:800;color:#e0533d">−2 uur →</span>'),
+          (() => { const k = bouwKlok({ uur: 12, minuten: 0 }); k.style.width = "140px"; return k; })()
+        ),
+        na: "2 uur − 2 uur = <b>12 uur</b>.",
+      },
+      {
+        kop: "Later: het is 11 uur, wat is 3 uur later?",
+        tekst: "Tel 3 uur door vanaf 11: 12, 1, 2. Het antwoord is <b>2</b>. Na de 12 komt weer de 1!",
+        visual: rij(
+          (() => { const k = bouwKlok({ uur: 11, minuten: 0 }); k.style.width = "140px"; return k; })(),
+          uitHtml('<span style="font-size:1.8rem;font-weight:800;color:#2f6fb5">+3 uur →</span>'),
+          (() => { const k = bouwKlok({ uur: 2, minuten: 0 }); k.style.width = "140px"; return k; })()
+        ),
+        na: "11 uur + 3 uur = <b>2 uur</b>.",
+      },
     ],
     tips: [
+      "Bij <b>eerder</b> ga je met de wijzer terug, bij <b>later</b> ga je vooruit.",
+      "Op de klok na de 12 komt de 1 en vóór de 1 komt de 12. Tel dus rond de klok, niet door naar 13 of onder 1.",
       "Bij <b>half vier</b> is het eigenlijk 3:30: een half uur vóór vier uur.",
       "De lange wijzer doet er 60 minuten over om rond te gaan: één rondje is een uur.",
     ],

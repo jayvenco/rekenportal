@@ -42,12 +42,56 @@ function genereerHalfUur() {
   };
 }
 
+export const URENVERSCHIL_OPTIES = [1, 2, 3];
+export const RICHTING_OPTIES = ["eerder", "later", "beide"];
+
+/** Uur op de klok (1 t/m 12) na `verschil` uur eerder (negatief) of later (positief). */
+export function verschuifUur(uur, verschil) {
+  return ((((uur - 1 + verschil) % 12) + 12) % 12) + 1;
+}
+
+/**
+ * "Uren eerder of later": een hele tijd staat op de klok en het kind typt zelf
+ * welk uur het 1, 2 of 3 uur eerder of later is (bijv. 2 uur, 2 uur eerder = 12).
+ * @param {{urenVerschil?: number[], richting?: string}} instellingen
+ */
+function genereerUrenOpgave(instellingen) {
+  const verschillen = (instellingen.urenVerschil || URENVERSCHIL_OPTIES).filter((v) => URENVERSCHIL_OPTIES.includes(v));
+  const kies = verschillen.length ? verschillen : URENVERSCHIL_OPTIES;
+  const verschil = kiesWillekeurig(kies);
+  const richting = instellingen.richting === "eerder" || instellingen.richting === "later"
+    ? instellingen.richting
+    : kiesWillekeurig(["eerder", "later"]);
+  const uur = randomGeheelGetal(1, 12);
+  const antwoord = verschuifUur(uur, richting === "eerder" ? -verschil : verschil);
+  const uurWoord = verschil === 1 ? "1 uur" : `${verschil} uur`;
+  const vraag = richting === "eerder"
+    ? `Het is ${uur} uur. Hoe laat was het ${uurWoord} eerder?`
+    : `Het is ${uur} uur. Hoe laat is het ${uurWoord} later?`;
+  const hint = richting === "eerder"
+    ? `Tel ${uurWoord} terug vanaf ${uur} op de klok. Let op: na de 1 komt weer de 12.`
+    : `Tel ${uurWoord} door vanaf ${uur} op de klok. Let op: na de 12 komt weer de 1.`;
+  return {
+    type: "klokkijken_uren",
+    uur,
+    minuten: 0,
+    verschil,
+    richting,
+    vraag,
+    hint,
+    antwoord,
+    meta: { subtype: `uren_${richting}`, uur, minuten: 0, verschil },
+  };
+}
+
 /**
  * Genereert één opgave op basis van het gekozen type.
- * @param {Object} instellingen - { opgaveType: "heel" | "half" | "mix", aantalOpgaven: number }
+ * @param {Object} instellingen - { modus?: "lezen"|"tekenen"|"uren", opgaveType: "heel" | "half" | "mix", aantalOpgaven: number,
+ *   urenVerschil?: number[], richting?: "eerder"|"later"|"beide" }
  * @returns {Object} opgave-object.
  */
 export function genereerOpgave(instellingen) {
+  if (instellingen.modus === "uren") return genereerUrenOpgave(instellingen);
   const mode = instellingen.opgaveType;
   if (mode === "heel") return genereerHeelUur();
   if (mode === "half") return genereerHalfUur();
@@ -77,5 +121,6 @@ export function genereerFouteAntwoorden(juistLabel, aantal = 3) {
 
 /** Maakt een unieke sleutel van een opgave, om herhaling binnen een sessie te voorkomen. */
 export function opgaveNaarSleutel(opgave) {
+  if (opgave.type === "klokkijken_uren") return `uren_${opgave.uur}_${opgave.richting}_${opgave.verschil}`;
   return `${opgave.type}_${opgave.uur}_${opgave.minuten}`;
 }

@@ -12,7 +12,8 @@ JavaScript (ES modules). Werkt volledig offline door `index.html` te openen.
 | ![Splitsen instellen](docs/screenshots/03-splitsen-instellen.png)<br>Splitsen: bereik 10 t/m 100 kiezen | ![Splitsen uitleg](docs/screenshots/04-splitsen-uitleg.png)<br>Uitlegpagina met plaatjes |
 | ![Splitsen oefenen](docs/screenshots/06-splitsen-oefenen.png)<br>Splitsboom met Math City-voortgang | ![Hulp](docs/screenshots/08-hulp-venster.png)<br>Hulp-knop: uitleg, voorbeeld en tips |
 | ![Sommen via het tiental](docs/screenshots/14-splitsen-via-tiental.png)<br>Sommen via het tiental: stap 3 van 3 | ![Oplossing](docs/screenshots/15-splitsen-via-tiental-oplossing.png)<br>Na twee foute pogingen: de oplossing in rood |
-| ![Uitleg via het tiental](docs/screenshots/16-uitleg-via-tiental.png)<br>Uitleg: plus- en minsommen via het tiental | |
+| ![Uitleg via het tiental](docs/screenshots/16-uitleg-via-tiental.png)<br>Uitleg: plus- en minsommen via het tiental | ![Klok: uren eerder of later](docs/screenshots/17-klok-uren-vraag.png)<br>Klokkijken: uren eerder of later (typ het uur) |
+| ![Klok: oplossing](docs/screenshots/18-klok-uren-oplossing.png)<br>Na twee foute pogingen: de klok met het antwoord | |
 | ![Rekenen met geld](docs/screenshots/09-geld-oefenen.png)<br>Rekenen met geld | ![Grafieken](docs/screenshots/10-grafieken-oefenen.png)<br>Grafieken lezen (groep 8) |
 | ![Math City](docs/screenshots/11-math-city.png)<br>Math City na een oefening | ![Mobiel](docs/screenshots/13-mobiel-geld.png)<br>Mobiele weergave |
 
@@ -244,6 +245,14 @@ Let op: tot er een `main`-branch bestaat, gebruiken template en script de tag
   er over, 3) de uitkomst. De twee pogingen gelden voor de hele opgave. Een
   opgave heeft altijd een lijst `stappen` (`opgaven.js`); de weergave staat in
   `brug.js`. Statistiekveld `meta.bewerking`: `splitsen`, `brug-plus`, `brug-min`.
+- **Klokkijken** (groep 4) — drie soorten: *Lezen* (kies de tijd bij een klok, hele en
+  halve uren), *Tekenen* (zet zelf de wijzers) en *Uren eerder of later*. Bij dat
+  laatste staat een hele tijd op de klok, bijvoorbeeld "Het is 2 uur. Hoe laat was
+  het 2 uur eerder?", en typt het kind zelf het uur (12). Instelbaar: 1, 2 en/of 3
+  uur, en eerder, later of allebei. Rondom de 12 telt de klok door (11 uur + 3 uur =
+  2 uur). Na afloop verschijnt de klok met het goede antwoord. Code:
+  `js/exercises/klokkijken/opgaven.js` (`verschuifUur`, statistiek
+  `uren_eerder`/`uren_later`).
 - **Rekenen met geld** (groep 4) — biljetten van 5/10/20/50/100 en munten van
   50 cent/1/2 euro. Twee soorten: *tel het geld* (typ het bedrag, komma
   toegestaan) en *betaal het bedrag* (kies of sleep geld uit de beschikbare

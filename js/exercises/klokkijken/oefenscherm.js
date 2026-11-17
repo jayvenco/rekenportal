@@ -14,6 +14,7 @@ import { maakVoortgangCirkels } from "../../utils/voortgangCirkels.js";
 import { maakRewardTracker, toonBadgeUnlocks, toonRewardResultaat, verversCoinCounter } from "../../utils/rewards.js";
 import { toonPerfecteScoreAnimatie } from "../../utils/eindeAnimatie.js";
 import { bouwKlok } from "../../utils/klokSvg.js";
+import { bouwCijferInvoer } from "../../utils/invoerModus.js";
 
 const EXERCISE_ID = "klokkijken";
 
@@ -31,6 +32,9 @@ export function startOefensessie(container, instellingen, opKlaar) {
   let huidigeOpgave = null;
   let bezigMetFeedback = false;
   let pogingNummer = 1;
+  // "Uren eerder of later": het kind typt het uur zelf in (geen meerkeuze).
+  const urenModus = instellingen.modus === "uren";
+  let opruimInvoer = null;
 
   container.innerHTML = "";
 
@@ -82,6 +86,35 @@ export function startOefensessie(container, instellingen, opKlaar) {
     voortgangTekst.textContent = `Opgave ${Math.min(opgaveIndex + 1, instellingen.aantalOpgaven)} van ${instellingen.aantalOpgaven} — ${aantalGoedTotaal} goed`;
   }
 
+  /** Bouwt de invoer voor de huidige opgave: typen (uren-modus) of meerkeuze. */
+  function bouwInvoer() {
+    if (opruimInvoer) {
+      opruimInvoer();
+      opruimInvoer = null;
+    }
+    if (urenModus) {
+      opruimInvoer = bouwCijferInvoer(invoerVlak, verwerkAntwoord, () => bezigMetFeedback, 2);
+    } else {
+      bouwMeerkeuze();
+    }
+  }
+
+  /** Toont na afloop de klok met het goede antwoord naast de klok uit de vraag. */
+  function toonAntwoordKlok() {
+    if (!urenModus) return;
+    const wrapper = document.createElement("div");
+    wrapper.className = "klok-antwoord";
+    wrapper.style.cssText = "display:flex;flex-direction:column;align-items:center;margin-left:16px";
+    const klok = bouwKlok({ uur: huidigeOpgave.antwoord, minuten: 0 });
+    const tekst = document.createElement("strong");
+    tekst.textContent = `${huidigeOpgave.antwoord} uur`;
+    wrapper.append(klok, tekst);
+    klokHouder.style.display = "flex";
+    klokHouder.style.justifyContent = "center";
+    klokHouder.style.alignItems = "center";
+    klokHouder.appendChild(wrapper);
+  }
+
   /** Bouwt vier meerkeuze-knoppen: het goede antwoord plus drie foute, door elkaar. */
   function bouwMeerkeuze() {
     invoerVlak.innerHTML = "";
@@ -131,11 +164,15 @@ export function startOefensessie(container, instellingen, opKlaar) {
     startTijdOpgave = performance.now();
     bijwerkenVoortgang();
 
-    vraagVlak.innerHTML = `<span class="getal-groot">Hoe laat is het?</span>`;
+    vraagVlak.innerHTML = "";
+    const vraagTekst = document.createElement("span");
+    vraagTekst.className = "getal-groot";
+    vraagTekst.textContent = urenModus ? huidigeOpgave.vraag : "Hoe laat is het?";
+    vraagVlak.appendChild(vraagTekst);
     klokHouder.innerHTML = "";
     klokHouder.appendChild(bouwKlok({ uur: huidigeOpgave.uur, minuten: huidigeOpgave.minuten }));
 
-    bouwMeerkeuze();
+    bouwInvoer();
   }
 
   async function verwerkAntwoord(antwoordVanKind) {
@@ -154,6 +191,7 @@ export function startOefensessie(container, instellingen, opKlaar) {
           meta: { ...huidigeOpgave.meta, pogingen: pogingNummer },
         });
         markeerAntwoorden(antwoordVanKind);
+        toonAntwoordKlok();
         if (pogingNummer === 1) {
           feedbackVlak.className = "feedback-vlak feedback-vlak--goed";
           feedbackVlak.textContent = `✓ ${geefCompliment(profielNaam)}`;
@@ -175,9 +213,11 @@ export function startOefensessie(container, instellingen, opKlaar) {
         pogingNummer = 2;
         rewardTracker.registreerFout();
         feedbackVlak.className = "feedback-vlak feedback-vlak--fout";
-        feedbackVlak.textContent = `${geefFoutmelding()} Probeer het nog eens.`;
+        feedbackVlak.textContent = urenModus
+          ? `${geefFoutmelding()} Probeer het nog eens. Tip: ${huidigeOpgave.hint}`
+          : `${geefFoutmelding()} Probeer het nog eens.`;
         speelFoutGeluid();
-        bouwMeerkeuze();
+        bouwInvoer();
       } else {
         bezigMetFeedback = true;
         await recordAnswer({
@@ -187,8 +227,11 @@ export function startOefensessie(container, instellingen, opKlaar) {
           meta: { ...huidigeOpgave.meta, pogingen: 2 },
         });
         markeerAntwoorden(antwoordVanKind);
+        toonAntwoordKlok();
         feedbackVlak.className = "feedback-vlak feedback-vlak--fout";
-        feedbackVlak.textContent = `${geefFoutmelding()} Het juiste antwoord is ${huidigeOpgave.antwoord}.`;
+        feedbackVlak.textContent = urenModus
+          ? `${geefFoutmelding()} Het juiste antwoord is ${huidigeOpgave.antwoord} uur.`
+          : `${geefFoutmelding()} Het juiste antwoord is ${huidigeOpgave.antwoord}.`;
         speelFoutGeluid();
         raket.foutAntwoord();
         voortgangCirkels.zetStatus(opgaveIndex, "fout");
@@ -211,6 +254,10 @@ export function startOefensessie(container, instellingen, opKlaar) {
   }
 
   function toonEindscherm() {
+    if (opruimInvoer) {
+      opruimInvoer();
+      opruimInvoer = null;
+    }
     container.innerHTML = "";
 
     const kaart = document.createElement("div");

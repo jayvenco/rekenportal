@@ -5,10 +5,18 @@
 // -----------------------------------------------------------------------------
 
 import { getInstellingen, saveInstellingen } from "../../storage.js";
+import { URENVERSCHIL_OPTIES } from "./opgaven.js";
 
 const MODI = [
   { id: "lezen", label: "👀 Lezen", omschrijving: "Kijk naar de klok en kies hoe laat het is." },
   { id: "tekenen", label: "✏️ Tekenen", omschrijving: "Zet zelf de wijzers op de juiste plek." },
+  { id: "uren", label: "⏰ Uren eerder of later", omschrijving: "Reken uit hoe laat het 1, 2 of 3 uur eerder of later is." },
+];
+
+const RICHTINGEN = [
+  { id: "eerder", label: "⏪ Eerder" },
+  { id: "later", label: "⏩ Later" },
+  { id: "beide", label: "🔀 Allebei" },
 ];
 
 const TYPEN = [
@@ -21,6 +29,8 @@ const STANDAARD_INSTELLINGEN = {
   modus: "lezen",
   opgaveType: "mix",
   aantalOpgaven: 10,
+  urenVerschil: [1, 2, 3],
+  richting: "beide",
 };
 
 const AANTAL_OPTIES = [5, 10, 20];
@@ -35,6 +45,11 @@ export async function bouwInstelscherm(container, opStarten) {
   const instellingen = { ...STANDAARD_INSTELLINGEN, ...opgeslagen };
   if (!MODI.some((m) => m.id === instellingen.modus)) instellingen.modus = STANDAARD_INSTELLINGEN.modus;
   if (!TYPEN.some((t) => t.id === instellingen.opgaveType)) instellingen.opgaveType = STANDAARD_INSTELLINGEN.opgaveType;
+  if (!RICHTINGEN.some((r) => r.id === instellingen.richting)) instellingen.richting = STANDAARD_INSTELLINGEN.richting;
+  if (!Array.isArray(instellingen.urenVerschil) || !instellingen.urenVerschil.some((v) => URENVERSCHIL_OPTIES.includes(v))) {
+    instellingen.urenVerschil = [...STANDAARD_INSTELLINGEN.urenVerschil];
+  }
+  instellingen.urenVerschil = instellingen.urenVerschil.filter((v) => URENVERSCHIL_OPTIES.includes(v));
   if (!AANTAL_OPTIES.includes(instellingen.aantalOpgaven)) instellingen.aantalOpgaven = STANDAARD_INSTELLINGEN.aantalOpgaven;
 
   container.innerHTML = "";
@@ -47,7 +62,7 @@ export async function bouwInstelscherm(container, opStarten) {
   kaart.appendChild(titel);
 
   const uitleg = document.createElement("p");
-  uitleg.textContent = "Lees de klok of teken zelf de wijzers voor hele en halve uren.";
+  uitleg.textContent = "Lees de klok, teken zelf de wijzers of reken uit hoe laat het eerder of later is.";
   kaart.appendChild(uitleg);
 
   // --- Moduskeuze ---
@@ -76,6 +91,7 @@ export async function bouwInstelscherm(container, opStarten) {
       for (const item of modusKnoppen) {
         item.knop.setAttribute("aria-pressed", String(item.id === m.id));
       }
+      werkZichtbaarheidBij();
     });
     knop.setAttribute("aria-pressed", String(instellingen.modus === m.id));
     modusKnoppen.push({ knop, id: m.id });
@@ -117,6 +133,77 @@ export async function bouwInstelscherm(container, opStarten) {
   }
   typeGroep.appendChild(typeRij);
   kaart.appendChild(typeGroep);
+
+  // --- Alleen bij "Uren eerder of later": hoeveel uur en welke richting ---
+  const urenGroep = document.createElement("div");
+  urenGroep.className = "instel-groep";
+  const urenLabel = document.createElement("span");
+  urenLabel.className = "instel-groep__label";
+  urenLabel.textContent = "Hoeveel uur eerder of later? (kies er één of meer)";
+  urenGroep.appendChild(urenLabel);
+  const urenRij = document.createElement("div");
+  urenRij.className = "keuze-rij";
+  urenRij.setAttribute("role", "group");
+  urenRij.setAttribute("aria-label", "Aantal uren kiezen");
+  const urenKnoppen = [];
+  for (const v of URENVERSCHIL_OPTIES) {
+    const knop = document.createElement("button");
+    knop.type = "button";
+    knop.className = "keuze-knop";
+    knop.textContent = `${v} uur`;
+    knop.setAttribute("aria-pressed", String(instellingen.urenVerschil.includes(v)));
+    knop.addEventListener("click", () => {
+      const aan = instellingen.urenVerschil.includes(v);
+      // Er moet er altijd minstens één aan blijven staan.
+      if (aan && instellingen.urenVerschil.length === 1) return;
+      instellingen.urenVerschil = aan
+        ? instellingen.urenVerschil.filter((x) => x !== v)
+        : [...instellingen.urenVerschil, v].sort((a, b) => a - b);
+      knop.setAttribute("aria-pressed", String(!aan));
+    });
+    urenKnoppen.push({ knop, v });
+    urenRij.appendChild(knop);
+  }
+  urenGroep.appendChild(urenRij);
+
+  const richtingLabel = document.createElement("span");
+  richtingLabel.className = "instel-groep__label";
+  richtingLabel.style.display = "block";
+  richtingLabel.style.marginTop = "12px";
+  richtingLabel.textContent = "Eerder of later?";
+  urenGroep.appendChild(richtingLabel);
+  const richtingRij = document.createElement("div");
+  richtingRij.className = "keuze-rij";
+  richtingRij.setAttribute("role", "group");
+  richtingRij.setAttribute("aria-label", "Richting kiezen");
+  const richtingKnoppen = [];
+  for (const r of RICHTINGEN) {
+    const knop = document.createElement("button");
+    knop.type = "button";
+    knop.className = "keuze-knop";
+    knop.textContent = r.label;
+    knop.setAttribute("aria-pressed", String(instellingen.richting === r.id));
+    knop.addEventListener("click", () => {
+      instellingen.richting = r.id;
+      for (const item of richtingKnoppen) item.knop.setAttribute("aria-pressed", String(item.id === r.id));
+    });
+    richtingKnoppen.push({ knop, id: r.id });
+    richtingRij.appendChild(knop);
+  }
+  urenGroep.appendChild(richtingRij);
+  const urenToelichting = document.createElement("p");
+  urenToelichting.style.cssText = "margin:8px 0 0;font-size:0.95rem;opacity:.85";
+  urenToelichting.textContent = "Je ziet een hele tijd op de klok en typt zelf het antwoord, bijvoorbeeld: het is 2 uur, hoe laat was het 2 uur eerder? Antwoord: 12.";
+  urenGroep.appendChild(urenToelichting);
+  kaart.appendChild(urenGroep);
+
+  /** Toont de uren-opties alleen in de uren-modus en verbergt dan de keuze voor hele/halve uren. */
+  function werkZichtbaarheidBij() {
+    const uren = instellingen.modus === "uren";
+    urenGroep.style.display = uren ? "" : "none";
+    typeGroep.style.display = uren ? "none" : "";
+  }
+  werkZichtbaarheidBij();
 
   // --- Aantal opgaven ---
   const aantalGroep = document.createElement("div");
