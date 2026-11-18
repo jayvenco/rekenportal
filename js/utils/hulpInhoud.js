@@ -82,6 +82,30 @@ function sprongLijn(start, stappen) {
   return uitSvg(s + "</svg>");
 }
 
+
+/** Een stapeltje puzzelblokken voor in de Hulp (kleur, tekst). */
+function blokStapel(blokken, titel = "") {
+  const d = document.createElement("div");
+  d.style.cssText = "display:inline-flex;flex-direction:column;gap:3px;min-width:150px";
+  if (titel) {
+    const h = document.createElement("div");
+    h.style.cssText = "font-size:.8rem;font-weight:800;color:#5b6676";
+    h.textContent = titel;
+    d.appendChild(h);
+  }
+  for (const b of blokken) {
+    const e = document.createElement("div");
+    const inspring = b.in ? 26 : 0;
+    e.style.cssText = `background:${b.kleur || "#1fb5c4"};color:#fff;font-weight:800;border-radius:7px;padding:8px 12px;margin-left:${inspring}px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.18);display:flex;gap:10px;align-items:center`;
+    e.innerHTML = b.html;
+    d.appendChild(e);
+  }
+  return d;
+}
+const TEAL = "#1fb5c4";
+const PAARS = "#9b59d0";
+const GEEL = "#e8b923";
+
 /** Horizontale staafjes om twee waarden te vergelijken. */
 function balkjes(items, max) {
   let s = `<svg viewBox="0 0 420 ${items.length * 40 + 6}" width="420" style="max-width:100%">`;
@@ -350,6 +374,67 @@ const INHOUD = {
       "Bij een som via het tiental klopt het totaal altijd: de twee delen samen zijn het tweede getal (2 + 5 = 7).",
       "Controleer: tel de twee delen op. Komt het hele getal eruit?",
       "Meer uitleg met plaatjes staat in het instelscherm bij <b>📖 Uitleg</b>.",
+    ],
+  }),
+
+  codeblokken: () => ({
+    titel: "Code-blokken",
+    intro: "Je programmeert met blokjes. Het vogeltje voert jouw blokjes één voor één uit, van boven naar beneden.",
+    stappen: [
+      "Sleep blokjes uit de toolbox (links) naar het werkvlak. Ze klikken onder elkaar vast. Tikken op een blokje kan ook.",
+      "Druk op <b>▶ Start</b>: het vogeltje voert je programma uit. Met <b>⏭ Stap</b> gaat het één blokje tegelijk.",
+      "Gaat het mis? Het gele blokje laat zien waar het vogeltje was. Pas je blokjes aan en probeer opnieuw.",
+      "Een blokje weghalen: sleep het naar de 🗑 of tik op het ✕.",
+      "Je krijgt tot 3 sterren: <b>1★</b> vlag bereikt, <b>2★</b> alle sterretjes gepakt, <b>3★</b> met zo min mogelijk blokjes.",
+    ],
+    voorbeelden: [
+      {
+        kop: "Pijltjes: O, O, Z, Z",
+        tekst: "O is Oost (naar rechts), Z is Zuid (omlaag). Dit programma gaat twee stappen naar rechts en dan twee naar beneden.",
+        visual: blokStapel([
+          { html: '<span>O</span><span style="margin-left:auto;font-size:1.6rem">→</span>' },
+          { html: '<span>O</span><span style="margin-left:auto;font-size:1.6rem">→</span>' },
+          { html: '<span>Z</span><span style="margin-left:auto;font-size:1.6rem">↓</span>' },
+          { html: '<span>Z</span><span style="margin-left:auto;font-size:1.6rem">↓</span>' },
+        ], "Als je op Start drukt:"),
+      },
+      {
+        kop: "Herhalen: vooruit, 5 keer",
+        tekst: "Met een <b>herhaal-blokje</b> hoef je niet vijf keer hetzelfde blokje neer te zetten. Tik op het getal om het aantal te veranderen.",
+        visual: blokStapel([
+          { kleur: PAARS, html: "🔁 herhaal <b style='background:#fff;color:#9b59d0;border-radius:6px;padding:0 8px'>5×</b>" },
+          { in: true, html: "↑ vooruit" },
+        ], "Programma:"),
+        na: "Het blokje in het hoekje wordt 5 keer uitgevoerd.",
+      },
+      {
+        kop: "Functie: een eigen blokje maken",
+        tekst: "Zet je vaak dezelfde blokjes achter elkaar? Stop ze in <b>functie A</b> en gebruik het gele blokje <b>functie A</b> in je programma.",
+        visual: blokStapel([
+          { kleur: GEEL, html: "🅰️ functie A" },
+          { kleur: GEEL, html: "🅰️ functie A" },
+          { html: "↑ vooruit" },
+        ], "Programma:"),
+        na: "Functie A bevat bijvoorbeeld: vooruit, vooruit, draai rechts.",
+      },
+      {
+        kop: "Platform: lopen, springen, schieten, bouwen",
+        tekst: "Op het platform heeft het vogeltje vier krachten:",
+        visual: tabel(["Blokje", "Wat doet het?"], [
+          ["🚶 loop", "Eén stap vooruit."],
+          ["🦘 spring", "Twee stappen vooruit, over een gat of een muurtje heen."],
+          ["💥 schiet", "Schiet de vijand weg die vlak voor je staat."],
+          ["🧱 bouw", "Legt een brug over het gat vlak voor je."],
+        ]),
+      },
+    ],
+    tips: [
+      "Loop het programma eerst zelf in je hoofd na: waar komt het vogeltje na elk blokje?",
+      "Gebruik ⏭ <b>Stap</b> om te zien welk blokje het probleem is.",
+      "Bij een <b>draai</b>-blokje gaat het vogeltje niet vooruit, het kijkt alleen een andere kant op.",
+      "Zie je een patroon dat zich herhaalt? Dan past er een <b>herhaal-blokje</b> of een <b>functie</b>.",
+      "Een gat is te breed om overheen te springen? Bouw er dan eerst een brug in.",
+      "Een vijand blokkeert je? Springen helpt niet: schiet hem eerst weg.",
     ],
   }),
 

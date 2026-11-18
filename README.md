@@ -13,7 +13,9 @@ JavaScript (ES modules). Werkt volledig offline door `index.html` te openen.
 | ![Splitsen oefenen](docs/screenshots/06-splitsen-oefenen.png)<br>Splitsboom met Math City-voortgang | ![Hulp](docs/screenshots/08-hulp-venster.png)<br>Hulp-knop: uitleg, voorbeeld en tips |
 | ![Sommen via het tiental](docs/screenshots/14-splitsen-via-tiental.png)<br>Sommen via het tiental: stap 3 van 3 | ![Oplossing](docs/screenshots/15-splitsen-via-tiental-oplossing.png)<br>Na twee foute pogingen: de oplossing in rood |
 | ![Uitleg via het tiental](docs/screenshots/16-uitleg-via-tiental.png)<br>Uitleg: plus- en minsommen via het tiental | ![Klok: uren eerder of later](docs/screenshots/17-klok-uren-vraag.png)<br>Klokkijken: uren eerder of later (typ het uur) |
-| ![Klok: oplossing](docs/screenshots/18-klok-uren-oplossing.png)<br>Na twee foute pogingen: de klok met het antwoord | |
+| ![Klok: oplossing](docs/screenshots/18-klok-uren-oplossing.png)<br>Na twee foute pogingen: de klok met het antwoord | ![Code-blokken levels](docs/screenshots/17-code-levelkeuze.png)<br>Code-blokken: drie sets met sterren per level |
+| ![Repareer de code](docs/screenshots/18-code-repareer.png)<br>Pijltjes: repareer de code | ![Functies](docs/screenshots/19-code-bord-functie.png)<br>Slim bord: herhalen en functies |
+| ![Platform](docs/screenshots/20-code-platform.png)<br>Platform: lopen, springen, schieten, bouwen | |
 | ![Rekenen met geld](docs/screenshots/09-geld-oefenen.png)<br>Rekenen met geld | ![Grafieken](docs/screenshots/10-grafieken-oefenen.png)<br>Grafieken lezen (groep 8) |
 | ![Math City](docs/screenshots/11-math-city.png)<br>Math City na een oefening | ![Mobiel](docs/screenshots/13-mobiel-geld.png)<br>Mobiele weergave |
 
@@ -253,6 +255,22 @@ Let op: tot er een `main`-branch bestaat, gebruiken template en script de tag
   2 uur). Na afloop verschijnt de klok met het goede antwoord. Code:
   `js/exercises/klokkijken/opgaven.js` (`verschuifUur`, statistiek
   `uren_eerder`/`uren_later`).
+- **Code-blokken** (groep 4, 7 en 8) — programmeren met puzzelblokken, in drie sets
+  van elk 8 levels. Je sleept blokken uit de toolbox naar het werkvlak, waar ze onder
+  elkaar vastklikken (slepen met muis of vinger, tikken kan ook; prullenbak of ✕ om
+  weg te halen). Knoppen: **Start**, **Stap** (één blok tegelijk, het uitgevoerde blok
+  licht geel op), **Opnieuw**, **Wis alles**, snelheid, en **Toon code** (het programma
+  als tekst). Sets: *Pijltjes* (richtingsblokken N/Z/O/W, ook "repareer de code"-levels),
+  *Slim bord* (vooruit, draaien, herhaal-blokken en functies A/B met een blokkenmaximum)
+  en *Platform* (lopen, springen, schieten en bouwen: gaten, muurtjes, vijanden en
+  sterren). Per level 1–3 sterren: vlag bereikt, alle sterretjes gepakt en niet meer
+  blokken dan de voorbeeldoplossing. Sterren worden per profiel bewaard
+  (instellingen-opslag); munten en badges komen alleen bij een nieuw of beter resultaat.
+  Code: `js/exercises/codeblokken/` — `engine.js` (programma → acties → simulatie, zonder
+  DOM), `levels.js` (levels met voorbeeldoplossing; doel en sterretjes van een bord
+  worden daaruit afgeleid), `wereld.js` (SVG + animaties), `editor.js` (blokken en slepen).
+  Test: `node js/exercises/codeblokken/test/test.mjs` (elke voorbeeldoplossing moet het
+  level winnen binnen het blokkenmaximum).
 - **Rekenen met geld** (groep 4) — biljetten van 5/10/20/50/100 en munten van
   50 cent/1/2 euro. Twee soorten: *tel het geld* (typ het bedrag, komma
   toegestaan) en *betaal het bedrag* (kies of sleep geld uit de beschikbare

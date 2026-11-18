@@ -33,6 +33,7 @@ import { grafiekenOefening } from "./exercises/grafieken/index.js";
 import { splitsenOefening } from "./exercises/splitsen/index.js";
 import { geldOefening } from "./exercises/geld/index.js";
 import { meerMinderOefening } from "./exercises/meerminder/index.js";
+import { codeblokkenOefening, mount as mountCodeblokken } from "./exercises/codeblokken/index.js";
 
 /**
  * Elke oefening in deze lijst heeft de vorm:
@@ -126,6 +127,27 @@ export const EXERCISES = [
     ...robotOefening,
     groep: 8,
     instelbareOpties: "Code modus, 12 levels",
+  },
+  {
+    ...codeblokkenOefening,
+    groep: 4,
+    omschrijving: "Programmeer het vogeltje met blokjes: sleep pijltjes naar het werkvlak.",
+    instelbareOpties: "Set Pijltjes (8 levels), Slim bord en Platform",
+    mount: (container, settings) => mountCodeblokken(container, settings, "pijltjes"),
+  },
+  {
+    ...codeblokkenOefening,
+    groep: 7,
+    omschrijving: "Programmeer met herhaal-blokken en functies op een bord.",
+    instelbareOpties: "Set Slim bord (8 levels), Pijltjes en Platform",
+    mount: (container, settings) => mountCodeblokken(container, settings, "bord"),
+  },
+  {
+    ...codeblokkenOefening,
+    groep: 8,
+    omschrijving: "Programmeer een platformspel: lopen, springen, schieten en bouwen.",
+    instelbareOpties: "Set Platform (8 levels), Pijltjes en Slim bord",
+    mount: (container, settings) => mountCodeblokken(container, settings, "platform"),
   },
   {
     ...statistiekOefening,
