@@ -180,7 +180,7 @@ export async function toonHomepage(container) {
       const tegel = document.createElement(oefening.mount ? "button" : "div");
       tegel.className = "tegel";
       tegel.type = "button";
-      tegel.setAttribute("aria-label", `Start de oefening ${oefening.titel}`);
+      tegel.setAttribute("aria-label", oefening.leermiddel ? `Open ${oefening.titel}` : `Start de oefening ${oefening.titel}`);
       tegel.addEventListener("click", () => {
         window.location.hash = `#/oefening/${oefening.id}${oefening.groep ? `?groep=${oefening.groep}` : ""}`;
       });
@@ -203,7 +203,7 @@ export async function toonHomepage(container) {
 
       const voortgangEl = document.createElement("span");
       voortgangEl.className = "tegel__voortgang";
-      voortgangEl.textContent = "nog niet geoefend vandaag";
+      voortgangEl.textContent = oefening.leermiddel ? "leermiddel · geen opgaven" : "nog niet geoefend vandaag";
       tegel.appendChild(voortgangEl);
 
       grid.appendChild(tegel);

@@ -474,6 +474,30 @@ const INHOUD = {
     ],
   }),
 
+  "klok-lezen": () => ({
+    titel: "Klok lezen",
+    intro: "Hier kun je oefenen met de klok zonder opgaven. Je ziet hoe uren, minuten, halve uren en kwartieren werken.",
+    stappen: [
+      "Sleep de <b>korte wijzer</b> (rood, uren) of de <b>lange wijzer</b> (blauw, minuten) naar een andere plek. Of gebruik de pijltjestoetsen.",
+      "Kijk onder de klok hoe laat het is: in woorden (kwart over 3), digitaal (15:15) en wat elke wijzer aanwijst.",
+      "Druk op <b>▶ Een uur</b>, <b>▶ Een half uur</b> of <b>▶ De kwartieren</b> voor een korte animatie.",
+      "Met <b>+1 tot +10</b> ga je 1 tot 10 uur vooruit, met <b>−1 tot −10</b> 1 tot 10 uur terug.",
+      "Op het tabblad <b>Digitale klok</b> verander je de uren en minuten met de pijltjes ▲ ▼. Vasthouden werkt ook.",
+    ],
+    voorbeelden: [
+      {
+        kop: "De kleuren op de klok",
+        tekst: "<b style='color:#e0533d'>Rood (12)</b> is het hele uur: 0 minuten. <b style='color:#2e9e6b'>Groen (3)</b> is kwart over: 15 minuten. <b style='color:#2f6fb5'>Blauw (6)</b> is half: 30 minuten. <b style='color:#e8913a'>Oranje (9)</b> is kwart voor: 45 minuten.",
+      },
+    ],
+    tips: [
+      "Een uur heeft 60 minuten. Elk cijfer op de klok is 5 minuten verder: de 1 is 5 minuten, de 2 is 10 minuten, de 3 is 15 minuten.",
+      "Een kwartier is een kwart van een uur: 15 minuten. Een half uur is 30 minuten.",
+      "Zet de <b>magneet</b> aan als de lange wijzer vanzelf op de 5 minuten wil blijven staan.",
+      "De korte wijzer loopt langzaam mee: bij half 4 staat hij precies tussen de 3 en de 4.",
+    ],
+  }),
+
   geld: () => ({
     titel: "Rekenen met geld",
     intro: "Je werkt met biljetten van 5, 10, 20, 50 en 100 euro en munten van 50 cent, 1 en 2 euro.",

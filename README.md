@@ -16,7 +16,8 @@ JavaScript (ES modules). Werkt volledig offline door `index.html` te openen.
 | ![Klok: oplossing](docs/screenshots/18-klok-uren-oplossing.png)<br>Na twee foute pogingen: de klok met het antwoord | ![Code-blokken levels](docs/screenshots/17-code-levelkeuze.png)<br>Code-blokken: drie sets met sterren per level |
 | ![Repareer de code](docs/screenshots/18-code-repareer.png)<br>Pijltjes: repareer de code | ![Functies](docs/screenshots/19-code-bord-functie.png)<br>Slim bord: herhalen en functies |
 | ![Platform](docs/screenshots/20-code-platform.png)<br>Platform: lopen, springen, schieten, bouwen | ![Robot met TNT](docs/screenshots/21-robot-tnt-explosie.png)<br>Robot: TNT ontploft, straal van 1 vakje |
-| ![Robot uitleg](docs/screenshots/22-robot-uitleg-tnt.png)<br>Robot: uitlegartikel over TNT en kettingreacties | |
+| ![Robot uitleg](docs/screenshots/22-robot-uitleg-tnt.png)<br>Robot: uitlegartikel over TNT en kettingreacties | ![Klok lezen](docs/screenshots/23-klok-analoog.png)<br>Klok lezen: grote analoge klok met wijzers om te verslepen |
+| ![Klok animatie](docs/screenshots/24-klok-animatie.png)<br>Klok lezen: animatie, de minuten die voorbij zijn worden gekleurd | ![Digitale klok](docs/screenshots/25-klok-digitaal.png)<br>Klok lezen: de digitale klok |
 | ![Rekenen met geld](docs/screenshots/09-geld-oefenen.png)<br>Rekenen met geld | ![Grafieken](docs/screenshots/10-grafieken-oefenen.png)<br>Grafieken lezen (groep 8) |
 | ![Math City](docs/screenshots/11-math-city.png)<br>Math City na een oefening | ![Mobiel](docs/screenshots/13-mobiel-geld.png)<br>Mobiele weergave |
 
@@ -256,6 +257,20 @@ Let op: tot er een `main`-branch bestaat, gebruiken template en script de tag
   2 uur). Na afloop verschijnt de klok met het goede antwoord. Code:
   `js/exercises/klokkijken/opgaven.js` (`verschuifUur`, statistiek
   `uren_eerder`/`uren_later`).
+- **Klok lezen** (groep 4, 7 en 8, een leermiddel zonder opgaven) — een grote analoge klok
+  waarvan je de korte (uren) en lange wijzer (minuten) zelf versleept, met muis, vinger of
+  pijltjestoetsen; de uren lopen mee als de lange wijzer over de 12 gaat. Alle 12 uren zijn
+  groot, elke minuut heeft een streepje, elke 5 minuten een groter streepje met een cijfer
+  (5, 10, ... 60), en het hele uur (rood), kwart over (groen), half (blauw) en kwart voor
+  (oranje) hebben elk een eigen kleur en hulptekst. Onder de klok staat de tijd in woorden
+  ("kwart over 3", "half 4"), digitaal, en wat elke wijzer aanwijst. Korte animaties voor
+  **een uur**, **een half uur** en **de kwartieren**, en knoppen om **1 tot 10 uur vooruit
+  of achteruit** te springen. Een tweede tabblad toont een grote **digitale klok** (uren en
+  minuten met ▲▼, vasthouden werkt, 24- of 12-uurs, dagdeel) met dezelfde tijd op een kleine
+  analoge klok. Code: `js/exercises/klok-lezen/` — `tijd.js` (tijdlogica, in Node te testen),
+  `analoog.js`, `digitaal.js`, `animaties.js`. Test:
+  `node js/exercises/klok-lezen/test/test.mjs`. Een oefening met `leermiddel: true` krijgt
+  op de homepagina het label "leermiddel · geen opgaven" en komt niet in de statistieken.
 - **Robot Programmeer Spel** (groep 4 en 8) — stuur de robot over een 8×8-bord naar het
   doel met pijltjes (groep 4) of getypte commando's UP/DOWN/LEFT/RIGHT (groep 8). Naast
   stevige muren zijn er **zwakke muurtjes** (oranje, gestippeld) en **TNT** 🧨: loop je

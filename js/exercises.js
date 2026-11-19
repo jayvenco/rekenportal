@@ -34,6 +34,7 @@ import { splitsenOefening } from "./exercises/splitsen/index.js";
 import { geldOefening } from "./exercises/geld/index.js";
 import { meerMinderOefening } from "./exercises/meerminder/index.js";
 import { codeblokkenOefening, mount as mountCodeblokken } from "./exercises/codeblokken/index.js";
+import { klokLezenOefening } from "./exercises/klok-lezen/index.js";
 
 /**
  * Elke oefening in deze lijst heeft de vorm:
@@ -131,6 +132,11 @@ export const EXERCISES = [
     mount: (container, settings) => robotOefening.mount(container, { ...settings, groep: 8 }),
   },
   {
+    ...klokLezenOefening,
+    groep: 4,
+    instelbareOpties: "Geen opgaven: een leermiddel met een analoge en een digitale klok",
+  },
+  {
     ...codeblokkenOefening,
     groep: 4,
     omschrijving: "Programmeer het vogeltje met blokjes: sleep pijltjes naar het werkvlak.",
@@ -138,11 +144,21 @@ export const EXERCISES = [
     mount: (container, settings) => mountCodeblokken(container, settings, "pijltjes"),
   },
   {
+    ...klokLezenOefening,
+    groep: 7,
+    instelbareOpties: "Geen opgaven: een leermiddel met een analoge en een digitale klok",
+  },
+  {
     ...codeblokkenOefening,
     groep: 7,
     omschrijving: "Programmeer met herhaal-blokken en functies op een bord.",
     instelbareOpties: "Set Slim bord (8 levels), Pijltjes en Platform",
     mount: (container, settings) => mountCodeblokken(container, settings, "bord"),
+  },
+  {
+    ...klokLezenOefening,
+    groep: 8,
+    instelbareOpties: "Geen opgaven: een leermiddel met een analoge en een digitale klok",
   },
   {
     ...codeblokkenOefening,
