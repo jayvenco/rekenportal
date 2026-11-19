@@ -25,10 +25,10 @@ function voegStijlToe() {
   .kl-tab{border:3px solid #cbd5e1;background:#fff;border-radius:999px;padding:10px 22px;font-size:1.1rem;font-weight:800;color:#34445e;cursor:pointer}
   .kl-tab[aria-selected="true"]{background:#2f6fb5;border-color:#2f6fb5;color:#fff}
   @media (max-width:520px){.kl-tab{padding:8px 14px;font-size:1rem}.kl-woorden{font-size:1.7rem}}
-  .kl-rij{display:grid;grid-template-columns:minmax(0,600px) minmax(0,1fr);gap:20px;align-items:start}
-  @media (max-width:940px){.kl-rij{grid-template-columns:minmax(0,1fr)}}
+  .kl-rij{display:grid;grid-template-columns:minmax(0,660px) minmax(0,1fr);gap:16px;align-items:start}
+  @media (max-width:1100px){.kl-rij{grid-template-columns:minmax(0,1fr)}}
   .kl-links{display:flex;flex-direction:column;gap:12px;align-items:stretch}
-  .kl-analoog{width:100%;max-width:640px;margin:0 auto}
+  .kl-analoog{width:100%;max-width:660px;margin:0 auto}
   .kl-rechts{display:flex;flex-direction:column;gap:12px;min-width:0}
   .kl-kaart{background:#fff;border:2px solid #dde5ee;border-radius:16px;padding:14px 16px}
   .kl-kaart h3{margin:0 0 8px;font-size:1.05rem;color:#34445e}
