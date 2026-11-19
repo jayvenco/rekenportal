@@ -9,19 +9,7 @@ import { vindOefening } from "../exercises.js";
 import { getInstellingen } from "../storage.js";
 import { getTelraam, vernietigTelraam } from "../utils/telraam.js";
 import { maakHulpKnop } from "../utils/hulp.js";
-
-const OPGAVE_ACHTERGRONDEN = {
-  getallenlijn: "/img/opgave-achtergronden/natuur-bos.png?v=1",
-  tafels: "/img/opgave-achtergronden/ruimte.png?v=1",
-  plusmin: "/img/opgave-achtergronden/anime-fantasie.png?v=1",
-  verhaaltjes: "/img/opgave-achtergronden/onderwater.png?v=1",
-  meten: "/img/opgave-achtergronden/natuur-bos.png?v=1",
-  standaard: "/img/opgave-achtergronden/bergen.png?v=1",
-};
-
-function achtergrondVoorOefening(exerciseId) {
-  return OPGAVE_ACHTERGRONDEN[exerciseId] || OPGAVE_ACHTERGRONDEN.standaard;
-}
+import { kiesAchtergrond } from "../utils/achtergronden.js";
 
 /**
  * Toont een specifieke oefening.
@@ -31,7 +19,7 @@ function achtergrondVoorOefening(exerciseId) {
 export async function toonOefeningScherm(container, exerciseId) {
   container.innerHTML = "";
   container.classList.add("opgave-pagina");
-  container.style.setProperty("--opgave-achtergrond", `url("${achtergrondVoorOefening(exerciseId)}")`);
+  container.style.setProperty("--opgave-achtergrond", `url("${kiesAchtergrond()}")`);
   // Parse optional ?groep= parameter from hash (string or number)
   const hashGroep = exerciseId.includes("?groep=") ? exerciseId.split("?groep=")[1] : undefined;
   const groep = hashGroep !== undefined ? (isNaN(Number(hashGroep)) ? hashGroep : Number(hashGroep)) : undefined;

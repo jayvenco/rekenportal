@@ -315,3 +315,8 @@ Let op: tot er een `main`-branch bestaat, gebruiken template en script de tag
   = beide pogingen fout), met bouwmachines, vrachtwagens en bouwvakkers.
   Ook los aan te sturen via `zetResultaten({ correctAnswers, firstAttemptErrors,
   secondAttemptErrors })` in `js/utils/mathCityAnimatie.js`.
+- **Opgave-achtergronden** — elk opgavescherm krijgt bij het openen een willekeurige
+  achtergrond (nooit dezelfde twee keer achter elkaar). De lijst staat in
+  `js/utils/achtergronden.js`; een nieuwe afbeelding toevoegen = bestand in
+  `img/opgave-achtergronden/` zetten en de bestandsnaam in die lijst bijvoegen.
+  Nieuwe afbeeldingen zijn JPEG (kwaliteit 80, ca. 600–750 KB) om de pagina snel te houden.
