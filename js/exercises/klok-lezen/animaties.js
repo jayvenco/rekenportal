@@ -5,7 +5,7 @@
 // wijzers vloeiend via de gedeelde klok-store.
 // -----------------------------------------------------------------------------
 
-import { normaliseer, uur12, tijdInWoorden } from "./tijd.js";
+import { normaliseer, uur12, tijdInWoorden, duurTekst } from "./tijd.js";
 
 const REDUCED = typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches;
 const ease = (p) => (p < 0.5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2);
@@ -119,14 +119,29 @@ export function maakAnimator(store, haken = {}) {
 
     /** 1 tot 10 uur vooruit (positief) of achteruit (negatief). */
     springUren(n) {
+      return this.springMinuten(n * 60);
+    },
+
+    /**
+     * Zelf gekozen sprong: een aantal minuten vooruit (positief) of achteruit (negatief),
+     * bijvoorbeeld 135 = 2 uur en 15 minuten later.
+     */
+    springMinuten(n) {
       return start("sprong", async (token) => {
         const van = store.get();
-        const naar = van + n * 60;
-        const woord = Math.abs(n) === 1 ? "1 uur" : `${Math.abs(n)} uur`;
-        bijschrift(`${tijdInWoorden(van)}: ${woord} ${n > 0 ? "later" : "eerder"}…`);
-        if (!(await tween(van, naar, 700 + 380 * Math.abs(n), token))) return;
+        const naar = van + n;
+        const duur = duurTekst(n);
+        const hele = Math.abs(n) % 60 === 0;
+        const uren = Math.abs(n) / 60;
+        bijschrift(`${tijdInWoorden(van)}: ${duur} ${n > 0 ? "later" : "eerder"}…`);
+        // hoe groter de sprong, hoe langer de animatie (maximaal 9 seconden)
+        if (!(await tween(van, naar, Math.min(9000, 700 + 380 * (Math.abs(n) / 60)), token))) return;
         const nieuw = normaliseer(naar);
-        bijschrift(`${tijdInWoorden(van)} ${n > 0 ? "+" : "−"} ${woord} = ${tijdInWoorden(nieuw)}. De lange wijzer ging ${Math.abs(n)} keer ${n > 0 ? "rond" : "terug rond"}, de korte wijzer ${Math.abs(n)} ${Math.abs(n) === 1 ? "cijfer" : "cijfers"} ${n > 0 ? "vooruit" : "terug"}.`, "klaar");
+        const uitleg = hele
+          ? ` De lange wijzer ging ${uren} keer ${n > 0 ? "rond" : "terug rond"}, de korte wijzer ${uren} ${uren === 1 ? "cijfer" : "cijfers"} ${n > 0 ? "vooruit" : "terug"}.`
+          : " De wijzers draaiden samen mee.";
+        const dagen = Math.abs(n) >= 1440 ? " Dat is meer dan een hele dag!" : "";
+        bijschrift(`${tijdInWoorden(van)} ${n > 0 ? "+" : "−"} ${duur} = ${tijdInWoorden(nieuw)}.${uitleg}${dagen}`, "klaar");
       });
     },
 

@@ -482,6 +482,7 @@ const INHOUD = {
       "Kijk onder de klok hoe laat het is: in woorden (kwart over 3), digitaal (15:15) en wat elke wijzer aanwijst.",
       "Druk op <b>▶ Een uur</b>, <b>▶ Een half uur</b> of <b>▶ De kwartieren</b> voor een korte animatie.",
       "Met <b>+1 tot +10</b> ga je 1 tot 10 uur vooruit, met <b>−1 tot −10</b> 1 tot 10 uur terug.",
+      "Onder <b>Springen in de tijd</b> kun je zelf invullen hoeveel <b>uur</b> en <b>minuten</b> de klok eerder of later moet gaan. Druk op <b>⏪ Eerder</b> of <b>⏩ Later</b>.",
       "Op het tabblad <b>Digitale klok</b> verander je de uren en minuten met de pijltjes ▲ ▼. Vasthouden werkt ook.",
     ],
     voorbeelden: [

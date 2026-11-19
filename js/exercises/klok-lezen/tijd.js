@@ -66,6 +66,18 @@ export function hoekVanPunt(dx, dy) {
   return (graden + 360) % 360;
 }
 
+/** "2 uur en 15 minuten", "45 minuten", "3 uur" voor een aantal minuten (altijd positief gelezen). */
+export function duurTekst(minuten) {
+  const m = Math.abs(Math.round(minuten));
+  const u = Math.floor(m / 60);
+  const rest = m % 60;
+  const uren = `${u} uur`;
+  const min = `${rest} ${rest === 1 ? "minuut" : "minuten"}`;
+  if (u === 0) return min;
+  if (rest === 0) return uren;
+  return `${uren} en ${min}`;
+}
+
 /** Verschuift de tijd met een aantal uur (positief = later, negatief = eerder). */
 export function verschuifUren(t, uren) {
   return normaliseer(t + uren * 60);

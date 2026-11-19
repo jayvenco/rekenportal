@@ -56,6 +56,11 @@ function voegStijlToe() {
   .kl-bijschrift--klaar{background:#e7f8ec;border-color:#9fdcb4;color:#14703a}
   .kl-sprongen{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
   @media (max-width:520px){.kl-sprongen{grid-template-columns:repeat(5,minmax(0,1fr));gap:5px}.kl-sprongen .kl-knop{padding:9px 2px;font-size:.9rem}}
+  .kl-zelf{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end}
+  .kl-zelf__veld{display:flex;flex-direction:column;gap:3px;font-size:.85rem;font-weight:800;color:#5b6676}
+  .kl-zelf__veld input{width:5.2em;font-size:1.3rem;font-weight:800;padding:8px 10px;border:3px solid #cbd5e1;border-radius:10px;color:#1f2937;background:#fff}
+  .kl-zelf__veld input:focus{outline:none;border-color:#2f6fb5}
+  .kl-zelf__melding{min-height:1.3em;margin-top:6px;font-weight:700;color:#a24a07;font-size:.95rem}
   .kl-opties{display:flex;flex-direction:column;gap:6px;font-size:1rem}
   .kl-opties label{display:flex;gap:8px;align-items:center;cursor:pointer}
   .kl-opties input{width:20px;height:20px}
@@ -249,6 +254,53 @@ export async function mount(container) {
     maakRij("⏪ Achteruit: 1 tot 10 uur eerder", "−");
     k.appendChild(el("p", "kl-tip", "Het getal is het aantal uren. Kijk hoe de lange wijzer rondjes draait en de korte wijzer meeloopt."));
     k.lastChild.style.marginTop = "8px";
+
+    // zelf kiezen: hoeveel uur en minuten eerder of later
+    k.appendChild(el("p", "kl-tip", "✏️ Zelf kiezen: hoeveel eerder of later?"));
+    k.lastChild.style.cssText = "margin:12px 0 4px;font-weight:800;color:#34445e;font-size:1rem";
+    const veld = el("div", "kl-zelf");
+    const maakVeld = (label, max, begin) => {
+      const l = el("label", "kl-zelf__veld");
+      const i = el("input");
+      i.type = "number";
+      i.min = "0";
+      i.max = String(max);
+      i.step = "1";
+      i.value = String(begin);
+      i.inputMode = "numeric";
+      i.setAttribute("aria-label", label);
+      l.append(i, el("span", "", label));
+      return { l, i };
+    };
+    const uren = maakVeld("uur", 99, 1);
+    const minuten = maakVeld("minuten", 59, 0);
+    const melding = el("div", "kl-zelf__melding");
+    melding.setAttribute("aria-live", "polite");
+    const lees = () => {
+      const u = Math.max(0, Math.min(99, Math.floor(Number(uren.i.value) || 0)));
+      const m = Math.max(0, Math.min(59, Math.floor(Number(minuten.i.value) || 0)));
+      uren.i.value = String(u);
+      minuten.i.value = String(m);
+      return u * 60 + m;
+    };
+    const spring = (richting) => {
+      const totaal = lees();
+      if (totaal === 0) {
+        melding.textContent = "Vul minstens 1 minuut of 1 uur in.";
+        return;
+      }
+      melding.textContent = "";
+      animator.springMinuten(richting * totaal);
+    };
+    const eerder = knop("⏪ Eerder", "kl-knop--uur", () => spring(-1));
+    const later = knop("⏩ Later", "", () => spring(1));
+    for (const i of [uren.i, minuten.i]) {
+      i.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") spring(1);
+      });
+    }
+    veld.append(uren.l, minuten.l, eerder, later);
+    k.append(veld, melding);
     return k;
   }
 

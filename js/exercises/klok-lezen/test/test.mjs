@@ -2,7 +2,7 @@
 import {
   normaliseer, uurVan, minuutVan, uur12, minuutHoek, uurHoek, sleepMinuutwijzer, sleepUurwijzer,
   hoekVanPunt, verschuifUren, tijdInWoorden, urenEnMinuten, uitlegMinuutwijzer, uitlegUurwijzer,
-  dagdeel, digitaal, maakKlokStore, hoeken,
+  dagdeel, digitaal, maakKlokStore, hoeken, duurTekst,
 } from "../tijd.js";
 
 let fouten = 0;
@@ -75,6 +75,17 @@ gelijk(dagdeel(t(14, 0)).naam, "'s middags", "middag");
 gelijk(dagdeel(t(20, 0)).naam, "'s avonds", "avond");
 gelijk(JSON.stringify(digitaal(t(15, 5), true)), JSON.stringify({ uren: "15", minuten: "05" }), "digitaal 24 uur");
 gelijk(JSON.stringify(digitaal(t(15, 5), false)), JSON.stringify({ uren: "3", minuten: "05" }), "digitaal 12 uur");
+
+// duur in woorden (voor zelf gekozen sprongen)
+gelijk(duurTekst(135), "2 uur en 15 minuten", "duur 135");
+gelijk(duurTekst(-135), "2 uur en 15 minuten", "duur negatief wordt positief gelezen");
+gelijk(duurTekst(45), "45 minuten", "duur 45");
+gelijk(duurTekst(1), "1 minuut", "duur 1");
+gelijk(duurTekst(180), "3 uur", "duur 180");
+gelijk(duurTekst(61), "1 uur en 1 minuut", "duur 61");
+gelijk(verschuifUren(t(3, 15), 0), t(3, 15), "0 uur verandert niets");
+gelijk(normaliseer(t(10, 20) + 135), t(12, 35), "10:20 + 2 uur 15 = 12:35");
+gelijk(normaliseer(t(0, 10) - 45), t(23, 25), "0:10 - 45 min = 23:25");
 
 // store
 {

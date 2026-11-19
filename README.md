@@ -265,7 +265,7 @@ Let op: tot er een `main`-branch bestaat, gebruiken template en script de tag
   (oranje) hebben elk een eigen kleur en hulptekst. Onder de klok staat de tijd in woorden
   ("kwart over 3", "half 4"), digitaal, en wat elke wijzer aanwijst. Korte animaties voor
   **een uur**, **een half uur** en **de kwartieren**, en knoppen om **1 tot 10 uur vooruit
-  of achteruit** te springen. Een tweede tabblad toont een grote **digitale klok** (uren en
+  of achteruit** te springen, plus een invoerveld om zelf in te vullen hoeveel **uur en minuten eerder of later** de klok moet gaan (bijvoorbeeld 2 uur en 15 minuten later). Een tweede tabblad toont een grote **digitale klok** (uren en
   minuten met ▲▼, vasthouden werkt, 24- of 12-uurs, dagdeel) met dezelfde tijd op een kleine
   analoge klok. Code: `js/exercises/klok-lezen/` — `tijd.js` (tijdlogica, in Node te testen),
   `analoog.js`, `digitaal.js`, `animaties.js`. Test:
