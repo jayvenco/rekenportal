@@ -8,6 +8,7 @@
 import { bouwGetallenlijn } from "./getallenlijnSvg.js";
 import { bouwKlok } from "./klokSvg.js";
 import { bouwSplitsboom } from "../exercises/splitsen/splitsboom.js";
+import { miniKaart } from "../exercises/robot/uitleg.js";
 import { maakGeldSvg } from "../exercises/geld/geldSvg.js";
 import { maakGrafiek, voegGrafiekStijlToe } from "../exercises/grafieken/grafiekWeergave.js";
 
@@ -435,6 +436,41 @@ const INHOUD = {
       "Zie je een patroon dat zich herhaalt? Dan past er een <b>herhaal-blokje</b> of een <b>functie</b>.",
       "Een gat is te breed om overheen te springen? Bouw er dan eerst een brug in.",
       "Een vijand blokkeert je? Springen helpt niet: schiet hem eerst weg.",
+    ],
+  }),
+
+  robot: () => ({
+    titel: "Robot Programmeer Spel",
+    intro: "Je schrijft een lijstje commando's. De robot 🤖 voert ze één voor één uit, zodat hij bij het doel 🎯 komt.",
+    stappen: [
+      "Kies een level en tik op de pijltjes (⬆️ ⬇️ ⬅️ ➡️), of typ in de codemodus UP, DOWN, LEFT en RIGHT, elk op een eigen regel.",
+      "Druk op <b>▶ START</b>. De robot loopt je lijstje af. <b>🔄 RESET</b> zet het bord terug, <b>🗑 CLEAR</b> wist je lijstje.",
+      "Botst de robot tegen een muur of loopt hij van het bord af? Dan stopt het programma. Pas je lijstje aan en probeer opnieuw.",
+      "<b>Zwakke muurtjes</b> (oranje, gestippeld) kun je opblazen met <b>TNT</b> 🧨. Loop over de TNT: alle zwakke muurtjes binnen 1 vakje eromheen (9 vakjes) vallen om.",
+    ],
+    voorbeelden: [
+      {
+        kop: "Commando's: RIGHT, RIGHT, DOWN, DOWN, RIGHT",
+        tekst: "Elk commando is één stap. De oranje vakjes laten zien waar de robot liep.",
+        visual: miniKaart(["Soo.", "..o.", "..oG"]),
+      },
+      {
+        kop: "TNT: de straal van 1 vakje",
+        tekst: "Loopt de robot over de TNT, dan ontploft hij. De 9 rode vakjes eromheen worden opgeblazen. Stevige muren (grijs) blijven staan.",
+        visual: miniKaart(["#####", "S*T*G", "#####"]),
+        na: "Zwakke muurtjes in de rode vakjes verdwijnen, zodat de weg vrij is.",
+      },
+      {
+        kop: "Kettingreactie en munten",
+        tekst: "Een TNT binnen de straal van een ontploffende TNT gaat ook af. <b>Let op:</b> munten 💰 in de explosie gaan kapot. Pak ze eerst!",
+        visual: miniKaart(["S.c..", "..TWG"]),
+      },
+    ],
+    tips: [
+      "Loop je programma eerst in je hoofd na, vakje voor vakje.",
+      "Zoek de TNT die het dichtst bij het muurtje staat dat je moet openen.",
+      "Wil je alle munten? Pak ze vóór je over een TNT in de buurt loopt.",
+      "Meer uitleg met plaatjes staat in het instelscherm bij <b>📖 Uitleg: hoe werkt het spel?</b>.",
     ],
   }),
 

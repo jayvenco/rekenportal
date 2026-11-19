@@ -15,6 +15,9 @@
 import { recordAnswer } from "../../storage.js";
 import { maakRewardTracker, toonBadgeUnlocks, toonRewardResultaat, verversCoinCounter } from "../../utils/rewards.js";
 
+import { maakWereld, doeStap } from "./regels.js";
+import { NIVEAUS_GROEP4, NIVEAUS_GROEP8 } from "./levels.js";
+
 const EXERCISE_ID = "robot";
 const ANIMATIE_VERTRAGING_MS = 500;
 
@@ -49,6 +52,10 @@ export async function toonOefeningScherm(container, instellingen, opKlaar) {
   const gridRows = levelData?.size || 6;
   const levelNaam = levelData?.name || `Level ${instellingen.level}`;
   const maxCoins = levelData?.coins?.length || 0;
+  // Spelstaat (muren, muurtjes, TNT, munten) volgens regels.js; bezocht = het afgelegde pad.
+  let wereld = levelData ? maakWereld(levelData) : null;
+  const bezocht = new Set();
+  let aantalOntploft = 0;
 
   const rewardTracker = maakRewardTracker(EXERCISE_ID, 1); // 1 level per sessie
 
@@ -77,6 +84,16 @@ export async function toonOefeningScherm(container, instellingen, opKlaar) {
   topBar.appendChild(scoreBadge);
 
   container.appendChild(topBar);
+
+  if ((levelData?.tnt?.length || 0) > 0 || (levelData?.muurtjes?.length || 0) > 0) {
+    const legenda = document.createElement("div");
+    legenda.className = "robot-legenda";
+    legenda.style.cssText = "padding:8px 14px;background:#fff7ed;border:2px solid #fdba74;border-radius:12px;font-size:0.95em;line-height:1.45;";
+    legenda.innerHTML =
+      "🧨 <b>TNT</b>: loop eroverheen en hij ontploft. Alle <b>zwakke muurtjes</b> (🧱 oranje, gestippeld) in de 9 vakjes eromheen vallen om. " +
+      "Een TNT in de buurt gaat ook af (kettingreactie). <b>Let op:</b> munten 💰 in de explosie gaan kapot. Stevige muren (🧱 grijs) blijven staan.";
+    container.appendChild(legenda);
+  }
 
   // ─── 2. Hoofd-layout: grid + commandopaneel ──────────────────────────
   const mainRow = document.createElement("div");
@@ -109,40 +126,6 @@ export async function toonOefeningScherm(container, instellingen, opKlaar) {
         "width:48px;height:48px;background:#fff;border:1px solid #e2e8f0;border-radius:4px;" +
         "display:flex;align-items:center;justify-content:center;font-size:20px;transition:background 0.2s;";
 
-      // Hindernis / muur (voor later gebruik)
-      if (levelData?.obstacles) {
-        const isMuur = levelData.obstacles.some(
-          (m) => m.row === rij && m.col === kol
-        );
-        if (isMuur) {
-          cel.style.background = "#94a3b8";
-          cel.textContent = "🧱";
-        }
-      }
-
-      // Doel markeren
-      if (levelData?.target?.row === rij && levelData?.target?.col === kol) {
-        cel.style.background = "#fef9c3";
-        cel.textContent = "🎯";
-      }
-
-      // Muntjes
-      if (levelData?.coins) {
-        const isMunt = levelData.coins.some(
-          (c) => c.row === rij && c.col === kol
-        );
-        if (isMunt) {
-          cel.textContent = "💰";
-        }
-      }
-
-      // Startpositie
-      if (levelData?.robot?.row === rij && levelData?.robot?.col === kol) {
-        cel.textContent = "🤖";
-        cel.style.background = "#dbeafe";
-        cel.id = "robot-start-cel";
-      }
-
       // Cel-id voor later robot-animatie
       const celId = `cel-${rij}-${kol}`;
       cel.id = celId;
@@ -153,6 +136,7 @@ export async function toonOefeningScherm(container, instellingen, opKlaar) {
 
   gridContainer.appendChild(gridEl);
   mainRow.appendChild(gridContainer);
+  teken();
 
   // ─── Commandopaneel (rechts / onder) ────────────────────────────────
   const panelContainer = document.createElement("div");
@@ -293,73 +277,70 @@ export async function toonOefeningScherm(container, instellingen, opKlaar) {
     }
   }
 
-  /** Verplaatst het robot-icoon naar een bepaalde cel. */
-  function verplaatsRobot(rij, kol) {
-    // De vorige robotcel wordt onderdeel van het afgelegde pad (oranje).
+  /** Tekent alle cellen opnieuw vanuit de spelstaat. */
+  function teken() {
     gridEl.querySelectorAll(".robot-cel").forEach((cel) => {
-      if (cel.textContent === "🤖") {
-        cel.textContent = "";
-        cel.style.background = "#f0883e";
+      const rij = Number(cel.dataset.rij);
+      const kol = Number(cel.dataset.kol);
+      const k = `${rij},${kol}`;
+      let achtergrond = "#fff";
+      let tekst = "";
+      let rand = "1px solid #e2e8f0";
+      let titel = "";
+      if (bezocht.has(k)) achtergrond = "#f0883e";
+      if (wereld) {
+        if (wereld.doel.row === rij && wereld.doel.col === kol) { achtergrond = "#fef9c3"; tekst = "🎯"; titel = "Doel"; }
+        if (wereld.munten.has(k)) { tekst = "💰"; titel = "Munt"; }
+        if (wereld.tnt.has(k)) { achtergrond = "#fee2e2"; tekst = "🧨"; titel = "TNT: loop erover om te ontploffen"; }
+        if (wereld.stenen.has(k)) { achtergrond = "#94a3b8"; tekst = "🧱"; titel = "Stevige muur"; }
+        if (wereld.muurtjes.has(k)) { achtergrond = "#fdba74"; tekst = "🧱"; rand = "2px dashed #c2410c"; titel = "Zwak muurtje: blaas het op met TNT"; }
+        if (wereld.robot.row === rij && wereld.robot.col === kol) { achtergrond = "#dbeafe"; tekst = "🤖"; titel = "Robot"; }
+      } else if (levelData?.robot?.row === rij && levelData?.robot?.col === kol) {
+        achtergrond = "#dbeafe"; tekst = "🤖";
       }
+      cel.style.background = achtergrond;
+      cel.style.border = rand;
+      cel.textContent = tekst;
+      if (titel) cel.title = titel; else cel.removeAttribute("title");
     });
-    // Zet robot op nieuwe positie (lichtblauw = huidige plek).
-    const celDoel = gridEl.querySelector(`#cel-${rij}-${kol}`);
-    if (celDoel) {
-      celDoel.textContent = "🤖";
-      celDoel.style.background = "#dbeafe";
+  }
+
+  /** Laat de explosies kort zien: 💥 op alle vakjes in de straal. */
+  async function toonExplosies(ontploffingen) {
+    const keys = new Set();
+    for (const e of ontploffingen) {
+      for (let dr = -1; dr <= 1; dr++) {
+        for (let dc = -1; dc <= 1; dc++) {
+          const r = e.tnt.row + dr;
+          const c = e.tnt.col + dc;
+          if (r >= 0 && c >= 0 && r < gridRows && c < gridCols) keys.add(`${r},${c}`);
+        }
+      }
     }
+    for (const k of keys) {
+      if (wereld?.stenen.has(k)) continue; // stevige muren blijven gewoon staan
+      const [r, c] = k.split(",");
+      const cel = gridEl.querySelector(`#cel-${r}-${c}`);
+      if (cel) { cel.textContent = "💥"; cel.style.background = "#fecaca"; }
+    }
+    await new Promise((resolve) => setTimeout(resolve, 550));
+    teken();
   }
 
   /** Reset de grid naar de oorspronkelijke beginsituatie. */
   function resetGrid() {
-    gridEl.querySelectorAll(".robot-cel").forEach((cel) => {
-      const rij = Number(cel.dataset.rij);
-      const kol = Number(cel.dataset.kol);
-
-      let achtergrond = "#fff";
-      let tekst = "";
-
-      const isMuur = levelData?.obstacles?.some((m) => m.row === rij && m.col === kol);
-      if (isMuur) { achtergrond = "#94a3b8"; tekst = "🧱"; }
-
-      const isDoel = levelData?.target?.row === rij && levelData?.target?.col === kol;
-      if (isDoel) { achtergrond = "#fef9c3"; tekst = "🎯"; }
-
-      const isMunt = levelData?.coins?.some((c) => c.row === rij && c.col === kol);
-      if (isMunt) { tekst = "💰"; }
-
-      const isStart = levelData?.robot?.row === rij && levelData?.robot?.col === kol;
-      if (isStart) { achtergrond = "#dbeafe"; tekst = "🤖"; }
-
-      cel.style.background = achtergrond;
-      cel.textContent = tekst;
-    });
-
+    wereld = levelData ? maakWereld(levelData) : null;
+    bezocht.clear();
+    aantalOntploft = 0;
     coinsCollected = 0;
     collisionError = null;
+    teken();
     werkScoreBij();
   }
 
   /** Werkt de score/munten badge bij. */
   function werkScoreBij() {
     scoreBadge.textContent = `💰 ${coinsCollected} / ${maxCoins} munten`;
-  }
-
-  /** Markeert een cel als bezocht (voor muntjes oprapen). */
-  function checkMuntjes(rij, kol) {
-    if (!levelData?.coins) return;
-    const muntIndex = levelData.coins.findIndex(
-      (c) => c.row === rij && c.col === kol
-    );
-    if (muntIndex >= 0) {
-      // Verwijder de munt uit de getoonde grid
-      const cel = gridEl.querySelector(`#cel-${rij}-${kol}`);
-      if (cel && cel.textContent === "💰") {
-        cel.textContent = ""; // munt opgepakt
-        coinsCollected++;
-        werkScoreBij();
-      }
-    }
   }
 
   // ─── 6. Engine-loop ─────────────────────────────────────────────────
@@ -396,57 +377,49 @@ export async function toonOefeningScherm(container, instellingen, opKlaar) {
 
       await new Promise((resolve) => setTimeout(resolve, ANIMATIE_VERTRAGING_MS));
 
-      // Bereken nieuwe positie
+      // Voer het commando uit volgens de spelregels (regels.js)
       const cmd = commands[i];
-      let nieuweRij = robotRij;
-      let nieuweKol = robotKol;
+      const van = { row: robotRij, col: robotKol };
+      const uitkomst = wereld ? doeStap(wereld, cmd) : { botsing: "onbekend" };
 
-      switch (cmd) {
-        case "UP":    nieuweRij--; break;
-        case "DOWN":  nieuweRij++; break;
-        case "LEFT":  nieuweKol--; break;
-        case "RIGHT": nieuweKol++; break;
-      }
-
-      // 🔹 Collision-check: muren
-      if (levelData?.obstacles) {
-        const isMuur = levelData.obstacles.some(
-          (m) => m.row === nieuweRij && m.col === nieuweKol
-        );
-        if (isMuur) {
-          collisionError = `🧱 Robot botst tegen een muur bij stap ${i + 1}!`;
-          feedbackEl.textContent = collisionError;
-          feedbackEl.style.color = "#dc2626";
-          isFinished = true;
-          // Markeer de muur rood
-          const muurCel = gridEl.querySelector(`#cel-${nieuweRij}-${nieuweKol}`);
-          if (muurCel) muurCel.style.background = "#fca5a5";
-          break;
-        }
-      }
-
-      // 🔹 Collision-check: buiten grid
-      if (
-        nieuweRij < 0 || nieuweRij >= gridRows ||
-        nieuweKol < 0 || nieuweKol >= gridCols
-      ) {
-        collisionError = `🚫 Robot loopt van het bord af bij stap ${i + 1}!`;
-        feedbackEl.textContent = collisionError;
+      if (uitkomst.botsing) {
+        const reden = {
+          rand: `🚫 Robot loopt van het bord af bij stap ${i + 1}!`,
+          steen: `🧱 Robot botst tegen een stevige muur bij stap ${i + 1}!`,
+          muurtje: `🧱 Dit muurtje is nog dicht (stap ${i + 1}). Blaas het op met TNT 🧨!`,
+          onbekend: `❓ Onbekend commando bij stap ${i + 1}.`,
+        }[uitkomst.botsing];
+        collisionError = reden;
+        feedbackEl.textContent = reden;
         feedbackEl.style.color = "#dc2626";
         isFinished = true;
+        if (uitkomst.botsing === "steen" || uitkomst.botsing === "muurtje") {
+          const muurCel = gridEl.querySelector(`#cel-${uitkomst.naar.row}-${uitkomst.naar.col}`);
+          if (muurCel) muurCel.style.background = "#fca5a5";
+        }
         break;
       }
 
-      // Verplaats robot
-      robotRij = nieuweRij;
-      robotKol = nieuweKol;
-      verplaatsRobot(robotRij, robotKol);
+      robotRij = uitkomst.naar.row;
+      robotKol = uitkomst.naar.col;
+      bezocht.add(`${van.row},${van.col}`);
+      coinsCollected = wereld.opgepakt;
+      werkScoreBij();
+      teken();
 
-      // Check muntjes
-      checkMuntjes(robotRij, robotKol);
+      // 🧨 TNT: ontploffing met straal 1 (en eventueel een kettingreactie)
+      if (uitkomst.ontploffingen.length > 0) {
+        const gesloopt = uitkomst.ontploffingen.reduce((n, e) => n + e.gesloopt.length, 0);
+        const kapot = uitkomst.ontploffingen.reduce((n, e) => n + e.kapot.length, 0);
+        aantalOntploft += uitkomst.ontploffingen.length;
+        await toonExplosies(uitkomst.ontploffingen);
+        feedbackEl.textContent =
+          `💥 BOEM! ${gesloopt} muurtje${gesloopt === 1 ? "" : "s"} opgeblazen` +
+          (kapot ? `, ${kapot} munt${kapot === 1 ? "" : "en"} kapot` : "") + ".";
+      }
 
       // 🔹 Check: doel bereikt?
-      if (levelData?.target?.row === robotRij && levelData?.target?.col === robotKol) {
+      if (uitkomst.doel) {
         feedbackEl.textContent = "🎉 Doel bereikt! Goed gedaan!";
         feedbackEl.style.color = "#16a34a";
         isFinished = true;
@@ -494,6 +467,7 @@ export async function toonOefeningScherm(container, instellingen, opKlaar) {
         coins: coinsCollected,
         maxCoins,
         stappen: commands.length,
+        tnt: aantalOntploft,
       },
     });
 
@@ -515,9 +489,9 @@ export async function toonOefeningScherm(container, instellingen, opKlaar) {
     volgendLevelBtn.textContent = "Volgende level ▶";
     volgendLevelBtn.style.cssText =
       "font-size:1.1em;padding:10px 28px;background:#2f6ed4;color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:600;";
-    const volgendeLevel = instellingen.level + 1;
-    const maxLevel = instellingen.groep === 8 ? 12 : 6;
-    if (volgendeLevel <= maxLevel) {
+    const levellijst = instellingen.groep === 8 ? NIVEAUS_GROEP8 : NIVEAUS_GROEP4;
+    const volgendeLevel = levellijst[levellijst.indexOf(instellingen.level) + 1];
+    if (volgendeLevel !== undefined) {
       volgendLevelBtn.addEventListener("click", () => {
         opKlaar({
           opnieuw: true,

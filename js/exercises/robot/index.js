@@ -23,20 +23,28 @@ function icoonRobot() {
  */
 export async function mount(container, settings) {
   const { toonInstellingenScherm } = await import("./instelscherm.js");
+  const startscherm = { ...settings, groep: settings.groep || 4 };
 
-  await toonInstellingenScherm(
-    container,
-    { ...settings, groep: settings.groep || 4 },
-    (gekozenInstellingen) => {
-      toonOefenscherm(gekozenInstellingen);
-    }
-  );
+  async function toonInstellingen() {
+    await toonInstellingenScherm(
+      container,
+      startscherm,
+      (gekozenInstellingen) => {
+        toonOefenscherm(gekozenInstellingen);
+      },
+      async () => {
+        const { toonUitleg } = await import("./uitleg.js");
+        toonUitleg(container, toonInstellingen, toonInstellingen);
+      }
+    );
+  }
+  await toonInstellingen();
 
   async function toonOefenscherm(instellingen) {
     const { toonOefeningScherm } = await import("./oefenscherm.js");
-    toonOefeningScherm(container, instellingen, ({ opnieuw }) => {
+    toonOefeningScherm(container, instellingen, ({ opnieuw, nieuweInstellingen }) => {
       if (opnieuw) {
-        toonOefenscherm(instellingen);
+        toonOefenscherm(nieuweInstellingen || instellingen);
       } else {
         window.location.hash = "#/";
       }

@@ -18,6 +18,8 @@
  * @property {'arrows'|'code'} mode
  */
 
+import { TNT_LEVELS } from "./levelsTnt.js";
+
 export const LEVELS = [
   // ── Groep 4 (levels 1–6) ──────────────────────────────────────────────
   {
@@ -382,6 +384,11 @@ export const LEVELS = [
     mode: "code",
   },
 ];
+
+// Levellijsten per groep. De TNT-levels (13-20) staan in levelsTnt.js.
+export const NIVEAUS_GROEP4 = [1, 2, 3, 4, 5, 6, 13, 14, 15, 16];
+export const NIVEAUS_GROEP8 = [7, 8, 9, 10, 11, 12, 17, 18, 19, 20];
+LEVELS.push(...TNT_LEVELS);
 
 /**
  * Vindt een level op id.

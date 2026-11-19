@@ -6,6 +6,7 @@
 // -----------------------------------------------------------------------------
 
 import { getInstellingen, saveInstellingen } from "../../storage.js";
+import { NIVEAUS_GROEP4, NIVEAUS_GROEP8 } from "./levels.js";
 
 const STANDAARD_INSTELLINGEN = {
   level: 1,
@@ -14,8 +15,6 @@ const STANDAARD_INSTELLINGEN = {
   groep: 4,
 };
 
-const NIVEAUS_GROEP4 = [1, 2, 3, 4, 5, 6];
-const NIVEAUS_GROEP8 = [7, 8, 9, 10, 11, 12];
 
 const MODUS_OPTIES_GROEP4 = [{ id: "arrows", label: "Pijltjes" }];
 const MODUS_OPTIES_GROEP8 = [
@@ -34,9 +33,10 @@ const MOEILIJKHEID_OPTIES = [
  * @param {Object} opgeslagen - eerder opgeslagen instellingen (of leeg object).
  * @param {Function} startOefening - callback(opgehaaldeInstellingen) als het kind op "START" klikt.
  */
-export async function toonInstellingenScherm(container, opgeslagen, startOefening) {
+export async function toonInstellingenScherm(container, opgeslagen, startOefening, opUitleg) {
   const saved = (await getInstellingen("robot")) || {};
-  const instellingen = { ...STANDAARD_INSTELLINGEN, ...saved };
+  // De groep komt uit het menu (opgeslagen.groep), niet uit eerder bewaarde instellingen.
+  const instellingen = { ...STANDAARD_INSTELLINGEN, ...saved, groep: opgeslagen?.groep || saved.groep || 4 };
 
   const groep = instellingen.groep || 4;
   const niveauLijst = groep === 8 ? NIVEAUS_GROEP8 : NIVEAUS_GROEP4;
@@ -192,6 +192,14 @@ export async function toonInstellingenScherm(container, opgeslagen, startOefenin
     startOefening({ ...instellingen });
   });
   startRij.appendChild(startKnop);
+  if (opUitleg) {
+    const uitlegKnop = document.createElement("button");
+    uitlegKnop.type = "button";
+    uitlegKnop.className = "knop knop--zacht";
+    uitlegKnop.textContent = "\u{1F4D6} Uitleg: hoe werkt het spel?";
+    uitlegKnop.addEventListener("click", opUitleg);
+    startRij.appendChild(uitlegKnop);
+  }
   kaart.appendChild(startRij);
 
   container.appendChild(kaart);

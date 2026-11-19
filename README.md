@@ -15,7 +15,8 @@ JavaScript (ES modules). Werkt volledig offline door `index.html` te openen.
 | ![Uitleg via het tiental](docs/screenshots/16-uitleg-via-tiental.png)<br>Uitleg: plus- en minsommen via het tiental | ![Klok: uren eerder of later](docs/screenshots/17-klok-uren-vraag.png)<br>Klokkijken: uren eerder of later (typ het uur) |
 | ![Klok: oplossing](docs/screenshots/18-klok-uren-oplossing.png)<br>Na twee foute pogingen: de klok met het antwoord | ![Code-blokken levels](docs/screenshots/17-code-levelkeuze.png)<br>Code-blokken: drie sets met sterren per level |
 | ![Repareer de code](docs/screenshots/18-code-repareer.png)<br>Pijltjes: repareer de code | ![Functies](docs/screenshots/19-code-bord-functie.png)<br>Slim bord: herhalen en functies |
-| ![Platform](docs/screenshots/20-code-platform.png)<br>Platform: lopen, springen, schieten, bouwen | |
+| ![Platform](docs/screenshots/20-code-platform.png)<br>Platform: lopen, springen, schieten, bouwen | ![Robot met TNT](docs/screenshots/21-robot-tnt-explosie.png)<br>Robot: TNT ontploft, straal van 1 vakje |
+| ![Robot uitleg](docs/screenshots/22-robot-uitleg-tnt.png)<br>Robot: uitlegartikel over TNT en kettingreacties | |
 | ![Rekenen met geld](docs/screenshots/09-geld-oefenen.png)<br>Rekenen met geld | ![Grafieken](docs/screenshots/10-grafieken-oefenen.png)<br>Grafieken lezen (groep 8) |
 | ![Math City](docs/screenshots/11-math-city.png)<br>Math City na een oefening | ![Mobiel](docs/screenshots/13-mobiel-geld.png)<br>Mobiele weergave |
 
@@ -255,6 +256,19 @@ Let op: tot er een `main`-branch bestaat, gebruiken template en script de tag
   2 uur). Na afloop verschijnt de klok met het goede antwoord. Code:
   `js/exercises/klokkijken/opgaven.js` (`verschuifUur`, statistiek
   `uren_eerder`/`uren_later`).
+- **Robot Programmeer Spel** (groep 4 en 8) — stuur de robot over een 8×8-bord naar het
+  doel met pijltjes (groep 4) of getypte commando's UP/DOWN/LEFT/RIGHT (groep 8). Naast
+  stevige muren zijn er **zwakke muurtjes** (oranje, gestippeld) en **TNT** 🧨: loop je
+  over een TNT, dan ontploft hij en vallen alle zwakke muurtjes in de 3×3 vakjes eromheen
+  om (straal 1). Een TNT binnen die straal gaat ook af (kettingreactie); munten in de
+  explosie gaan kapot, stevige muren blijven staan. Levels 1–12 zijn de oorspronkelijke,
+  levels 13–16 (pijltjes) en 17–20 (code) zijn de TNT-levels met afgesloten ruimtes,
+  kettingreacties en munten die je vóór de TNT moet pakken. In het instelscherm staat een
+  uitlegartikel met plaatjes ("📖 Uitleg: hoe werkt het spel?") en er is een Hulp-knop.
+  Code: `js/exercises/robot/` — `regels.js` (spelregels en oplosser, zonder DOM),
+  `levelsTnt.js` (levels als kaartjes met tekens), `uitleg.js` (artikel).
+  Test: `node js/exercises/robot/test/test.mjs` (elk level is oplosbaar, de TNT-levels
+  zijn alleen met TNT te halen en `minSteps` klopt met de oplosser).
 - **Code-blokken** (groep 4, 7 en 8) — programmeren met puzzelblokken, in drie sets
   van elk 8 levels. Je sleept blokken uit de toolbox naar het werkvlak, waar ze onder
   elkaar vastklikken (slepen met muis of vinger, tikken kan ook; prullenbak of ✕ om

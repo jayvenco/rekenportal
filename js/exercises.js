@@ -121,12 +121,14 @@ export const EXERCISES = [
   {
     ...robotOefening,
     groep: 4,
-    instelbareOpties: "Pijltjesmodus, 6 levels",
+    instelbareOpties: "Pijltjesmodus, 10 levels (met TNT)",
+    mount: (container, settings) => robotOefening.mount(container, { ...settings, groep: 4 }),
   },
   {
     ...robotOefening,
     groep: 8,
-    instelbareOpties: "Code modus, 12 levels",
+    instelbareOpties: "Code modus, 16 levels (met TNT)",
+    mount: (container, settings) => robotOefening.mount(container, { ...settings, groep: 8 }),
   },
   {
     ...codeblokkenOefening,
