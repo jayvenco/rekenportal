@@ -24,7 +24,8 @@
 // afgeschermd met een wachtwoord (zie utils/instellingenSlot.js).
 // -----------------------------------------------------------------------------
 
-const BEVEILIGDE_ROUTES = ["#/beheer", "#/leerplan", "#/statistieken", "#/rapport"];
+// Statistieken (van het actieve profiel) zijn bewust vrij: een kind opent ze zelf.
+const BEVEILIGDE_ROUTES = ["#/beheer", "#/leerplan", "#/rapport"];
 
 import { toonHomepage } from "./screens/home.js";
 import { toonOefeningScherm } from "./screens/oefeningScherm.js";
@@ -106,11 +107,13 @@ async function verwerkRoute() {
 }
 
 window.addEventListener("hashchange", verwerkRoute);
-window.addEventListener("DOMContentLoaded", verwerkRoute);
 
-// Direct uitvoeren voor het geval DOMContentLoaded al is geweest
-// (bv. bij een script met defer dat na het event laadt in sommige browsers).
-if (document.readyState === "interactive" || document.readyState === "complete") {
+// Module-scripts lopen vaak al vóór DOMContentLoaded: dan direct starten. Anders
+// wachten op het event. Nooit allebei, anders wordt het scherm twee keer opgebouwd
+// (dubbele knoppen).
+if (document.readyState === "loading") {
+  window.addEventListener("DOMContentLoaded", verwerkRoute, { once: true });
+} else {
   verwerkRoute();
 }
 

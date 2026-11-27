@@ -2,9 +2,9 @@
 // -----------------------------------------------------------------------------
 // Instellingenscherm van de portal: geluid, achtergrondmuziek en links naar
 // Beheer/Leerplan/Statistieken.
-// Het hele scherm zit achter een gedeeld wachtwoord ("Kattegat", zie
+// Het hele scherm zit achter een gedeeld wachtwoord ("admin", zie
 // utils/instellingenSlot.js) — dat is ook de enige weg naar Beheer, Leerplan
-// en Statistieken, die niet meer los in het hoofdmenu staan.
+// en Rapport. Statistieken van het eigen profiel zijn vrij (knop op de homepage).
 // -----------------------------------------------------------------------------
 
 import {

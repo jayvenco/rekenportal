@@ -87,6 +87,12 @@ export async function toonHomepage(container) {
   wisselProfielKnop.textContent = "🔄 Wissel profiel";
   actiesBlok.appendChild(wisselProfielKnop);
 
+  const statistiekenKnop = document.createElement("a");
+  statistiekenKnop.className = "knop knop--zacht";
+  statistiekenKnop.href = "#/statistieken";
+  statistiekenKnop.textContent = "📊 Mijn statistieken";
+  actiesBlok.appendChild(statistiekenKnop);
+
   const instellingenKnop = document.createElement("a");
   instellingenKnop.className = "knop knop--zacht";
   instellingenKnop.href = "#/instellingen";

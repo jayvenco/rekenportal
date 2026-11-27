@@ -1,7 +1,8 @@
 // utils/instellingenSlot.js
 // -----------------------------------------------------------------------------
-// Kleine "slot" voor het instellingenscherm: één gedeeld wachtwoord ("Kattegat")
-// dat toegang geeft tot Instellingen, Beheer, Leerplan en Statistieken. Geen
+// Kleine "slot" voor het instellingenscherm: één gedeeld wachtwoord ("admin")
+// dat toegang geeft tot Instellingen, Beheer, Leerplan en Rapport. Statistieken van
+// het eigen profiel zijn vrij te openen (knop op de homepage). Geen
 // echte beveiliging (het wachtwoord staat gewoon in deze broncode) — dit is
 // een speedbump voor kinderen, geen login-systeem.
 //
@@ -10,7 +11,8 @@
 // -----------------------------------------------------------------------------
 
 const SLEUTEL_ONTGRENDELD = "rekenportal_instellingen_ontgrendeld";
-const WACHTWOORD_INSTELLINGEN = "Kattegat";
+// "admin:" wordt ook geaccepteerd, voor als de dubbele punt per ongeluk wordt meegetypt.
+const WACHTWOORDEN_INSTELLINGEN = ["admin", "admin:"];
 
 // Bestemming waar de router naartoe wilde vóór de wachtwoord-gate; wordt na
 // een geslaagde ontgrendeling gebruikt om direct door te sturen.
@@ -28,7 +30,7 @@ export function isInstellingenOntgrendeld() {
 
 /** Controleert het wachtwoord en ontgrendelt bij een match. Geeft true/false terug. */
 export function ontgrendelInstellingen(wachtwoord) {
-  if (wachtwoord !== WACHTWOORD_INSTELLINGEN) return false;
+  if (!WACHTWOORDEN_INSTELLINGEN.includes(String(wachtwoord).trim())) return false;
   try {
     sessionStorage.setItem(SLEUTEL_ONTGRENDELD, "1");
   } catch (fout) {

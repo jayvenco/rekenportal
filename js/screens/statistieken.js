@@ -13,6 +13,7 @@ import {
   wisAlleStatistieken,
 } from "../storage.js";
 import { bouwDagelijkseGrafiek } from "../utils/grafiekSvg.js";
+import { isInstellingenOntgrendeld } from "../utils/instellingenSlot.js";
 
 function maakStatTegeltje(waarde, label) {
   const tegel = document.createElement("div");
@@ -227,7 +228,8 @@ export async function toonStatistiekenScherm(container) {
     container.appendChild(kaart);
   }
 
-  // --- Wis-knop ---
+  // --- Wis-knop: alleen voor ouders (na ontgrendelen) ---
+  if (!isInstellingenOntgrendeld()) return;
   const wisKaart = document.createElement("div");
   wisKaart.className = "kaart";
   const wisKop = document.createElement("h2");
