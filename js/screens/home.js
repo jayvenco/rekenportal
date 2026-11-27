@@ -7,7 +7,7 @@
 // -----------------------------------------------------------------------------
 
 import { EXERCISES } from "../exercises.js";
-import { listProfielen, getActiefProfielId } from "../storage.js";
+import { listProfielen, getActiefProfielId, getStartgroepVoorProfiel, standaardStartgroep } from "../storage.js";
 import { haalProfielRewards, toonBadgeCollectie } from "../utils/rewards.js";
 
 /** Zoekt het huidige actieve profiel op in de lijst van profielen (of null). */
@@ -150,7 +150,15 @@ export async function toonHomepage(container) {
 
   // Groep-tabs
   const groepen = [...new Set(EXERCISES.map((e) => e.groep))].sort();
+  // Startgroep per profiel (Beheer), anders standaard op naam; binnen een sessie
+  // onthouden we de laatst gekozen tab, zodat je na een oefening weer op dezelfde tab komt.
   let actieveGroep = groepen[0] || 4;
+  if (actiefProfiel) {
+    let gewenst = null;
+    try { gewenst = Number(sessionStorage.getItem(`rekenportal_groep_tab_${actiefProfiel.id}`)) || null; } catch { /* geen opslag */ }
+    if (!gewenst) gewenst = (await getStartgroepVoorProfiel(actiefProfiel.id)) ?? standaardStartgroep(actiefProfiel.naam);
+    if (gewenst && groepen.includes(gewenst)) actieveGroep = gewenst;
+  }
   const tabRij = document.createElement("div");
   tabRij.className = "groep-tabs";
   tabRij.style.cssText = "display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;";
@@ -165,6 +173,9 @@ export async function toonHomepage(container) {
     else knop.classList.add("knop--zacht");
     knop.addEventListener("click", () => {
       actieveGroep = g;
+      if (actiefProfiel && typeof g === "number") {
+        try { sessionStorage.setItem(`rekenportal_groep_tab_${actiefProfiel.id}`, String(g)); } catch { /* geen opslag */ }
+      }
       for (const k of tabKnoppen) {
         k.classList.toggle("knop--primair", Number(k.dataset.groep) === g);
         k.classList.toggle("knop--zacht", Number(k.dataset.groep) !== g);

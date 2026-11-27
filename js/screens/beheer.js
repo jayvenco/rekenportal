@@ -15,6 +15,9 @@ import {
   getStatistiekOverzichtVoorProfiel,
   getActiefProfielId,
   wisActiefProfiel,
+  getStartgroepVoorProfiel,
+  saveStartgroepVoorProfiel,
+  standaardStartgroep,
 } from "../storage.js";
 import { haalMaandOverzicht, haalTotaalPunten, haalRecenteSessies } from "../utils/punten.js";
 import { EXERCISES } from "../exercises.js";
@@ -234,6 +237,32 @@ export async function toonBeheerScherm(container) {
     });
     kopRij.appendChild(verwijderKnop);
     kaart.appendChild(kopRij);
+
+    // Startgroep: in welke groep opent de homepage voor dit profiel?
+    const startRij = document.createElement("div");
+    startRij.className = "acties-rij";
+    startRij.style.cssText = "align-items:center;margin-bottom:12px;gap:10px";
+    const startLabel = document.createElement("label");
+    startLabel.textContent = "Start in:";
+    startLabel.style.fontWeight = "700";
+    const startKeuze = document.createElement("select");
+    startKeuze.className = "keuze-knop";
+    startLabel.htmlFor = startKeuze.id = `startgroep-${profiel.id}`;
+    const standaard = standaardStartgroep(profiel.naam);
+    for (const [waarde, tekst] of [
+      ["", standaard ? `Automatisch (groep ${standaard})` : "Automatisch (eerste groep)"],
+      ["4", "Groep 4"], ["7", "Groep 7"], ["8", "Groep 8"],
+    ]) {
+      const o = document.createElement("option");
+      o.value = waarde;
+      o.textContent = tekst;
+      startKeuze.appendChild(o);
+    }
+    const huidigeStart = await getStartgroepVoorProfiel(profiel.id);
+    startKeuze.value = huidigeStart ? String(huidigeStart) : "";
+    startKeuze.addEventListener("change", () => saveStartgroepVoorProfiel(profiel.id, startKeuze.value ? Number(startKeuze.value) : null));
+    startRij.append(startLabel, startKeuze);
+    kaart.appendChild(startRij);
 
     const overzicht = await getStatistiekOverzichtVoorProfiel(profiel.id);
     const statGrid = document.createElement("div");

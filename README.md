@@ -345,3 +345,8 @@ Let op: tot er een `main`-branch bestaat, gebruiken template en script de tag
   stappen met een verhoudingstabel. Uitlegpagina, Hulp-knop en fouten in het
   Rapport zijn aangesloten. Logica en afbeeldingen zijn DOM-vrij en getest:
   `node js/exercises/schaal/test/test.mjs`.
+- **Startgroep per profiel** — de homepage opent in de groep-tab die bij het profiel past:
+  Aria in groep 8 en Nora in groep 4 (standaard op naam, `standaardStartgroep` in
+  `js/storage.js`). In Instellingen → Beheer kan per profiel een andere startgroep
+  gekozen worden (veld "Start in", opgeslagen als instelling `startgroep`). Kiest het
+  kind zelf een andere tab, dan blijft die gekozen zolang de sessie loopt.

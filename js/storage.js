@@ -335,6 +335,39 @@ export async function saveInstellingen(exerciseId, instellingen) {
   }
 }
 
+// Startgroep: in welke groep-tab de homepage opent voor een profiel. Niet ingesteld?
+// Dan geldt de standaard op naam (Aria: groep 8, Nora: groep 4); anders de eerste tab.
+const STANDAARD_STARTGROEP_OP_NAAM = { aria: 8, nora: 4 };
+
+/** Standaard startgroep voor een profielnaam, of null. */
+export function standaardStartgroep(naam) {
+  return STANDAARD_STARTGROEP_OP_NAAM[String(naam || "").trim().toLowerCase()] ?? null;
+}
+
+/** Ingestelde startgroep van een profiel (4, 7, 8) of null als "automatisch". */
+export async function getStartgroepVoorProfiel(profielId) {
+  try {
+    const r = await fetchJson(`/instellingen/${encodeURIComponent(profielId)}/exercise/startgroep`);
+    return r && Number.isFinite(Number(r.groep)) ? Number(r.groep) : null;
+  } catch (fout) {
+    console.error("Kon startgroep niet ophalen:", fout);
+    return null;
+  }
+}
+
+/** Slaat de startgroep van een profiel op; null = automatisch (naam-standaard). */
+export async function saveStartgroepVoorProfiel(profielId, groep) {
+  try {
+    return await fetchJson(`/instellingen/${encodeURIComponent(profielId)}/exercise/startgroep`, {
+      method: "PUT",
+      body: JSON.stringify({ groep: groep === null ? null : Number(groep) }),
+    });
+  } catch (fout) {
+    console.error("Kon startgroep niet opslaan:", fout);
+    return null;
+  }
+}
+
 /** Haalt de algemene (globale) instellingen op, bv. geluid aan/uit. */
 export async function getAlgemeneInstellingen() {
   try {
