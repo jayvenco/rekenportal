@@ -8,6 +8,7 @@ export function voegSchaalStijlToe() {
   .schaal-plaat svg{border-radius:12px;box-shadow:0 2px 10px rgba(30,50,80,.12)}
   .schaal-info{background:#eef5ff;border-left:6px solid #2f6fb5;border-radius:10px;padding:8px 14px;margin:8px 0;font-size:1rem;line-height:1.45}
   .schaal-vraag{font-size:1.25rem;line-height:1.45;margin:10px 0;font-weight:600}
+  .schaal-hint-rij[hidden]{display:none}
   .schaal-hint-rij{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:6px 0}
   .schaal-hint{background:#fff7e0;border-left:6px solid #e8913a;border-radius:10px;padding:8px 14px;margin:6px 0;line-height:1.45}
   .schaal-antwoordrij{display:flex;align-items:center;justify-content:center;gap:12px;margin:8px auto 12px;max-width:420px}

@@ -2,7 +2,7 @@
 // -----------------------------------------------------------------------------
 // Oefenscherm "Rekenen op schaal": toont per opgave een afbeelding (plattegrond,
 // kaart of liniaal met model), een info-regel over de schaal, de vraag, een
-// hint-knop en de invoer met eenheid. Na een fout komt de hint automatisch;
+// hint-knop (pas na het eerste foute antwoord beschikbaar) en de invoer met eenheid;
 // na afloop (tweede poging of fout) staat de uitleg met verhoudingstabel klaar.
 // -----------------------------------------------------------------------------
 
@@ -113,6 +113,7 @@ export function startOefensessie(container, instellingen, opKlaar) {
     feedbackVlak.textContent = "";
     uitlegVlak.innerHTML = "";
     hintVlak.hidden = true;
+    hintRij.hidden = true; // hint pas beschikbaar na het eerste foute antwoord
     hintKnop.textContent = "💡 Hint";
 
     huidigeOpgave = genereerUniekeOpgave(() => genereerOpgave(instellingen), opgaveNaarSleutel, gebruikteSleutels);
@@ -188,8 +189,7 @@ export function startOefensessie(container, instellingen, opKlaar) {
         feedbackVlak.className = "feedback-vlak feedback-vlak--fout";
         feedbackVlak.textContent = `${geefFoutmelding()} Probeer het nog eens.`;
         hintVlak.innerHTML = `💡 ${o.hint}`;
-        hintVlak.hidden = false;
-        hintKnop.textContent = "💡 Verberg hint";
+        hintRij.hidden = false; // hint-knop komt beschikbaar; kind kiest zelf
         speelFoutGeluid();
         toonInvoer();
       } else {

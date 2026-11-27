@@ -47,8 +47,9 @@ export function toonOefeningScherm(container, instellingen) {
   const hintKnop = document.createElement("button");
   hintKnop.type = "button";
   hintKnop.className = "knop knop--zacht";
-  hintKnop.style.cssText = "display:block;margin:0 auto 8px;font-size:15px;";
+  hintKnop.style.cssText = "margin:0 auto 8px;font-size:15px;";
   hintKnop.textContent = "💡 Hint";
+  hintKnop.style.display = "none"; // hint pas beschikbaar na het eerste foute antwoord
   hintKnop.addEventListener("click", toonHint);
   container.appendChild(hintKnop);
 
@@ -73,6 +74,7 @@ export function toonOefeningScherm(container, instellingen) {
   function toonOpgave() {
     if (opgaveIndex >= instellingen.aantalOpgaven) { toonEindscherm(); return; }
     bezigMetFeedback = false; pogingNummer = 1; huidigeWaarde = "";
+    hintKnop.style.display = "none";
     feedbackVlak.className = "feedback-vlak"; feedbackVlak.textContent = "";
     hintVlak.textContent = "";
     if (opruimHuidigeInvoer) { opruimHuidigeInvoer(); opruimHuidigeInvoer = null; }
@@ -174,6 +176,7 @@ export function toonOefeningScherm(container, instellingen) {
       setTimeout(() => { opgaveIndex += 1; toonOpgave(); }, 1600);
     } else if (pogingNummer === 1) {
       pogingNummer = 2;
+      hintKnop.style.display = "block";
       raket.foutAntwoord();
       rewardTracker.registreerFout();
       feedbackVlak.className = "feedback-vlak feedback-vlak--fout";

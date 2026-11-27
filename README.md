@@ -18,7 +18,7 @@ JavaScript (ES modules). Werkt volledig offline door `index.html` te openen.
 | ![Platform](docs/screenshots/20-code-platform.png)<br>Platform: lopen, springen, schieten, bouwen | ![Robot met TNT](docs/screenshots/21-robot-tnt-explosie.png)<br>Robot: TNT ontploft, straal van 1 vakje |
 | ![Robot uitleg](docs/screenshots/22-robot-uitleg-tnt.png)<br>Robot: uitlegartikel over TNT en kettingreacties | ![Klok lezen](docs/screenshots/23-klok-analoog.png)<br>Klok lezen: grote analoge klok met wijzers om te verslepen |
 | ![Klok animatie](docs/screenshots/24-klok-animatie.png)<br>Klok lezen: animatie, de minuten die voorbij zijn worden gekleurd | ![Digitale klok](docs/screenshots/25-klok-digitaal.png)<br>Klok lezen: de digitale klok |
-| ![Schaal plattegrond](docs/screenshots/26-schaal-plattegrond.png)<br>Rekenen op schaal: plattegrond met muren A, B en C, hint na een foute poging | ![Schaal kaart](docs/screenshots/27-schaal-kaart.png)<br>Rekenen op schaal: stadskaart met gemeten afstand |
+| ![Schaal plattegrond](docs/screenshots/26-schaal-plattegrond.png)<br>Rekenen op schaal: plattegrond met muren A, B en C, hint-knop na een foute poging | ![Schaal kaart](docs/screenshots/27-schaal-kaart.png)<br>Rekenen op schaal: stadskaart met gemeten afstand |
 | ![Schaal uitleg](docs/screenshots/28-schaal-uitleg.png)<br>Rekenen op schaal: uitlegpagina met plaatjes en verhoudingstabellen | |
 | ![Rekenen met geld](docs/screenshots/09-geld-oefenen.png)<br>Rekenen met geld | ![Grafieken](docs/screenshots/10-grafieken-oefenen.png)<br>Grafieken lezen (groep 8) |
 | ![Math City](docs/screenshots/11-math-city.png)<br>Math City na een oefening | ![Mobiel](docs/screenshots/13-mobiel-geld.png)<br>Mobiele weergave |
@@ -341,7 +341,7 @@ Let op: tot er een `main`-branch bestaat, gebruiken template en script de tag
   (vermenigvuldigen), echt → tekening (delen) en de schaal bepalen (1 : ?), in drie
   niveaus. Antwoorden met komma en eenheid (cm, meter, kilometer) via
   `invoer.js`. Bij elke opgave: een **info**-regel over de schaal, een **hint**
-  (knop, en automatisch na een foute eerste poging) en na afloop de **uitleg** in
+  (knop verschijnt pas na het eerste foute antwoord) en na afloop de **uitleg** in
   stappen met een verhoudingstabel. Uitlegpagina, Hulp-knop en fouten in het
   Rapport zijn aangesloten. Logica en afbeeldingen zijn DOM-vrij en getest:
   `node js/exercises/schaal/test/test.mjs`.
