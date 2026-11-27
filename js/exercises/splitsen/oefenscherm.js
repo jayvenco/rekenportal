@@ -173,6 +173,9 @@ export function startOefensessie(container, instellingen, opKlaar) {
         exerciseId: EXERCISE_ID,
         correct: true,
         timeMs: tijdBesteed,
+        opgave: huidigeOpgave, gegeven: antwoordVanKind,
+        vraag: huidigeOpgave.type === "brug" ? `${huidigeOpgave.a} ${huidigeOpgave.bewerking === "plus" ? "+" : "−"} ${huidigeOpgave.b} (via het tiental)` : huidigeOpgave.stappen[0].vraag,
+        juist: huidigeOpgave.type === "brug" ? huidigeOpgave.uitkomst : huidigeOpgave.antwoordGoed,
         meta: { bewerking: huidigeOpgave.meta.bewerking, pogingen: pogingNummer },
       });
       if (pogingNummer === 1) {
@@ -209,6 +212,9 @@ export function startOefensessie(container, instellingen, opKlaar) {
         exerciseId: EXERCISE_ID,
         correct: false,
         timeMs: tijdBesteed,
+        opgave: huidigeOpgave, gegeven: antwoordVanKind,
+        vraag: huidigeOpgave.type === "brug" ? `${huidigeOpgave.a} ${huidigeOpgave.bewerking === "plus" ? "+" : "−"} ${huidigeOpgave.b} (via het tiental)` : huidigeOpgave.stappen[0].vraag,
+        juist: huidigeOpgave.type === "brug" ? huidigeOpgave.uitkomst : huidigeOpgave.antwoordGoed,
         meta: { bewerking: huidigeOpgave.meta.bewerking, pogingen: 2 },
       });
       feedbackVlak.className = "feedback-vlak feedback-vlak--fout";

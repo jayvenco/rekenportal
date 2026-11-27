@@ -159,7 +159,7 @@ export function toonOefeningScherm(container, instellingen) {
       bezigMetFeedback = true;
       aantalGoedTotaal += 1;
       raket.goedAntwoord(pogingNummer);
-      recordAnswer({ exerciseId: EXERCISE_ID, correct: true, timeMs: tijd, meta: { ...huidigeOpgave.meta, pogingen: pogingNummer } }).catch(() => {});
+      recordAnswer({ exerciseId: EXERCISE_ID, correct: true, timeMs: tijd, opgave: huidigeOpgave, gegeven: ingave, meta: { ...huidigeOpgave.meta, pogingen: pogingNummer } }).catch(() => {});
       if (pogingNummer === 1) {
         feedbackVlak.className = "feedback-vlak feedback-vlak--goed";
         feedbackVlak.textContent = "✓ " + geefCompliment();
@@ -184,7 +184,7 @@ export function toonOefeningScherm(container, instellingen) {
     } else {
       bezigMetFeedback = true;
       raket.foutAntwoord();
-      recordAnswer({ exerciseId: EXERCISE_ID, correct: false, timeMs: tijd, meta: { ...huidigeOpgave.meta, pogingen: 2 } }).catch(() => {});
+      recordAnswer({ exerciseId: EXERCISE_ID, correct: false, timeMs: tijd, opgave: huidigeOpgave, gegeven: ingave, meta: { ...huidigeOpgave.meta, pogingen: 2 } }).catch(() => {});
       feedbackVlak.className = "feedback-vlak feedback-vlak--fout";
       feedbackVlak.textContent = geefFoutmelding() + " Het juiste antwoord is " + huidigeOpgave.antwoordGoed.display + ".";
       speelFoutGeluid();

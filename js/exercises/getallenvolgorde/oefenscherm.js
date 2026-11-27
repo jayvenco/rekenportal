@@ -131,6 +131,8 @@ export function startOefensessie(container, instellingen, opKlaar) {
             exerciseId: EXERCISE_ID,
             correct: true,
             timeMs: tijdBesteed,
+            vraag: `Zet de getallen op volgorde (klein naar groot): ${huidigeOpgave.getallen.join(", ")}`,
+            juist: huidigeOpgave.oplossing.join(", "),
             meta: { ...huidigeOpgave.meta, hadFout: hadFoutBijDezeOpgave },
           });
 

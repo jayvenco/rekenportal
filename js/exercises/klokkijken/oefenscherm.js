@@ -188,6 +188,8 @@ export function startOefensessie(container, instellingen, opKlaar) {
           exerciseId: EXERCISE_ID,
           correct: true,
           timeMs: tijdBesteed,
+          opgave: huidigeOpgave, gegeven: antwoordVanKind,
+          vraag: huidigeOpgave.vraag || `Hoe laat is het op de klok? (${huidigeOpgave.meta.uur}:${String(huidigeOpgave.meta.minuten).padStart(2, "0")})`,
           meta: { ...huidigeOpgave.meta, pogingen: pogingNummer },
         });
         markeerAntwoorden(antwoordVanKind);
@@ -224,6 +226,8 @@ export function startOefensessie(container, instellingen, opKlaar) {
           exerciseId: EXERCISE_ID,
           correct: false,
           timeMs: tijdBesteed,
+          opgave: huidigeOpgave, gegeven: antwoordVanKind,
+          vraag: huidigeOpgave.vraag || `Hoe laat is het op de klok? (${huidigeOpgave.meta.uur}:${String(huidigeOpgave.meta.minuten).padStart(2, "0")})`,
           meta: { ...huidigeOpgave.meta, pogingen: 2 },
         });
         markeerAntwoorden(antwoordVanKind);

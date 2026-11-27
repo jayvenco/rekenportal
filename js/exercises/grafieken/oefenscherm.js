@@ -232,6 +232,8 @@ export async function startOefensessie(container, instellingen, opKlaar) {
         exerciseId: EXERCISE_ID,
         correct: goed,
         timeMs: Math.round(performance.now() - start),
+        vraag: huidig.vraag.tekst,
+        juist: toonJuisteAntwoord(huidig.vraag),
         meta: { opgaveId: huidig.id, niveau: huidig.niveau, categorie: huidig.categorie, pogingen: poging },
       });
     } catch (fout) {

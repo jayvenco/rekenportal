@@ -284,11 +284,17 @@ export function startOefensessie(container, instellingen, opKlaar) {
       const isGoed = antwoord === huidigeOpgave.antwoordGoed;
       const tijd = Math.round(performance.now() - startTijdOpgave);
       const meta = { opgaveType: huidigeOpgave.type, maxEuro: huidigeOpgave.meta.maxEuro };
+      const euro = (c) => `€ ${(c / 100).toFixed(2).replace(".", ",")}`;
+      const rapport = {
+        vraag: huidigeOpgave.type === "betaal" ? `Betaal ${euro(huidigeOpgave.antwoordGoed)} met het juiste geld` : "Tel het geld: hoeveel is dit samen?",
+        gegeven: euro(antwoord),
+        juist: euro(huidigeOpgave.antwoordGoed),
+      };
       if (isGoed) {
         bezigMetFeedback = true;
         controleKnop.style.display = "none";
         aantalGoedTotaal += 1;
-        await recordAnswer({ exerciseId: EXERCISE_ID, correct: true, timeMs: tijd, meta: { ...meta, pogingen: pogingNummer } });
+        await recordAnswer({ exerciseId: EXERCISE_ID, correct: true, timeMs: tijd, ...rapport, meta: { ...meta, pogingen: pogingNummer } });
         feedbackVlak.className = pogingNummer === 1 ? "feedback-vlak feedback-vlak--goed" : "feedback-vlak feedback-vlak--tweede-poging-goed";
         feedbackVlak.textContent = `✓ ${geefCompliment(profielNaam)}${pogingNummer === 2 ? " (tweede poging!)" : ""}`;
         voortgangCirkels.zetStatus(opgaveIndex, pogingNummer === 1 ? "goed" : "tweedePogingGoed");
@@ -307,7 +313,7 @@ export function startOefensessie(container, instellingen, opKlaar) {
       } else {
         bezigMetFeedback = true;
         controleKnop.style.display = "none";
-        await recordAnswer({ exerciseId: EXERCISE_ID, correct: false, timeMs: tijd, meta: { ...meta, pogingen: 2 } });
+        await recordAnswer({ exerciseId: EXERCISE_ID, correct: false, timeMs: tijd, ...rapport, meta: { ...meta, pogingen: 2 } });
         toonOplossing();
         feedbackVlak.className = "feedback-vlak feedback-vlak--fout";
         feedbackVlak.textContent = `${geefFoutmelding()} Het juiste bedrag is ${formatBedrag(huidigeOpgave.antwoordGoed)}.`;

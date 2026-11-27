@@ -150,6 +150,9 @@ export function startOefensessie(container, instellingen, opKlaar) {
         exerciseId: EXERCISE_ID,
         correct: isGoed,
         timeMs: tijdBesteed,
+        opgave: huidigeOpgave,
+        gegeven: gekozenOptie.naam,
+        juist: huidigeOpgave.opties.find((o) => o.correct)?.naam,
         meta: huidigeOpgave.meta,
       });
 

@@ -135,6 +135,11 @@ function bouwNavigatieKaart() {
   statistiekenLink.href = "#/statistieken";
   statistiekenLink.textContent = "📊 Statistieken";
 
+  const rapportLink = document.createElement("a");
+  rapportLink.className = "knop knop--zacht";
+  rapportLink.href = "#/rapport";
+  rapportLink.textContent = "📋 Rapport";
+
   const vergrendelKnop = document.createElement("button");
   vergrendelKnop.type = "button";
   vergrendelKnop.className = "knop knop--zacht";
@@ -144,7 +149,7 @@ function bouwNavigatieKaart() {
     window.location.hash = "#/";
   });
 
-  rij.append(beheerLink, leerplanLink, statistiekenLink, vergrendelKnop);
+  rij.append(beheerLink, leerplanLink, statistiekenLink, rapportLink, vergrendelKnop);
   kaart.appendChild(rij);
   return kaart;
 }

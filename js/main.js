@@ -9,6 +9,7 @@
 //   #/oefening/<id>         -> een specifieke oefening
 //   #/statistieken          -> statistiekenscherm (achter instellingen-slot)
 //   #/instellingen          -> instellingenscherm (incl. wachtwoord-gate)
+//   #/rapport               -> rapport per profiel: opgaven die niet goed gingen (14 dagen)
 //   #/profielen             -> profielkiezer (wie ben jij?)
 //   #/beheer                -> ouder/beheer-scherm (achter instellingen-slot)
 //   #/leerplan              -> leerplan-overzicht (achter instellingen-slot)
@@ -23,7 +24,7 @@
 // afgeschermd met een wachtwoord (zie utils/instellingenSlot.js).
 // -----------------------------------------------------------------------------
 
-const BEVEILIGDE_ROUTES = ["#/beheer", "#/leerplan", "#/statistieken"];
+const BEVEILIGDE_ROUTES = ["#/beheer", "#/leerplan", "#/statistieken", "#/rapport"];
 
 import { toonHomepage } from "./screens/home.js";
 import { toonOefeningScherm } from "./screens/oefeningScherm.js";
@@ -32,6 +33,7 @@ import { toonInstellingenScherm } from "./screens/instellingen.js";
 import { toonProfielkiezerScherm } from "./screens/profielkiezer.js";
 import { toonBeheerScherm } from "./screens/beheer.js";
 import { toonLeerplanScherm } from "./screens/leerplan.js";
+import { toonRapportScherm } from "./screens/rapport.js";
 import { getActiefProfielId } from "./storage.js";
 import { vernietigTelraam } from "./utils/telraam.js";
 import { isInstellingenOntgrendeld, setBestemmingNaOntgrendeling } from "./utils/instellingenSlot.js";
@@ -96,6 +98,8 @@ async function verwerkRoute() {
     await toonBeheerScherm(hoofdContainer);
   } else if (hash === "#/leerplan") {
     await toonLeerplanScherm(hoofdContainer);
+  } else if (hash === "#/rapport") {
+    await toonRapportScherm(hoofdContainer);
   } else {
     await toonHomepage(hoofdContainer);
   }

@@ -343,6 +343,7 @@ export function toonOefeningScherm(container, instellingen) {
         exerciseId: EXERCISE_ID,
         correct: true,
         timeMs: tijdBesteed,
+        opgave: huidigeOpgave, gegeven: ingave,
         meta: { ...huidigeOpgave.meta, pogingen: pogingNummer },
       }).catch(() => {});
 
@@ -383,6 +384,7 @@ export function toonOefeningScherm(container, instellingen) {
         exerciseId: EXERCISE_ID,
         correct: false,
         timeMs: tijdBesteed,
+        opgave: huidigeOpgave, gegeven: ingave,
         meta: { ...huidigeOpgave.meta, pogingen: 2 },
       }).catch(() => {});
       feedbackVlak.className = "feedback-vlak feedback-vlak--fout";

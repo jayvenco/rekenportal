@@ -131,6 +131,7 @@ export function startOefensessie(container, instellingen, opKlaar) {
         exerciseId: EXERCISE_ID,
         correct: true,
         timeMs: tijdBesteed,
+        opgave: huidigeOpgave, gegeven: antwoordVanKind,
         meta: { ...huidigeOpgave.meta, pogingen: pogingNummer },
       });
       if (pogingNummer === 1) {
@@ -174,6 +175,7 @@ export function startOefensessie(container, instellingen, opKlaar) {
         exerciseId: EXERCISE_ID,
         correct: false,
         timeMs: tijdBesteed,
+        opgave: huidigeOpgave, gegeven: antwoordVanKind,
         meta: { ...huidigeOpgave.meta, pogingen: 2 },
       });
       feedbackVlak.className = "feedback-vlak feedback-vlak--fout";

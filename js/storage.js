@@ -217,17 +217,50 @@ export function exportAlleUrl(formaat) {
 // Antwoorden (statistiek-ruwdata) — werken altijd op het ACTIEVE profiel.
 // -----------------------------------------------------------------------------
 
+/** Haalt leesbare tekst uit een waarde (HTML-tags weg, objecten via .display). */
+function naarTekst(waarde) {
+  if (waarde === undefined || waarde === null) return undefined;
+  if (typeof waarde === "object") waarde = waarde.display ?? waarde.tekst ?? waarde.label ?? JSON.stringify(waarde);
+  const tekst = String(waarde).replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
+  return tekst || undefined;
+}
+
+/** Bouwt de velden voor de rapportage ("wat ging niet goed") uit een opgave-object. */
+function bouwFoutDetails({ opgave, gegeven, vraag, juist }) {
+  const o = opgave || {};
+  const v = naarTekst(vraag ?? o.vraagTekst ?? o.vraag ?? o.tekst);
+  if (!v) return {};
+  return {
+    vraag: v.slice(0, 600),
+    gegeven: naarTekst(gegeven)?.slice(0, 200),
+    juist: naarTekst(juist ?? o.antwoordGoed ?? o.antwoord)?.slice(0, 200),
+  };
+}
+
+/** Rapport van één profiel: opgaven die niet goed gingen in de afgelopen 14 dagen. */
+export async function getRapport(profielId) {
+  try {
+    return await fetchJson(`/rapport/${encodeURIComponent(profielId)}`);
+  } catch (fout) {
+    console.error("Kon rapport niet ophalen:", fout);
+    return null;
+  }
+}
+
 /**
  * Slaat één beantwoorde opgave op voor het actieve profiel.
+ * Optioneel `opgave` (+ `gegeven` = antwoord van het kind) of `vraag`/`juist`: dan
+ * komt een fout of een tweede-poging-goed ook in het rapport.
  * @param {Object} gegevens
  * @param {string} gegevens.exerciseId
  * @param {boolean} gegevens.correct
  * @param {number} gegevens.timeMs
  * @param {Object} [gegevens.meta]
  */
-export async function recordAnswer({ exerciseId, correct, timeMs, meta }) {
+export async function recordAnswer({ exerciseId, correct, timeMs, meta, opgave, gegeven, vraag, juist }) {
   try {
     const profielId = vereisActiefProfielId();
+    const fout = bouwFoutDetails({ opgave, gegeven, vraag, juist });
     return await fetchJson("/antwoorden", {
       method: "POST",
       body: JSON.stringify({
@@ -236,6 +269,7 @@ export async function recordAnswer({ exerciseId, correct, timeMs, meta }) {
         correct: !!correct,
         timeMs: typeof timeMs === "number" && timeMs >= 0 ? timeMs : 0,
         meta: meta || {},
+        ...fout,
       }),
     });
   } catch (fout) {

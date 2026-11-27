@@ -320,3 +320,14 @@ Let op: tot er een `main`-branch bestaat, gebruiken template en script de tag
   `js/utils/achtergronden.js`; een nieuwe afbeelding toevoegen = bestand in
   `img/opgave-achtergronden/` zetten en de bestandsnaam in die lijst bijvoegen.
   Nieuwe afbeeldingen zijn JPEG (kwaliteit 80, ca. 600–750 KB) om de pagina snel te houden.
+- **Rapport (ouders)** — `#/rapport`, bereikbaar via Instellingen → "📋 Rapport" (achter
+  het instellingen-slot). Per profiel een overzicht van opgaven die niet goed gingen in
+  de afgelopen 14 dagen, gegroepeerd per oefening: de vraag, wat het kind antwoordde
+  (alleen bij echt fout), het juiste antwoord, en of het "fout" was of "pas bij de 2e
+  poging goed". Filter "alleen echt fout" en een afdrukknop. De regels staan in de
+  tabel `fouten` (`backend/app/models/fout.py`) en worden na 14 dagen automatisch
+  verwijderd (bij elk nieuw antwoord en bij het openen van het rapport); de gewone
+  statistieken blijven onaangetast. Een oefening komt in het rapport door
+  `recordAnswer({ ..., opgave, gegeven })` (of `vraag`/`juist`) mee te geven; zonder
+  vraagtekst wordt er niets gelogd (zo blijven Robot en Code-blokken erbuiten).
+  API: `GET /api/rapport/{profiel_id}`.

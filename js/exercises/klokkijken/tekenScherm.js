@@ -197,6 +197,7 @@ export function startTekenSessie(container, instellingen, opKlaar) {
           exerciseId: EXERCISE_ID,
           correct: true,
           timeMs: tijdBesteed,
+          vraag: `Teken de wijzers: ${huidigeOpgave.antwoord}`, juist: huidigeOpgave.antwoord,
           meta: { ...huidigeOpgave.meta, teken: true, pogingen: pogingNummer },
         });
         feedbackVlak.className = "feedback-vlak feedback-vlak--goed";
@@ -223,6 +224,7 @@ export function startTekenSessie(container, instellingen, opKlaar) {
           exerciseId: EXERCISE_ID,
           correct: false,
           timeMs: tijdBesteed,
+          vraag: `Teken de wijzers: ${huidigeOpgave.antwoord}`, juist: huidigeOpgave.antwoord,
           meta: { ...huidigeOpgave.meta, teken: true, pogingen: 2 },
         });
         // Toon het juiste antwoord
