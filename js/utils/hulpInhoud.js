@@ -9,6 +9,7 @@ import { bouwGetallenlijn } from "./getallenlijnSvg.js";
 import { bouwKlok } from "./klokSvg.js";
 import { bouwSplitsboom } from "../exercises/splitsen/splitsboom.js";
 import { miniKaart } from "../exercises/robot/uitleg.js";
+import { afbeeldingSvg } from "../exercises/schaal/afbeeldingen.js";
 import { maakGeldSvg } from "../exercises/geld/geldSvg.js";
 import { maakGrafiek, voegGrafiekStijlToe } from "../exercises/grafieken/grafiekWeergave.js";
 
@@ -651,6 +652,38 @@ const INHOUD = {
       },
     ],
     tips: ["Een verhoudingstabel helpt: zet de getallen onder elkaar.", "Zoek eerst de rij met <b>1</b> (1 persoon, 1 cm)."],
+  }),
+
+  schaal: () => ({
+    titel: "Rekenen op schaal",
+    intro: "Een schaal vertelt hoeveel kleiner een tekening, kaart of model is dan het echte ding. Schaal <b>1 : 50</b> betekent: 1 cm op de tekening is 50 cm in het echt.",
+    stappen: [
+      "Lees de schaal en de gegeven lengte. Begin je met een liniaal? Lees af vanaf de <b>0</b>.",
+      "Van tekening naar echt: <b>vermenigvuldig</b> met het schaalgetal. Van echt naar tekening: <b>deel</b>.",
+      "Je krijgt cm. Reken om naar de eenheid van de vraag: <b>: 100</b> voor meters, <b>: 100 000</b> voor kilometers.",
+      "Moet je de schaal bepalen? Reken de echte lengte om naar cm en deel die door de cm op de tekening.",
+    ],
+    voorbeelden: [
+      {
+        kop: "Muur A is 8 cm op de plattegrond (schaal 1 : 50)",
+        tekst: "8 × 50 = 400 cm. 400 cm : 100 = <b>4 meter</b>.",
+        visual: uitSvg(afbeeldingSvg({ soort: "plattegrond", maten: { A: 8, B: 3.5, C: 12 }, seed: 11, schaal: 50 })),
+      },
+      {
+        kop: "Verhoudingstabel",
+        tekst: "Links de tekening, rechts het echt. Doe aan beide kanten hetzelfde.",
+        visual: tabel(["Tekening", "Echt"], [["1 cm", "50 cm"], ["8 cm <b style='color:#e0533d'>(× 50)</b>", "400 cm = 4 m <b style='color:#e0533d'>(× 50)</b>"]]),
+      },
+      {
+        kop: "Omrekenen",
+        visual: tabel(["Eenheid", "Is hetzelfde als"], [["1 m", "100 cm"], ["1 km", "1000 m = 100 000 cm"]]),
+      },
+    ],
+    tips: [
+      "Bij schaal <b>1 : 100</b> worden cm gewoon meters. Bij <b>1 : 100 000</b> worden cm kilometers.",
+      "Onder elke opgave staan info en een 💡 hint. Na je antwoord zie je de uitleg met een verhoudingstabel.",
+      "Check of je antwoord realistisch is: een kamer van 400 meter bestaat niet.",
+    ],
   }),
 
   statistiek: () => ({

@@ -16,6 +16,7 @@ import { tafelsOefening } from "./exercises/tafels/index.js";
 import { plusMinOefening } from "./exercises/plusmin/index.js";
 import { verhaaltjesOefening } from "./exercises/verhaaltjes/index.js";
 import { verhoudingenOefening } from "./exercises/verhoudingen/index.js";
+import { schaalOefening } from "./exercises/schaal/index.js";
 import { breukenOefening } from "./exercises/breuken/index.js";
 import { complexOefening } from "./exercises/complex/index.js";
 import { metenOefening } from "./exercises/meten/index.js";
@@ -118,6 +119,11 @@ export const EXERCISES = [
     ...verhoudingenOefening,
     groep: 8,
     instelbareOpties: "Categorie (recepten, schaal, mix), aantal opgaven",
+  },
+  {
+    ...schaalOefening,
+    groep: 8,
+    instelbareOpties: "Soort (plattegrond, kaart, model, rekenen, mix), niveau, aantal opgaven",
   },
   {
     ...robotOefening,
